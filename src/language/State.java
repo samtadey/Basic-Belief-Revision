@@ -6,6 +6,9 @@ package language;
 /**
  * @author sam_t
  *
+ * This class is a state representation of the known world. 
+ * The class stores a binary string representation of the world state
+ *
  */
 public class State {
 	

@@ -7,37 +7,82 @@ import java.util.ArrayList;
 
 /**
  * @author sam_t
+ * 
+ * The BeliefState class represents a set of states. These states should be in the form of a binary string
+ *
+ * Variables
+ *   beliefs - an ArrayList of States
  *
  */
 public class BeliefState {
 
 	private ArrayList<State> beliefs; 
-	//private int num_vars;
 	
+	/*
+	 * Default constructor
+	 * Instantiates the object
+	 */
 	public BeliefState() {
 		this.beliefs = new ArrayList<State>();
 	}
 	
+	/*
+	 * @params
+	 * 	 ArrayList<State>
+	 * 
+	 * Instantiates the object
+	 */
 	public BeliefState(ArrayList<State> beliefs) {
 		this.beliefs = beliefs;
 	}
 
+	/*
+	 * @returns beliefs as an ArrayList<State>
+	 */
 	public ArrayList<State> getBeliefs() {
 		return beliefs;
 	}
 
+	/*
+	 * @params
+	 *   ArrayList<State>
+	 * 
+	 * Sets the list of beliefs to the method argument
+	 */
 	public void setBeliefs(ArrayList<State> beliefs) {
 		this.beliefs = beliefs;
 	}
 	
+	/*
+	 * @params
+	 *   State
+	 * 
+	 * Adds the State method argument to the ArrayList of States
+	 */
 	public void addBelief(State belief) {
 		this.beliefs.add(belief);
 	}
 	
+	/*
+	 * @params
+	 * 	 int idx
+	 * 
+	 * Removes the State located at the index of the ArrayList<State>
+	 * 
+	 * @throws
+	 *   IndexOutOfBoundsException
+	 */
 	public void removeBelief(int idx) throws IndexOutOfBoundsException {
 		this.beliefs.remove(idx);
 	}
 	
+	/*
+	 * Prints the contents of the BeliefState to the console.
+	 * Sample Output:
+	 * [ 1001 ]
+	 * [ 1000 ]
+	 * [ 0000 ]
+	 */
 	public void toConsole() {
 		
 		if (this.beliefs.size() < 1) {
@@ -49,13 +94,5 @@ public class BeliefState {
 			System.out.println("[ " + this.beliefs.get(i).getState() + " ]");
 		
 	}
-
-//	public int getNumVars() {
-//		return num_vars;
-//	}
-//
-//	public void setNumVars(int num_vars) {
-//		this.num_vars = num_vars;
-//	}
 
 }
