@@ -5,6 +5,12 @@ package main;
 
 
 
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import distance.Distance;
+import distance.HammingDistance;
 import language.BeliefState;
 import language.State;
 
@@ -32,10 +38,12 @@ public class BeliefRevision {
 	   	BeliefState bstate = new BeliefState();     
 	    for (String line : input.split("\n")) 
 	    {
-	    	bstate.addBelief(new State(line));;
+	    	bstate.addBelief(new State(line));
 	    }
 	    return bstate;
     }
+    
+    
     
     /*
      * @params
@@ -49,7 +57,7 @@ public class BeliefRevision {
      * object are compared for the minimum distance. States in the sentence object with the minimum distance to any State in teh beliefs
      * object are stored and returned by the method.
      */
-    public static BeliefState reviseStates(BeliefState beliefs, BeliefState sentence) {
+    public static BeliefState reviseStates(BeliefState beliefs, BeliefState sentence, Distance d) {
     	
     	if (beliefs.getBeliefs().size() == 0 || sentence.getBeliefs().size() == 0)
     		return sentence;
@@ -58,12 +66,12 @@ public class BeliefRevision {
     	int[] idx = new int[sentence.getBeliefs().size()];
     	int min, curr;
     	
-    	min = findStateMinDistance(beliefs, sentence.getBeliefs().get(0));
+    	min = findStateMinDistance(beliefs, sentence.getBeliefs().get(0), d);
     	idx[0] = min;
     	//
     	for (int i = 1; i < sentence.getBeliefs().size(); i++)
     	{
-    		curr = findStateMinDistance(beliefs, sentence.getBeliefs().get(i));
+    		curr = findStateMinDistance(beliefs, sentence.getBeliefs().get(i), d);
     		if (curr < min)
     			min = curr;
     		idx[i] = curr;
@@ -89,17 +97,19 @@ public class BeliefRevision {
      * The distance between two states is defined by the Hamming Distance between two States
      * When the State sentence_state has been compared to all states in the belief state, the minimum distance is returned.
      */
-    private static int findStateMinDistance(BeliefState beliefs, State sentence_state) {
+    private static int findStateMinDistance(BeliefState beliefs, State sentence_state, Distance d) {
     	int min, curr;
     	
     	if (beliefs.getBeliefs().size() < 1)
     		return -1;
     	
-    	min = findDistance(beliefs.getBeliefs().get(0), sentence_state);
+    	//min = findDistance(beliefs.getBeliefs().get(0), sentence_state);
+    	min = d.getDistance(beliefs.getBeliefs().get(0), sentence_state);
     	
     	for (int i = 1; i < beliefs.getBeliefs().size(); i++)
     	{
-    		curr = findDistance(beliefs.getBeliefs().get(i), sentence_state);
+    		//curr = findDistance(beliefs.getBeliefs().get(i), sentence_state);
+    		curr = d.getDistance(beliefs.getBeliefs().get(i), sentence_state);
     		if (curr < min)
     			min = curr;
     	}
