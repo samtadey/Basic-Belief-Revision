@@ -19,5 +19,5 @@ public abstract class Distance {
 		this.propvars = vars;
 	}
 		
-	public abstract int getDistance(State s1, State s2);
+	public abstract double getDistance(State s1, State s2);
 }

@@ -17,8 +17,8 @@ public class HammingDistance extends Distance {
 		super(vars);
 	}
 
-	public int getDistance(State s1, State s2) {
-		int dist = 0;
+	public double getDistance(State s1, State s2) {
+		double dist = 0;
 		
     	if (s1.getState().length() != s2.getState().length())
     	{

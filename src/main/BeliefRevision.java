@@ -63,8 +63,9 @@ public class BeliefRevision {
     		return sentence;
     	
     	BeliefState states = new BeliefState();
-    	int[] idx = new int[sentence.getBeliefs().size()];
-    	int min, curr;
+    	double[] idx = new double[sentence.getBeliefs().size()];
+    	double min, curr;
+    	
     	
     	min = findStateMinDistance(beliefs, sentence.getBeliefs().get(0), d);
     	idx[0] = min;
@@ -80,6 +81,8 @@ public class BeliefRevision {
     	for (int i = 0; i < idx.length; i++)
     		if (idx[i] == min)
     			states.addBelief(sentence.getBeliefs().get(i));
+    	
+    	System.out.println("Min Distance: " + min);
     	
     	return states;
     	
@@ -97,8 +100,8 @@ public class BeliefRevision {
      * The distance between two states is defined by the Hamming Distance between two States
      * When the State sentence_state has been compared to all states in the belief state, the minimum distance is returned.
      */
-    private static int findStateMinDistance(BeliefState beliefs, State sentence_state, Distance d) {
-    	int min, curr;
+    private static double findStateMinDistance(BeliefState beliefs, State sentence_state, Distance d) {
+    	double min, curr;
     	
     	if (beliefs.getBeliefs().size() < 1)
     		return -1;
@@ -129,19 +132,19 @@ public class BeliefRevision {
      * The distance is defined as the Hamming Distance between the two States.
      * 
      */
-    private static int findDistance(State s1, State s2) {
-    	int dist = 0;
-    	if (s1.getState().length() != s2.getState().length())
-    	{
-    		System.out.println("Error: States are not equal length");
-    		return -1;
-    	}
-    	
-    	for (int i = 0; i < s1.getState().length(); i++)
-    		if (s1.getState().charAt(i) != s2.getState().charAt(i))
-    			dist++;
-    	
-    	return dist;
-    }
+//    private static int findDistance(State s1, State s2) {
+//    	int dist = 0;
+//    	if (s1.getState().length() != s2.getState().length())
+//    	{
+//    		System.out.println("Error: States are not equal length");
+//    		return -1;
+//    	}
+//    	
+//    	for (int i = 0; i < s1.getState().length(); i++)
+//    		if (s1.getState().charAt(i) != s2.getState().charAt(i))
+//    			dist++;
+//    	
+//    	return dist;
+//    }
 
 }
