@@ -76,6 +76,13 @@ public class BeliefState {
 		this.beliefs.remove(idx);
 	}
 	
+	public String toString() {
+		StringBuilder build = new StringBuilder();
+		for (int i = 0; i < this.beliefs.size(); i++)
+			build.append("[ " + this.beliefs.get(i).getState() + " ]\n");
+		return build.toString();
+	}
+	
 	/*
 	 * Prints the contents of the BeliefState to the console.
 	 * Sample Output:

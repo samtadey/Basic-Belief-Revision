@@ -4,71 +4,103 @@
 package revision_ui;
 
 import java.awt.Component;
-import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
+
+import data.UiData;
 
 /**
  * @author sam_t
  *
  */
-public class WeightedHammingPanel<T> extends JPanel {
+public class WeightedHammingPanel extends JPanel implements ActionListener {
 
-	HashMap<T, Double> varlist;
-	Set<T> varset;
-	JPanel main, vars, equals, weights;
-	DefaultListModel<T> vlist;
-	DefaultListModel<JLabel> labels;
-	DefaultListModel<JTextField> weighttextlist;
-	JList<T> list;
-	JList<JLabel> eq;
-	JList<JTextField> w;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
-	public WeightedHammingPanel(Set<T> varset) {
+	ArrayList<Character> vars;
+	ArrayList<Double> weights;
+	Set<Character> varset;
+	//JPanel main, vars, equals, weights;
+	
+	
+	ArrayList<Character> items;
+	DefaultListModel<JTextField> test;
+
+	
+	public WeightedHammingPanel(Set<Character> varset) {
 		this.varset = varset;
-		this.varlist = new HashMap<T, Double>();
-		
+		//this.varlist = new HashMap<Character, Double>();
+		items = new ArrayList<Character>();		
 		//i think "this" will be main
 		//main = new JPanel();
-		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		vars = new JPanel();
-		equals = new JPanel();
-		equals.setLayout(new BoxLayout(equals, BoxLayout.Y_AXIS));
-		weights = new JPanel();
-		weights.setLayout(new BoxLayout(weights, BoxLayout.Y_AXIS));
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		//setup variable list
-		vlist = new DefaultListModel<T>();
-		weighttextlist = new DefaultListModel<JTextField>();
-		labels = new DefaultListModel<JLabel>();
+		test = new DefaultListModel<JTextField>();
 
 		
-		//for some reason can't use list for other components
-		for (T c: varset)
+		
+
+		for (Character c: varset)
 		{
-			vlist.addElement(c);
-			equals.add(new JLabel(" = "));
-			weights.add(new JTextField(10));
+			JPanel panel = new JPanel();
+			JLabel var = new JLabel(Character.toString(c));
+		
+			JLabel eq = new JLabel("=");
+			JTextField tf = new JTextField(10);
+			//
+			tf.setText("1.0");
+			//WeightItemContainer con = new WeightItemContainer(c);
+			
+			items.add(c);
+			test.addElement(tf);
+		
+			//JButton b = new JButton("Test");
+			panel.add(var);
+			panel.add(eq);
+			panel.add(tf);
+			//WeightItemContainer con = new WeightItemContainer(c);
+			//add to list for reference
+			//items.add(con);
+			this.add(panel);
+			
 		}
-		list = new JList<T>(vlist);
+		
+	}
+	
 
+	@Override
+	public void actionPerformed(ActionEvent e) throws NumberFormatException {
 		
-		vars.add(list);
-
+		//set the data object 
+		for (int i = 0; i < test.getSize() && i < items.size(); i++)
+		{
+			System.out.println(i);
+			System.out.println(items.get(i) + " " + test.get(i).getText());
+			
+			//handle this with errors
+			double w = Double.parseDouble(test.get(i).getText());
+			
+			UiData.addVarWeights(items.get(i), w);
+		}
 		
-		//make equals pane
-		
-		this.add(vars);
-		this.add(equals);
-		this.add(weights);
+		System.out.println("Weighted handler");
+//		for (WeightItemContainer c: items)
+//			c.setWeight();
 		
 	}
 	

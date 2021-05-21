@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import distance.Distance;
+import distance.DistanceState;
 import distance.HammingDistance;
 import language.BeliefState;
 import language.State;
@@ -44,7 +45,6 @@ public class BeliefRevision {
     }
     
     
-    
     /*
      * @params
      * 	BeliefState beliefs
@@ -57,7 +57,7 @@ public class BeliefRevision {
      * object are compared for the minimum distance. States in the sentence object with the minimum distance to any State in teh beliefs
      * object are stored and returned by the method.
      */
-    public static BeliefState reviseStates(BeliefState beliefs, BeliefState sentence, Distance d) {
+    public static BeliefState reviseStates(BeliefState beliefs, BeliefState sentence, DistanceState d) {
     	
     	if (beliefs.getBeliefs().size() == 0 || sentence.getBeliefs().size() == 0)
     		return sentence;
@@ -100,7 +100,7 @@ public class BeliefRevision {
      * The distance between two states is defined by the Hamming Distance between two States
      * When the State sentence_state has been compared to all states in the belief state, the minimum distance is returned.
      */
-    private static double findStateMinDistance(BeliefState beliefs, State sentence_state, Distance d) {
+    private static double findStateMinDistance(BeliefState beliefs, State sentence_state, DistanceState d) {
     	double min, curr;
     	
     	if (beliefs.getBeliefs().size() < 1)

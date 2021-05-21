@@ -22,7 +22,8 @@ public class ParametrizedDifference extends Distance {
 	}
 
 	@Override
-	public double getDistance(State s1, State s2) {
+	public double getDistance(State s1, State s2) {  
+		
 		if (s1.getState().length() != s2.getState().length())
 		{
 			System.out.println("States not same length");

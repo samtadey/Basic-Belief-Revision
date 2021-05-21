@@ -21,4 +21,8 @@ public class State {
 	public String getState() {
 		return this.state_rep;
 	}
+	
+	public boolean isEqual(State s) {
+		return this.state_rep.equals(s.state_rep);
+	}
 }
