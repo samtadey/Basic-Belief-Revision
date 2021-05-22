@@ -5,13 +5,13 @@ package main;
 
 
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Random;
 import java.util.Set;
 
-import distance.Distance;
 import distance.DistanceState;
-import distance.HammingDistance;
 import language.BeliefState;
 import language.State;
 
@@ -43,6 +43,74 @@ public class BeliefRevision {
 	    }
 	    return bstate;
     }
+    
+    
+	public static double getDistanceHamming(State s1, State s2) {
+		double dist = 0;
+		
+    	if (s1.getState().length() != s2.getState().length())
+    	{
+    		System.out.println("Error: States are not equal length");
+    		return -1;
+    	}
+    	
+    	for (int i = 0; i < s1.getState().length(); i++)
+    		if (s1.getState().charAt(i) != s2.getState().charAt(i))
+    			dist++;
+    	
+    	return dist;
+	}
+	
+	public static double getDistanceRandom(State s1, State s2) {
+		Random rand;
+		int upper;
+		
+		//upper bound not inclusive , therefore range is 0 - length + 1
+		upper = s1.getState().length() + 1;
+		rand = new Random();
+		//will cast and thats fine
+		return rand.nextInt(upper);
+	}
+	
+	//Set vars must be an ordered set of variables
+	public static double getDistanceWeightHamming(State s1, State s2, HashMap<Character, Double> weights, Set<Character> vars) {
+		//assuming the set and states are ordered in the same way?
+		// [A, B, C](Set) or 011 (State)
+		int i = 0;
+		double dist = 0;
+		for (Character c: vars)
+		{
+			//
+			if (s1.getState().charAt(i) != s2.getState().charAt(i))
+				dist += weights.get(c);
+			i++;
+		}
+		
+		return dist;
+	}
+	
+
+//	public static double getParametrizedDistance(State s1, State s2, HashMap<Character, Double> weights, Set<Character> vars) {  
+//				
+//		//levels are as such
+//		//B = 1
+//		//C = 2
+//		//D = 3
+//		//A = 4
+//		//weights are assigned to the hashmap in preprossessing
+//		
+//		int i = 0;
+//		double dist = 0;
+//		for (Character c: vars)
+//		{
+//			if (s1.getState().charAt(i) != s2.getState().charAt(i))
+//				dist += weights.get(c);
+//			i++;
+//		}
+//		
+//		
+//		return dist;
+//	}
     
     
     /*

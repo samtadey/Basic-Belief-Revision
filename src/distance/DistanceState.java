@@ -78,11 +78,15 @@ public class DistanceState {
 		return 1;
 	}
 	
+	public Set<Character> getVocab() {
+		return this.vocab;
+	}
+	
 	public HashMap<String, HashMap<String, Double>> getDistances() {
 		return this.distances;
 	}
 	
-	//not sure about this
+	
 	public double getDistance(State s1, State s2) {
 		//do a string compare
 		//smaller states will always be the first argument
