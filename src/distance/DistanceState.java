@@ -16,7 +16,7 @@ public class DistanceState {
 	
 	private Set<Character> vocab;
 	
-	private HashMap<String, HashMap<String, Double>> distances;
+	private HashMap<State, HashMap<State, Double>> distances;
 	
 	public DistanceState(Set<Character> vocab) {
 		this.vocab = vocab;
@@ -24,17 +24,17 @@ public class DistanceState {
 		ArrayList<State> states = generateStates(vocab.size());
 		//state combinations and set distances
 		
-		distances = new HashMap<String, HashMap<String, Double>>();
+		distances = new HashMap<State, HashMap<State, Double>>();
 		for (int i = 0; i < states.size() - 1; i++)
 		{
-			HashMap<String, Double> inner = new HashMap<String, Double>();
+			HashMap<State, Double> inner = new HashMap<State, Double>();
 			for (int j = i+1; j < states.size(); j++)
 			{
 				
-				inner.put(states.get(j).getState(), 0.0);
+				inner.put(states.get(j), 0.0);
 				
 			}
-			distances.put(states.get(i).getState(), inner);
+			distances.put(states.get(i), inner);
 		}
 
 	}
@@ -82,19 +82,20 @@ public class DistanceState {
 		return this.vocab;
 	}
 	
-	public HashMap<String, HashMap<String, Double>> getDistances() {
+	public HashMap<State, HashMap<State, Double>> getDistances() {
 		return this.distances;
 	}
 	
 	
 	public double getDistance(State s1, State s2) {
+		int result = s1.compareTo(s2);
 		//do a string compare
 		//smaller states will always be the first argument
-		if (s1.getState().compareTo(s2.getState()) < 0)
-			return this.distances.get(s1.getState()).get(s2.getState());
+		if (result < 0)
+			return this.distances.get(s1).get(s2);
 		//first state is larger, therefore we must switch order
-		else if (s1.getState().compareTo(s2.getState()) > 0)
-			return this.distances.get(s2.getState()).get(s1.getState());
+		else if (result > 0)
+			return this.distances.get(s2).get(s1);
 		
 		//states are equal
 		return 0.0;
@@ -102,23 +103,24 @@ public class DistanceState {
 	
 	
 	public void setDistance(State s1, State s2, double dist) {
+		int result = s1.compareTo(s2);
 		
-		if (s1.getState().compareTo(s2.getState()) < 0)
-			this.distances.get(s1.getState()).replace(s2.getState(), dist);
+		if (result < 0)
+			this.distances.get(s1).replace(s2, dist);
 		//first state is larger, therefore we must switch order
-		else if (s1.getState().compareTo(s2.getState()) > 0)
-			this.distances.get(s2.getState()).replace(s1.getState(), dist);
+		else if (result > 0)
+			this.distances.get(s2).replace(s1, dist);
 		
 		//if states are equal to nothign
 	}
 	
 	public void stateToConsole() {
-		for (Map.Entry<String, HashMap<String, Double>> entry: distances.entrySet())
+		for (Map.Entry<State, HashMap<State, Double>> entry: distances.entrySet())
 		{
-			String key = entry.getKey();
-			for (Map.Entry<String, Double> inner: entry.getValue().entrySet())
+			State key = entry.getKey();
+			for (Map.Entry<State, Double> inner: entry.getValue().entrySet())
 			{
-				System.out.println(key + " " + inner.getKey() + " =  " + inner.getValue());
+				System.out.println(key.getState() + " " + inner.getKey().getState() + " =  " + inner.getValue());
 			}
 		}
 	}
@@ -136,17 +138,8 @@ public class DistanceState {
 		State s4 = new State("101");
 		State s5 = new State("010");
 		
-		String o = new String("000");
-		String i = new String("001");
-		String s = new String("100");
 		
-		System.out.println(s.compareTo(i));
-		
-		//System.out.println();
-		
-		DistanceState dist = new DistanceState(vocab);
-		
-		///dist.stateToConsole();
+		DistanceState dist = new DistanceState(vocab);	
 		
 		dist.setDistance(s2, s1, 2.0);
 		System.out.println(dist.getDistance(s1, s2));
@@ -159,18 +152,6 @@ public class DistanceState {
 		System.out.println(dist.getDistance(s3, s1));
 		
 		dist.stateToConsole();
-//		for (State key: dist.getDistances().keySet())
-//		{
-//			for ()
-//		}
-//		ArrayList<State> st = dist.generateStates(vocab.size());
-//		
-//		
-//		for (int i = 0; i < st.size(); i++)
-//			System.out.println(st.get(i).getState());
-//		
-//		
-		
 	}
 
 }

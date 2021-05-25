@@ -14,6 +14,9 @@ import java.util.Set;
 import distance.DistanceState;
 import language.BeliefState;
 import language.State;
+import propositional_translation.InputTranslation;
+import solver.DPLL;
+import solver.FormulaSet;
 
 
 /**
@@ -26,6 +29,28 @@ public class BeliefRevision {
 	 * Default Constructor
 	 */
 	public BeliefRevision() {}
+	
+	
+	
+	
+    public static BeliefState convertPropInput(String text, Set<Character> chars) {
+    	FormulaSet formset;
+		BeliefState soln;
+		
+		//probs some checking here
+		formset = InputTranslation.propToCNFForm(text, chars);
+		
+		//for multiple we could just combine formsets for every line of input
+		//formset.toConsole();
+		DPLL dpll = new DPLL();
+		
+		soln = dpll.allSatDpllBlock(formset);
+		
+		//System.out.println("Solutions");
+		//soln.toConsole();	
+		
+		return soln;
+    }
 	  
     /*
      * @params
@@ -42,6 +67,31 @@ public class BeliefRevision {
 	    	bstate.addBelief(new State(line));
 	    }
 	    return bstate;
+    }
+    
+    //probss move to input processing class
+    public static boolean verifyStateInput(String input) {    
+	    for (String line : input.split("\n")) 
+	    {
+	    	for (int i = 0; i < line.length(); i++)
+	    		if (line.charAt(i) != '0' || line.charAt(i) != '1')
+	    			return false;
+	    }
+	    return true;
+    }
+    
+    //does not accept digits
+    //accepts all other characters
+    public static boolean verifyPropFormulaInput(String input) {
+    	//Character.is
+    	
+    	for (String line: input.split("\n"))
+    	{
+    		for (int i = 0; i < line.length(); i++)
+	    		if (Character.isDigit(line.charAt(i)))
+	    			return false;
+    	}
+    	return true;
     }
     
     

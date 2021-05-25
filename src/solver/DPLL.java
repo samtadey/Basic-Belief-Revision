@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import language.BeliefState;
+import language.State;
+import language.StateHelper;
+
 
 /**
  * @author sam_t
@@ -328,12 +332,15 @@ public class DPLL {
 	 * @return
 	 *  All solutions as a ArrayList<ArrayList<Integer>>
 	 */
-	public ArrayList<ArrayList<Integer>> allSatDpllBlock(FormulaSet set) {
+	public BeliefState allSatDpllBlock(FormulaSet set) {
 		FormulaSet forms;
 		Formula blocking;
 		ArrayList<ArrayList<Integer>> allsol = new ArrayList<ArrayList<Integer>>();
+		ArrayList<ArrayList<Integer>> allassignments;
 		ArrayList<Integer> solution = new ArrayList<Integer>();
 		int[] soln;
+		BeliefState beliefs = new BeliefState();
+		int zeroes;
 		
 		forms = new FormulaSet(set);
 		//forms.setFormulas(dimacs);
@@ -343,6 +350,24 @@ public class DPLL {
 			//find the simplified solution from the solution tree
 			soln = DPLL.finalSoln(solution, forms.getVarcount());
 			//add solution to the list of solutions
+			
+			//if there is a zero in the solution, that means we must create two new states, one for the pos and one for the negation
+			//if no zeroes the second argument will not be used
+			zeroes = countZeroes(soln);
+			
+			if (zeroes > 0)
+			{
+				allassignments = StateHelper.generateAssignments(zeroes);
+				System.out.println(allassignments);
+				for (int i = 0; i < allassignments.size(); i++)
+					beliefs.addBelief(solutionToBelief(soln, allassignments.get(i)));
+			}
+			else if (zeroes == 0)
+			{
+				beliefs.addBelief(solutionToBelief(soln));
+			}
+			
+
 			allsol.add(convert(soln));
 			//generate the new blocking clause for the new solution
 			blocking = generateBlockingClause(soln);
@@ -351,7 +376,56 @@ public class DPLL {
 			//zero solution array
 			solution.clear();
 		}
-		return allsol;
+		return beliefs;
+	}
+	
+//	private boolean containsZero(int[] soln) {
+//		for (int i = 0; i < soln.length; i++)
+//			if (soln[i] == 0)
+//				return true;
+//		return false;
+//	}
+	
+	private int countZeroes(int[] soln) {
+		int count = 0;
+		for (int i = 0; i < soln.length; i++)
+			if (soln[i] == 0)
+				count++;
+		return count;
+	}
+	
+	//must handle the case where a variable is 0, which means it can take either value
+	//and must be convereted into two states
+	private State solutionToBelief(int[] soln, ArrayList<Integer> z_assign) throws IndexOutOfBoundsException {
+		StringBuilder s_input = new StringBuilder();
+		int z = 0;
+		
+		for (int i = 0; i < soln.length; i++)
+		{
+			if (soln[i] < 0)
+				s_input.append("0");
+			else if (soln[i] > 0)
+				s_input.append("1");
+			else
+				s_input.append(z_assign.get(z++)); //could throw errors if num of zeroes was greater than calculated
+		}
+		
+		return new State(s_input.toString());
+	}
+	
+	private State solutionToBelief(int[] soln) {
+		StringBuilder s_input = new StringBuilder();
+		
+		for (int i = 0; i < soln.length; i++)
+		{
+			if (soln[i] < 0)
+				s_input.append("0");
+			else if (soln[i] > 0)
+				s_input.append("1");
+
+		}
+		
+		return new State(s_input.toString());
 	}
 	
 	/*

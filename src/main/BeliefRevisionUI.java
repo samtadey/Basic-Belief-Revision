@@ -34,6 +34,7 @@ import data.UiData;
 import distance.DistanceState;
 import language.BeliefState;
 import language.State;
+import propositional_translation.InputTranslation;
 import revision_ui.ParametrizedDiffPanel;
 import revision_ui.TestComp;
 import revision_ui.VarListPanel;
@@ -66,9 +67,9 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
     static JTextArea sent;
     
     static JComboBox t;
+    static JComboBox inputtype;
     
     static JList list;
-    //static DefaultListModel<Character> varlist;
     
     static VarListPanel varlistpanel;
     
@@ -132,6 +133,8 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
         }
     }
     
+
+    
     /*
      * Take action when the button is pressed
      */
@@ -140,7 +143,7 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
     	//BeliefRevison revise = new Be
     	BeliefState b, c, d;
         String s = e.getActionCommand();
-        String combo;
+        String combo, intype;
         DistanceState distance;
         
         //retains order
@@ -159,92 +162,64 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
 
     	if (s.equals("Conversion"))
     	{
-    		//
-    		//Need to figure out what variables we have in our world
-    		//
+//    		FormulaSet formset;
+    		BeliefState soln;
+//    		
+//    		//probs some checking here
+//    		formset = InputTranslation.propToCNFForm(convert.getText(), chars);
+//    		
+//    		//for multiple we could just combine formsets for every line of input
+//    		formset.toConsole();
+//    		DPLL dpll = new DPLL();
+//    		
+//    		soln = dpll.allSatDpllBlock(formset);
+//    		
+//    		System.out.println("Solutions");
+//    		soln.toConsole();		
+    		soln = BeliefRevision.convertPropInput(convert.getText(), chars);
     		
-    		System.out.println(convert.getText());
-    		//alphabetical order
-    		Set<Character> charset = chars;
-    		HashMap<Character, Integer> mappingChartoInt = new HashMap<Character, Integer>();
-    		//create mapping
-    		int i = 1;
-    		for (Character var: chars)
-    			mappingChartoInt.put(var, i++);
-
-    		
-    		//need to accommidate multiple sentences
-    		
-    		//complex sentence [connective, sentence, sentence]
-    		PLParser p = new PLParser();
-    		Sentence test = p.parse(convert.getText());		
-    		ConjunctionOfClauses coclaus = ConvertToConjunctionOfClauses.convert(test);
-    		
-    		Set<Clause> cl = coclaus.getClauses();
-    		Set<Literal> literals;
-    		//coclause to FormulaSet
-    		FormulaSet formset = new FormulaSet(charset.size());
-    		for (Clause clause: cl)
-    		{
-    			Formula f = new Formula();
-    			literals= clause.getLiterals();
-    			for (Literal literal : literals)
-    			{
-    				//convert 
-    				literal.isPositiveLiteral();
-    				String symbol = literal.getAtomicSentence().getSymbol();
-    				if (symbol.length() > 1 || symbol.length() < 1)
-    					System.out.println("Problem with getting prop vars");
-    				else
-    				{
-    					char propvar = symbol.charAt(0);
-        				
-	    				if (literal.isPositiveLiteral())
-	    					f.addValue(mappingChartoInt.get(propvar));
-	    				else
-	    					f.addValue(-mappingChartoInt.get(propvar));
-    				}
-
-    				
-    			}
-    			formset.addFormula(f);	
-    		}
-    		
-    		formset.toConsole();
-    		DPLL dpll = new DPLL();
-    		
-    		ArrayList<ArrayList<Integer>> soln = dpll.allSatDpllBlock(formset);
-    		System.out.println("Solutions");
-    		System.out.println(soln);
-//    		for (int a = 0; i < soln.size(); i++)
-//    		{
-//    			System.out.print("[");
-//    			for (int j = 0; j < soln.get(a).size(); j++)
-//    				System.out.print(soln.get(a).get(j) + ",");
-//    			System.out.println("]");
-//    		}
-
-    				
-    		
+    		output.setText(soln.toString());
     	}
     	
     	
         if (s.equals("submit")) 
-        {              
+        {       
+        	System.out.println("Running Test");
         	
-        	//
-        	//error handling must be done on the input!
-        	//
+        	//handle type of input
+        	intype = (String) inputtype.getSelectedItem();
+        	System.out.println(intype);
         	
-            b = BeliefRevision.parseInput(bel.getText());
-            System.out.println("Current Beliefs");
-            b.toConsole();
-            
-            c = BeliefRevision.parseInput(sent.getText());
-            System.out.println("New Sentence");
-            c.toConsole();
-            
-            //combo = (String) t.getSelectedItem();
+        	//handle incorrect input
+        	//throw message if incorrect in else and return
+        	
+        	if (intype.equals(Strings.prop_input))
+        	{
+        		b = BeliefRevision.convertPropInput(bel.getText(), chars);
+                System.out.println("Current Beliefs");
+                b.toConsole();
+                
+                c = BeliefRevision.convertPropInput(sent.getText(), chars);
+                System.out.println("New Sentence");
+                c.toConsole();
+        	}
+        	else if (intype.equals(Strings.state_input))
+        	{
+        		b = BeliefRevision.parseInput(bel.getText());
+                System.out.println("Current Beliefs");
+                b.toConsole();
+                
+                c = BeliefRevision.parseInput(sent.getText());
+                System.out.println("New Sentence");
+                c.toConsole();
+        	}
+        	else
+        	{
+        		return;
+        	}
+        		//figure how to handle incorrect input
+        	
+
             combo = (String) varlistpanel.getChooser().getSelectedItem();
             System.out.println(combo);
             
@@ -313,7 +288,8 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
         // create a new button
         b = new JButton("submit");
         
-        
+    	//String[] input = {"Propositional Formula", "Belief States"};
+    	inputtype = new JComboBox<String>(Strings.input_types);
         // create a object of the text class
         BeliefRevisionUI te = new BeliefRevisionUI();
         
@@ -346,6 +322,7 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
         
         
         // add the text area and button to panel
+        set_info.add(inputtype);
         set_info.add(lbel);
         set_info.add(bel);
         set_info.add(lsent);
@@ -374,7 +351,7 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
         f.add(main_panel);
 
         // set the size of frame
-        f.setSize(500, 700);
+        f.setSize(700, 700);
   
         f.show();
     }
