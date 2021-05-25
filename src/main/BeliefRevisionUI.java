@@ -133,7 +133,6 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
         }
     }
     
-
     
     /*
      * Take action when the button is pressed

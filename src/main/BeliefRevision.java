@@ -36,18 +36,11 @@ public class BeliefRevision {
     public static BeliefState convertPropInput(String text, Set<Character> chars) {
     	FormulaSet formset;
 		BeliefState soln;
-		
 		//probs some checking here
 		formset = InputTranslation.propToCNFForm(text, chars);
-		
-		//for multiple we could just combine formsets for every line of input
-		//formset.toConsole();
+
 		DPLL dpll = new DPLL();
-		
 		soln = dpll.allSatDpllBlock(formset);
-		
-		//System.out.println("Solutions");
-		//soln.toConsole();	
 		
 		return soln;
     }

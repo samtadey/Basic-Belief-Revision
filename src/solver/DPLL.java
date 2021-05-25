@@ -379,12 +379,6 @@ public class DPLL {
 		return beliefs;
 	}
 	
-//	private boolean containsZero(int[] soln) {
-//		for (int i = 0; i < soln.length; i++)
-//			if (soln[i] == 0)
-//				return true;
-//		return false;
-//	}
 	
 	private int countZeroes(int[] soln) {
 		int count = 0;

@@ -90,24 +90,6 @@ public class FormulaSet {
 		this.varcount = varcount;
 	}
 	
-//	/*
-//	 * Copy FormulaSet members to new object
-//	 */
-//	public FormulaSet copySet() {
-//		FormulaSet copy = new FormulaSet(this.varcount);
-//				
-//		for (int i = 0; i < this.getFormulas().size(); i++) 
-//		{
-//			Formula f = new Formula();
-//			for (int j = 0; j < this.getFormulas().get(i).getFormula().size(); j++)
-//			{
-//				f.addValue(this.getFormulas().get(i).getFormula().get(j));
-//			}
-//			copy.addFormula(f);
-//		}
-//		
-//		return copy;
-//	}
 
 	/*
 	 * Setter for the formuulas member variable
@@ -163,6 +145,9 @@ public class FormulaSet {
 	 *  boolean result
 	 */
 	public boolean hasEmptyClause() {
+		
+		//on empty set?
+		
 		for (int i = 0; i < this.formulas.size(); i++)
 			if (this.formulas.get(i).getFormula().size() < 1)
 				return true;

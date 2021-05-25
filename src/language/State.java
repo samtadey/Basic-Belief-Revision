@@ -13,17 +13,31 @@ package language;
 public class State implements Comparable<State> {
 	
 	private String state_rep;
-	
 
+	/*
+	 * Constructor for a State object
+	 * The string parameter is stored as the State
+	 */
 	public State(String state_rep) {
 		this.state_rep = state_rep;
 	}
 	
+	/*
+	 * Getter function for the String member state_rep
+	 * 
+	 * @return
+	 * 	The object State as a String
+	 */
 	public String getState() {
 		return this.state_rep;
 	}
 	
-	
+	/*
+	 * Hashcode for a State object.
+	 * 
+	 * @returns
+	 * 	Hashcode as an int
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -32,6 +46,14 @@ public class State implements Comparable<State> {
 		return result;
 	}
 
+	/*
+	 * equals function for State objects
+	 * 
+	 * @params
+	 * 	Object obj as the object to compare for equality
+	 * @returns
+	 * 	boolean representing the equality of the two objects
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -49,6 +71,17 @@ public class State implements Comparable<State> {
 		return true;
 	}
 	
+	/*
+	 * Comparator function for the State object
+	 * 
+	 * @params
+	 * 	State o as the state to compare to
+	 * @returns
+	 * 	int value representing the results of the compare
+	 * 	-1 indicates 'this' is lesser than the object 'o'
+	 * 	0 indicates the objects are equal
+	 *  1 indicates 'o' is lesser than the object 'this'
+	 */
 	@Override
 	public int compareTo(State o) {
 		//add something for different lengths?
