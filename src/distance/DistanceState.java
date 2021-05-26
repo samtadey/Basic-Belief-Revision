@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import language.BeliefState;
 import language.State;
 import language.StateHelper;
 
@@ -16,6 +17,7 @@ import language.StateHelper;
 public class DistanceState {
 	
 	private Set<Character> vocab;
+	private BeliefState possible_states;
 	private HashMap<State, HashMap<State, Double>> distances;
 	
 	/*
@@ -28,59 +30,20 @@ public class DistanceState {
 	public DistanceState(Set<Character> vocab) {
 		this.vocab = vocab;
 		//must initialize all possible states with a distance of 0
-		ArrayList<State> states = StateHelper.generateStates(vocab.size());
+		//not easy to generate states as strings, thats why they are 
+		possible_states = new BeliefState(StateHelper.generateStates(vocab.size()));
 		HashMap<State, Double> inner;
 		//state combinations and set distances
 		
 		distances = new HashMap<State, HashMap<State, Double>>();
-		for (int i = 0; i < states.size() - 1; i++)
+		for (int i = 0; i < possible_states.getBeliefs().size() - 1; i++)
 		{
 			inner = new HashMap<State, Double>();
-			for (int j = i+1; j < states.size(); j++)	
-				inner.put(states.get(j), 0.0);
-			distances.put(states.get(i), inner);
+			for (int j = i+1; j < possible_states.getBeliefs().size(); j++)	
+				inner.put(possible_states.getBeliefs().get(j), 1.0);
+			distances.put(possible_states.getBeliefs().get(i), inner);
 		}
 	}
-	
-	
-//	private ArrayList<State> generateStates(int vocab_size) {
-//		
-//		int cur, val = 0, states = (int) Math.pow(2, vocab_size);
-//		int sep = states / 2;
-//		ArrayList<State> statelist = new ArrayList<State>(states);
-//		ArrayList<StringBuilder> statestrings = new ArrayList<StringBuilder>(states);
-//		
-//		
-//		for (int i = 0; i < states; i++)
-//			statestrings.add(new StringBuilder());
-//		
-//		//create states in reverse
-//		for (int i = 0; i < vocab_size; i++)
-//		{
-//	        cur = 0;
-//	        for (int j = 0; j < states; j++)
-//	        {
-//	        	statestrings.get(j).append(val);
-//	            if (++cur == sep)
-//	            {
-//	                val = changeBool(val);
-//	                cur = 0;
-//	            }
-//	        }
-//	        sep /= 2;
-//		}
-//			
-//		for (StringBuilder s: statestrings)
-//			statelist.add(new State(s.toString()));
-//		
-//		return statelist;
-//	}
-//	
-//	private int changeBool(int val) {
-//		if (val == 1)
-//			return 0;
-//		return 1;
-//	}
 	
 	/*
 	 * Getter function for the vocab member variable
@@ -102,6 +65,10 @@ public class DistanceState {
 		return this.distances;
 	}
 	
+	
+	public BeliefState getPossibleStates() {
+		return this.possible_states;
+	}
 	/*
 	 * Getter function for the distance between two state objects
 	 * 
@@ -149,6 +116,108 @@ public class DistanceState {
 		//if states are equal to nothign
 	}
 	
+	
+	/*
+	 * The function iterates through all combinations of the BeliefStates and modifies their distance values by the mod_value parameter
+	 * 
+	 * @params
+	 * 	BeliefState s1, s2
+	 * 	double mod_value
+	 */
+	private void modByReport(BeliefState b1, BeliefState b2, double mod_value) throws Exception {
+		State s1, s2;
+		double current_val, new_val;
+		
+		for (int i = 0; i < b1.getBeliefs().size(); i++)
+		{
+			s1 = b1.getBeliefs().get(i);
+			for (int j = i+1; j < b2.getBeliefs().size(); j++)
+			{
+				s2 = b2.getBeliefs().get(j);
+				current_val = this.getDistance(s1, s2);
+				new_val = current_val + mod_value;
+				//distance can not be < 0
+				if (new_val < 0)
+					new_val = 0;
+				
+				if (current_val != new_val)
+					if (checkTriangleInequality(s1, s2, new_val))
+						this.setDistance(s1, s2, new_val);
+					else
+						throw new Exception("Triangle Inequality Violated");
+			}
+		}
+	}
+	
+	/*
+	 * Checks a proposed distance value for triangle inequality among intermediate states
+	 * 
+	 * @returns
+	 * 	boolean indicating whether triangle inequality is violated by the new distance value.
+	 */
+	private boolean checkTriangleInequality(State s, State u, double proposed_val) {
+		double non_hypot;
+		
+		for (State t : this.possible_states.getBeliefs())
+		{
+			if (!s.equals(t) || !u.equals(t))
+			{
+				non_hypot = Math.max(this.getDistance(s, t), this.getDistance(t, u));
+				if (non_hypot > proposed_val)
+					return false;
+			}
+		}
+		return true;
+	}
+	
+	/*
+	 * Modifies the distance function by the Report.
+	 * Splits states in to two categories, satisfied and unsatisfied. Satisfied states are true given the formula in the report object, unsatisfied states are false.
+	 * Given the reported result on the true/false nature of the formula, BeliefStates are iterated through and distances are changed to reflect the 
+	 * information of the report.
+	 * 
+	 * @params
+	 * 	Report r
+	 */
+	public void addReport(Report r) {
+		//convert report to states
+		BeliefState sat_report = r.convertFormToStates(this.vocab);
+		BeliefState unsat_report = new BeliefState();
+		
+		//BeliefState unsat_report = //add all but sat_report;
+		//if does not contain state in sat, must be a member of the unsat group
+		for (State state: this.possible_states.getBeliefs())
+		{
+			if (!sat_report.contains(state))
+				unsat_report.addBelief(state);
+		}
+
+		if (r.getReportedVal() == 0)
+		{
+			//iterate through occurances where only one state is is true given the report formula
+			//this means combinations of sat and unsat states
+			try {
+				modByReport(sat_report, unsat_report, -1);
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		}
+		else if (r.getReportedVal() == 1)
+		{
+			//iterate through occurrances where both states are true, OR both states are false
+			//so all combinations of sat states, and all combinations of unsat states
+			try {
+				modByReport(sat_report, sat_report, 1);
+				modByReport(unsat_report, unsat_report, 1);
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+
+		}
+
+	}
+	
+	
 	/*
 	 * Prints state combinations and their distances to the console
 	 */
@@ -164,11 +233,12 @@ public class DistanceState {
 	}
 	
 	
-//	public static void main(String[] args) {
-//		Set<Character> vocab = new LinkedHashSet<Character>();
-//		vocab.add('A');
-//		vocab.add('B');
-//		vocab.add('C');
+	public static void main(String[] args) {
+		Set<Character> vocab = new LinkedHashSet<Character>();
+		vocab.add('A');
+		vocab.add('B');
+		vocab.add('C');
+		
 //		
 //		State s1 = new State("000");
 //		State s2 = new State("001");
@@ -176,21 +246,19 @@ public class DistanceState {
 //		State s4 = new State("101");
 //		State s5 = new State("010");
 //		
-//		
-//		DistanceState dist = new DistanceState(vocab);	
-//		
-//		dist.setDistance(s2, s1, 2.0);
-//		System.out.println(dist.getDistance(s1, s2));
-//		
-//		dist.setDistance(s1, s3, 20.0);
-//		dist.setDistance(s4, s3, 12.5);
-//		dist.setDistance(s5, s2, 0.1);
-//		dist.setDistance(s5, s3, 111.11);
-//		
-//		System.out.println(dist.getDistance(s3, s1));
+		DistanceState dist = new DistanceState(vocab);	
+		Report r = new Report("A & B", 0);
+		Report r2 = new Report("A & B", 1);
+		dist.stateToConsole();
+		dist.addReport(r);
+		System.out.println("After Adding Report");
+		dist.stateToConsole();
+		dist.addReport(r2);
+		System.out.println("After Adding Report 2");
+		dist.stateToConsole();
 //		
 //		dist.stateToConsole();
-//	}
+	}
 
 }
 
