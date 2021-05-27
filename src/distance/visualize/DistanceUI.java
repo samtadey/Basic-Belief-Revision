@@ -43,6 +43,8 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 	static JPanel reports;
 	
 	static JTextField vocab;
+	static JTextField t_formula;
+	static JTextField t_result;
 	
 	static JLabel l_vocab;
 	static JLabel formula;
@@ -74,8 +76,44 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 		return vocab;
 	}
 	
-	private void updateGridUI() {
+	private void rebuildGrid(BeliefState allstates) {
+		State s1, s2;
+		double dist;
+		JTextField tf;
 		
+		grid.removeAll();
+		//iterate through all textfields and set to distancestate
+		grid.add(new JLabel("State/State"));
+    	for (int i = 0; i < allstates.getBeliefs().size(); i++)
+    		grid.add(new JLabel("" + allstates.getBeliefs().get(i).getState()));
+    	
+    	for (int i = 0; i < allstates.getBeliefs().size(); i++)
+    	{
+    		//danger
+    		for (int j = -1; j < allstates.getBeliefs().size(); j++)
+    		{
+    			if (j < 0)
+    				grid.add(new JLabel("" + allstates.getBeliefs().get(i).getState()));
+    			else 
+    			{
+    				s1 = allstates.getBeliefs().get(i);
+    				s2 = allstates.getBeliefs().get(j);
+    				dist = distance.getDistance(s1, s2);
+    				tf = new JTextField(Double.toString(dist));
+    				if (i == j || j > i)
+    					tf.setEditable(false);
+    				
+    				//add listener
+    				tf.addFocusListener(this);
+    				//add distance to data structure
+    				dist_val[i][j] = dist;
+    				//add to jtext array // this box maps to the distance array
+    				grid_text.get(i).add(tf);
+    				//add to ui
+    				grid.add(tf);
+    			}
+    		}
+    	}
 	}
 	
 	@Override
@@ -113,62 +151,28 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
             	//map states combinations to the grid
             	allstates = distance.getPossibleStates();
             	
-            	grid.removeAll();
+            	//grid.removeAll();
             	
             	dist_val = new double[grids][grids];
             	grid_text = new ArrayList<ArrayList<JTextField>>();
-            	
-            	State s1,s2;
-            	JTextField tf;
-            	double dist;
             	
             	//init text field arrays
             	for (int i = 0; i < grids; i++)
             		grid_text.add(new ArrayList<JTextField>());
             	
-            	//
-            	//Set up grid
-            	//set header bar
-            	grid.add(new JLabel("State/State"));
-            	for (int i = 0; i < allstates.getBeliefs().size(); i++)
-            		grid.add(new JLabel("" + allstates.getBeliefs().get(i).getState()));
-            	
-            	for (int i = 0; i < allstates.getBeliefs().size(); i++)
-            	{
-            		//danger
-            		for (int j = -1; j < allstates.getBeliefs().size(); j++)
-            		{
-            			if (j < 0)
-            				grid.add(new JLabel("" + allstates.getBeliefs().get(i).getState()));
-            			else 
-            			{
-            				s1 = allstates.getBeliefs().get(i);
-            				s2 = allstates.getBeliefs().get(j);
-            				dist = distance.getDistance(s1, s2);
-            				tf = new JTextField(Double.toString(dist));
-            				if (i == j || j > i)
-            					tf.setEditable(false);
-            				
-            				//add listener
-            				tf.addFocusListener(this);
-            				//add distance to data structure
-            				dist_val[i][j] = dist;
-            				//add to jtext array // this box maps to the distance array
-            				grid_text.get(i).add(tf);
-            				//add to ui
-            				grid.add(tf);
-            			}
-            		}
-            	}
-            	
+            	rebuildGrid(allstates);
+            	        
+            	//set up reports area
             	reports.removeAll();
-            	
-                formula = new JLabel("Formula:");
-                reports.add(formula);
-                reports.add(new JTextField(10));
-                rep_res = new JLabel("Result:");
-                reports.add(rep_res);
-                reports.add(new JTextField(2));
+
+                reports.add(new JLabel("Formula:"));
+                t_formula = new JTextField(10);
+                reports.add(t_formula);
+
+                reports.add(new JLabel("Result:"));
+                
+                t_result = new JTextField(2);
+                reports.add(t_result);
                 JButton addrep = new JButton("Add Report");
                 reports.add(addrep);
                 JButton print = new JButton("Print Distances");
@@ -189,7 +193,7 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
     	}
     	else if (s.equals("Add Report"))
     	{
-    		System.out.println("Hey there");
+    		System.out.println("Adding Report");
     		// if formula or result not valid input
     		//message to form
     		
@@ -198,13 +202,19 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
     		String form;
     		int res;
     		
-    		form = formula.getText();
-    		res = Integer.parseInt(rep_res.getText());
+    		form = t_formula.getText();
+    		System.out.println(t_result.getText());
+
+    		res = Integer.parseInt(t_result.getText().trim());
     		Report r = new Report(form, res);
     		
-    		distance.addReport(r);
+    		//double array not updated
     		
-    		//update matrix
+    		distance.addReport(r);
+    		//rebuild matrix
+    		rebuildGrid(distance.getPossibleStates());
+    		f.validate();
+    		
     	}
 		
 	}
