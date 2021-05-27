@@ -6,6 +6,7 @@ package propositional_translation;
 import java.util.HashMap;
 import java.util.Set;
 
+import aima.core.logic.common.ParserException;
 import aima.core.logic.propositional.kb.data.Clause;
 import aima.core.logic.propositional.kb.data.ConjunctionOfClauses;
 import aima.core.logic.propositional.kb.data.Literal;
@@ -22,7 +23,7 @@ import solver.FormulaSet;
 public class InputTranslation {
 	
 	
-	public static FormulaSet propToCNFForm(String formula, Set<Character> vocab) {
+	public static FormulaSet propToCNFForm(String formula, Set<Character> vocab) throws ParserException {
 		//parser representation of literals, clauses
 		PLParser p;
 		Sentence sparsed;
@@ -57,7 +58,7 @@ public class InputTranslation {
 				symbol = literal.getAtomicSentence().getSymbol();
 				
 				if (symbol.length() != 1)
-					System.out.println("Problem with getting prop vars");
+					throw new ParserException("Variable Length Not 1");
 				else
 				{
 					char propvar = symbol.charAt(0);

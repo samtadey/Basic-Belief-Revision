@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
 
+import aima.core.logic.common.ParserException;
 import distance.DistanceState;
 import language.BeliefState;
 import language.State;
@@ -33,7 +34,7 @@ public class BeliefRevision {
 	
 	
 	
-    public static BeliefState convertPropInput(String text, Set<Character> chars) {
+    public static BeliefState convertPropInput(String text, Set<Character> chars) throws ParserException {
     	FormulaSet formset;
 		BeliefState soln;
 		//probs some checking here

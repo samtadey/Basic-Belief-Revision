@@ -5,6 +5,7 @@ package distance;
 
 import java.util.Set;
 
+import aima.core.logic.common.ParserException;
 import language.BeliefState;
 import main.BeliefRevision;
 
@@ -39,7 +40,7 @@ public class Report {
 	}
 	
 	
-	public BeliefState convertFormToStates(Set<Character> vocab) {
+	public BeliefState convertFormToStates(Set<Character> vocab) throws ParserException {
 		BeliefState states;
 		states = BeliefRevision.convertPropInput(this.formula, vocab);
 		return states;

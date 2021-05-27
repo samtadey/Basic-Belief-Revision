@@ -3,6 +3,7 @@
  */
 package distance.visualize;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -41,6 +42,7 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 	static JPanel top;
 	static JPanel grid;
 	static JPanel reports;
+	static JPanel errors;
 	
 	static JTextField vocab;
 	static JTextField t_formula;
@@ -59,10 +61,9 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 	ArrayList<ArrayList<JTextField>> grid_text;
 	private static double[][] dist_val;
 	
-//	public DistanceUI(Set<Character> vocab) {
-//        distance = new DistanceState(vocab);
-//	}
+	static String prev_box_val;
 	
+
 	private Set<Character> getVocab(String input) throws Exception {
 		Set<Character> vocab = new LinkedHashSet<Character>();
 		
@@ -122,8 +123,10 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
         Set<Character> vars;
         BeliefState allstates;
         System.out.println("Action");
-        
-        if (s.equals("Print Distances"))
+             
+		clearErrors();
+		
+		 if (s.equals("Print Distances"))
         {
         	//throws
         	for (int i = 0; i < dist_val.length; i++)
@@ -136,9 +139,9 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
         		System.out.println(" ]");
         	}
         }
-        
+         
     	if (s.equals("Generate Default Grid"))
-    	{
+    	{	
     		try {
             	vars = getVocab(vocab.getText());
             	distance = new DistanceState(vars);
@@ -146,13 +149,9 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
             	
             	visual.setColumns(grids+1);
             	visual.setRows(grids+1);
-            	//visual = new GridLayout(grids, grids);
-            	//grid.setLayout(visual);
-            	//map states combinations to the grid
+
             	allstates = distance.getPossibleStates();
-            	
-            	//grid.removeAll();
-            	
+	
             	dist_val = new double[grids][grids];
             	grid_text = new ArrayList<ArrayList<JTextField>>();
             	
@@ -188,35 +187,57 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
             	
             } catch (Exception ex) {
             	System.out.println(ex);
+            	addError(ex.getMessage());
             }
     		//this.distance = new DistanceState()
     	}
     	else if (s.equals("Add Report"))
     	{
-    		System.out.println("Adding Report");
-    		// if formula or result not valid input
-    		//message to form
+    		boolean error = false;
+    		String form, res_char;
+    		int res = -1;
+    		Report r;
     		
-    		//else all good
-    		
-    		String form;
-    		int res;
-    		
-    		form = t_formula.getText();
-    		System.out.println(t_result.getText());
+    		res_char = t_result.getText().trim();
+    		System.out.println(res_char);
+    		//validate number value input
+    		if (res_char.length() != 1 || (res_char.charAt(0) != '0' && res_char.charAt(0) != '1'))
+    		{
+    			addError("Invalid Input: Result - Allowable input, 0 or 1");
+    			error = true;
+    		}
 
-    		res = Integer.parseInt(t_result.getText().trim());
-    		Report r = new Report(form, res);
+    		//validate prop formula parsing
+    		form = t_formula.getText();
+
+    		try {
+    			res = Integer.parseInt(t_result.getText().trim());
+    			r = new Report(form, res);
+    			distance.addReport(r);
+    		} catch (Exception ex) {
+    			addError(ex.getMessage());
+    			error = true;
+    		}
     		
-    		//double array not updated
-    		
-    		distance.addReport(r);
+    		if (error)
+    			return;
     		//rebuild matrix
     		rebuildGrid(distance.getPossibleStates());
     		f.validate();
-    		
     	}
 		
+	}
+	
+	public void addError(String message) {
+		JLabel err = new JLabel("Error: " + message);
+		err.setForeground(Color.RED);
+		errors.add(err);
+		f.validate();
+	}
+	
+	public void clearErrors() {
+		errors.removeAll();
+		f.validate();
 	}
 
 	/**
@@ -231,6 +252,9 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
         top = new JPanel();
         grid = new JPanel();
         reports = new JPanel();
+        errors = new JPanel();
+        
+        errors.setLayout(new BoxLayout(errors, BoxLayout.Y_AXIS));
         //top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
         main_panel.setLayout(new BoxLayout(main_panel, BoxLayout.Y_AXIS));
         
@@ -247,14 +271,11 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
         //defau;t
         visual = new GridLayout(3, 3);
         grid.setLayout(visual);
-
-        
-        
-        
         
         main_panel.add(top);
         main_panel.add(grid);
         main_panel.add(reports);
+        main_panel.add(errors);
         
         f.add(main_panel);
 
@@ -266,47 +287,51 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 
 	@Override
 	public void focusGained(FocusEvent e) {
-		//System.out.println(e.getComponent());
-		
-		//nothing right now
+		//store original box value
+		int indy, indx;
+		Component tbox = e.getComponent();
+		indy = (tbox.getX() / tbox.getWidth()) - 1;
+		indx = (tbox.getY() / tbox.getHeight()) - 1;
+		prev_box_val = grid_text.get(indx).get(indy).getText();
 	}
 
 	//want to check the weight after the user is done with it
 	//when a user selects a button for an action, this will record the last event on a text box as well
 	@Override
 	public void focusLost(FocusEvent e) {
+		
+		clearErrors();
+		
 		int indx, indy;
 		Component tbox = e.getComponent();
 		indy = (tbox.getX() / tbox.getWidth()) - 1;
-		indx = (tbox.getY() / tbox.getHeight()) - 1;
-		
+		indx = (tbox.getY() / tbox.getHeight()) - 1;		
 		//gets the index of for the text box where the event occurrred
 		//seems in reverse, but produces the correct index
-		System.out.println(indx + " " + indy);
+		System.out.println(indx + " " + indy);		
 		
-		String weight = grid_text.get(indx).get(indy).getText();
-		double w = Double.parseDouble(weight);
-		
-		//do checking for value exceptions
-		if (w < 0) 
-		{
-			//reset grid state
-			//set error message
-			return;
-		}
-		//check triangle ineq
-		
-		dist_val[indx][indy] = w;
-		
+		double w = Double.parseDouble(grid_text.get(indx).get(indy).getText());
+		System.out.println(w);
 		//this works because its all in order
 		State s1, s2;
 		s1 = distance.getPossibleStates().getBeliefs().get(indx);
 		s2 = distance.getPossibleStates().getBeliefs().get(indy);
 		
-		//do some checking here for exceptions
-		distance.setDistance(s1, s2, w);
-		distance.stateToConsole();
-		//use index to change state distances
+		if (w < 0)
+		{
+			addError("Attempting to set distance below 0");
+			grid_text.get(indx).get(indy).setText(prev_box_val);
+			f.validate();
+		}
+		else 
+		{
+			//arr used for printing and viewing
+			dist_val[indx][indy] = w;
+			distance.setDistance(s1, s2, w);
+		}
+		
+
+		//no need to set UI if successful
 	}
 
 

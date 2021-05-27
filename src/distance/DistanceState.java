@@ -6,6 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import aima.core.logic.common.ParserException;
+import distance.exception.DistanceStateException;
 import language.BeliefState;
 import language.State;
 import language.StateHelper;
@@ -15,6 +17,8 @@ import language.StateHelper;
  *
  */
 public class DistanceState {
+	
+	public static final double DEFAULT_VAL = 2.0;
 	
 	private Set<Character> vocab;
 	private BeliefState possible_states;
@@ -40,7 +44,7 @@ public class DistanceState {
 		{
 			inner = new HashMap<State, Double>();
 			for (int j = i+1; j < possible_states.getBeliefs().size(); j++)	
-				inner.put(possible_states.getBeliefs().get(j), 1.0);
+				inner.put(possible_states.getBeliefs().get(j), DEFAULT_VAL);
 			distances.put(possible_states.getBeliefs().get(i), inner);
 		}
 	}
@@ -79,7 +83,8 @@ public class DistanceState {
 	 * 	The distance between the two parameter states as a double.
 	 * 	If the states are equal, the distance returned is 0.
 	 */
-	public double getDistance(State s1, State s2) {
+	public double getDistance(State s1, State s2) throws NullPointerException {
+		
 		int result = s1.compareTo(s2);
 		//do a string compare
 		//smaller states will always be the first argument
@@ -104,7 +109,16 @@ public class DistanceState {
 	 * @throws
 	 * 
 	 */
-	public void setDistance(State s1, State s2, double dist) {
+	public void setDistance(State s1, State s2, double dist) throws NullPointerException {
+		
+		if (dist < 0)
+		{
+			//should I set the distance TO zero in this case?
+			//throw new DistanceStateException("Attempting to set " + s1.getState() + "/" + s2.getState() + " below zero");
+			System.out.println("Attempting to set " + s1.getState() + "/" + s2.getState() + " below zero: No Change");
+			return;
+		}
+		
 		int result = s1.compareTo(s2);
 		
 		if (result < 0)
@@ -131,20 +145,44 @@ public class DistanceState {
 		for (int i = 0; i < b1.getBeliefs().size(); i++)
 		{
 			s1 = b1.getBeliefs().get(i);
-			for (int j = i+1; j < b2.getBeliefs().size(); j++)
+			for (int j = 0; j < b2.getBeliefs().size(); j++)
 			{
 				s2 = b2.getBeliefs().get(j);
 				current_val = this.getDistance(s1, s2);
 				new_val = current_val + mod_value;
-				//distance can not be < 0
-				if (new_val < 0)
-					new_val = 0;
 				
 				if (current_val != new_val)
-					if (checkTriangleInequality(s1, s2, new_val))
+					if (checkTriangleInequality(this.possible_states, s1, s2, new_val))
+						//set val makes no change if val is less than 0
 						this.setDistance(s1, s2, new_val);
-					else
-						throw new Exception("Triangle Inequality Violated");
+					//else
+						//System.out.println(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
+						//throw new Exception("Triangle Inequality Violated");
+				//maybe this function should return an array of messages to post
+			}
+		}
+	}
+	
+	private void modByReport(BeliefState b1, double mod_value) throws Exception {
+		State s1, s2;
+		double current_val, new_val;
+		
+		for (int i = 0; i < b1.getBeliefs().size(); i++)
+		{
+			s1 = b1.getBeliefs().get(i);
+			for (int j = i+1; j < b1.getBeliefs().size(); j++)
+			{
+				s2 = b1.getBeliefs().get(j);
+				current_val = this.getDistance(s1, s2);
+				new_val = current_val + mod_value;
+				
+				if (current_val != new_val)
+					if (checkTriangleInequality(this.possible_states, s1, s2, new_val))
+						this.setDistance(s1, s2, new_val);
+					//else
+						//System.out.println(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
+						//throw new Exception("Triangle Inequality Violated");
+				//maybe this function should return an array of messages to post
 			}
 		}
 	}
@@ -155,21 +193,26 @@ public class DistanceState {
 	 * @returns
 	 * 	boolean indicating whether triangle inequality is violated by the new distance value.
 	 */
-	private boolean checkTriangleInequality(State s, State u, double proposed_val) {
+	private boolean checkTriangleInequality(BeliefState possible_states, State s, State u, double proposed_val) {
 		double non_hypot;
 		
-		for (State t : this.possible_states.getBeliefs())
+		for (State t : possible_states.getBeliefs())
 		{
-			if (!s.equals(t) || !u.equals(t))
+			if (!s.equals(t) && !u.equals(t))
 			{
-				non_hypot = Math.max(this.getDistance(s, t), this.getDistance(t, u));
-				if (non_hypot > proposed_val)
+				//non_hypot = Math.max(this.getDistance(s, t), this.getDistance(t, u));
+				non_hypot = this.getDistance(s, t) + this.getDistance(t, u);
+				if (proposed_val > non_hypot)
+				{
+					System.out.println(s.getState() + "/" + u.getState() + " Triangle Inequality Violated by " + t.getState() + " value proposed: " + proposed_val);
 					return false;
+				}
+
 			}
 		}
 		return true;
 	}
-	
+
 	/*
 	 * Modifies the distance function by the Report.
 	 * Splits states in to two categories, satisfied and unsatisfied. Satisfied states are true given the formula in the report object, unsatisfied states are false.
@@ -179,7 +222,7 @@ public class DistanceState {
 	 * @params
 	 * 	Report r
 	 */
-	public void addReport(Report r) {
+	public void addReport(Report r) throws ParserException {
 		//convert report to states
 		BeliefState sat_report = r.convertFormToStates(this.vocab);
 		BeliefState unsat_report = new BeliefState();
@@ -197,7 +240,7 @@ public class DistanceState {
 			//iterate through occurances where only one state is is true given the report formula
 			//this means combinations of sat and unsat states
 			try {
-				modByReport(sat_report, unsat_report, -1);
+				modByReport(sat_report, unsat_report, 1);
 			} catch (Exception e) {
 				System.out.println(e);
 			}
@@ -207,8 +250,8 @@ public class DistanceState {
 			//iterate through occurrances where both states are true, OR both states are false
 			//so all combinations of sat states, and all combinations of unsat states
 			try {
-				modByReport(sat_report, sat_report, 1);
-				modByReport(unsat_report, unsat_report, 1);
+				modByReport(sat_report, -1);
+				modByReport(unsat_report, -1);
 			} catch (Exception e) {
 				System.out.println(e);
 			}
