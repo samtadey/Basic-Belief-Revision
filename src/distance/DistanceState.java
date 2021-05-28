@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import aima.core.logic.common.ParserException;
-import distance.exception.DistanceStateException;
 import language.BeliefState;
 import language.State;
 import language.StateHelper;
@@ -138,9 +137,10 @@ public class DistanceState {
 	 * 	BeliefState s1, s2
 	 * 	double mod_value
 	 */
-	private void modByReport(BeliefState b1, BeliefState b2, double mod_value) throws Exception {
+	private ArrayList<String> modByReport(BeliefState b1, BeliefState b2, double mod_value) throws Exception {
 		State s1, s2;
 		double current_val, new_val;
+		ArrayList<String> errors = new ArrayList<String>();
 		
 		for (int i = 0; i < b1.getBeliefs().size(); i++)
 		{
@@ -152,21 +152,23 @@ public class DistanceState {
 				new_val = current_val + mod_value;
 				
 				if (current_val != new_val)
-					if (checkTriangleInequality(this.possible_states, s1, s2, new_val))
+					if (checkTriangleInequality(this.possible_states, s1, s2, new_val, errors))
 						//set val makes no change if val is less than 0
 						this.setDistance(s1, s2, new_val);
 					//else
+						//errors.add(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
 						//System.out.println(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
 						//throw new Exception("Triangle Inequality Violated");
 				//maybe this function should return an array of messages to post
 			}
 		}
+		return errors;
 	}
 	
-	private void modByReport(BeliefState b1, double mod_value) throws Exception {
+	private ArrayList<String> modByReport(BeliefState b1, double mod_value) throws Exception {
 		State s1, s2;
 		double current_val, new_val;
-		
+		ArrayList<String> errors = new ArrayList<String>();
 		for (int i = 0; i < b1.getBeliefs().size(); i++)
 		{
 			s1 = b1.getBeliefs().get(i);
@@ -177,14 +179,16 @@ public class DistanceState {
 				new_val = current_val + mod_value;
 				
 				if (current_val != new_val)
-					if (checkTriangleInequality(this.possible_states, s1, s2, new_val))
+					if (checkTriangleInequality(this.possible_states, s1, s2, new_val, errors))
 						this.setDistance(s1, s2, new_val);
 					//else
+						//errors.add(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
 						//System.out.println(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
 						//throw new Exception("Triangle Inequality Violated");
 				//maybe this function should return an array of messages to post
 			}
 		}
+		return errors;
 	}
 	
 	/*
@@ -193,7 +197,7 @@ public class DistanceState {
 	 * @returns
 	 * 	boolean indicating whether triangle inequality is violated by the new distance value.
 	 */
-	private boolean checkTriangleInequality(BeliefState possible_states, State s, State u, double proposed_val) {
+	private boolean checkTriangleInequality(BeliefState possible_states, State s, State u, double proposed_val, ArrayList<String> errors) {
 		double non_hypot;
 		
 		for (State t : possible_states.getBeliefs())
@@ -204,6 +208,7 @@ public class DistanceState {
 				non_hypot = this.getDistance(s, t) + this.getDistance(t, u);
 				if (proposed_val > non_hypot)
 				{
+					errors.add(s.getState() + "/" + u.getState() + " Triangle Inequality Violated by " + t.getState() + " value proposed: " + proposed_val);
 					System.out.println(s.getState() + "/" + u.getState() + " Triangle Inequality Violated by " + t.getState() + " value proposed: " + proposed_val);
 					return false;
 				}
@@ -222,10 +227,11 @@ public class DistanceState {
 	 * @params
 	 * 	Report r
 	 */
-	public void addReport(Report r) throws ParserException {
+	public ArrayList<String> addReport(Report r) throws ParserException {
 		//convert report to states
 		BeliefState sat_report = r.convertFormToStates(this.vocab);
 		BeliefState unsat_report = new BeliefState();
+		ArrayList<String> errors = new ArrayList<String>();
 		
 		//BeliefState unsat_report = //add all but sat_report;
 		//if does not contain state in sat, must be a member of the unsat group
@@ -240,7 +246,7 @@ public class DistanceState {
 			//iterate through occurances where only one state is is true given the report formula
 			//this means combinations of sat and unsat states
 			try {
-				modByReport(sat_report, unsat_report, 1);
+				errors.addAll(modByReport(sat_report, unsat_report, 1));
 			} catch (Exception e) {
 				System.out.println(e);
 			}
@@ -250,13 +256,14 @@ public class DistanceState {
 			//iterate through occurrances where both states are true, OR both states are false
 			//so all combinations of sat states, and all combinations of unsat states
 			try {
-				modByReport(sat_report, -1);
-				modByReport(unsat_report, -1);
+				errors.addAll(modByReport(sat_report, -1));
+				errors.addAll(modByReport(unsat_report, -1));
 			} catch (Exception e) {
 				System.out.println(e);
 			}
 
 		}
+		return errors;
 
 	}
 	

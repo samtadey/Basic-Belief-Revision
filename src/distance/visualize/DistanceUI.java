@@ -81,8 +81,18 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 		State s1, s2;
 		double dist;
 		JTextField tf;
+		int grids = allstates.getBeliefs().size();
 		
 		grid.removeAll();
+		
+		dist_val = new double[grids][grids];
+    	grid_text = new ArrayList<ArrayList<JTextField>>();
+    	
+    	//init text field arrays
+    	for (int i = 0; i < grids; i++)
+    		grid_text.add(new ArrayList<JTextField>());
+    	
+    	
 		//iterate through all textfields and set to distancestate
 		grid.add(new JLabel("State/State"));
     	for (int i = 0; i < allstates.getBeliefs().size(); i++)
@@ -125,23 +135,12 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
         System.out.println("Action");
              
 		clearErrors();
-		
-		 if (s.equals("Print Distances"))
-        {
-        	//throws
-        	for (int i = 0; i < dist_val.length; i++)
-        	{
-        		System.out.print("[ ");
-        		for (int j = 0; j < dist_val[i].length; j++)
-        		{
-        			System.out.print(" " + dist_val[i][j] + ",");
-        		}
-        		System.out.println(" ]");
-        	}
-        }
          
     	if (s.equals("Generate Default Grid"))
     	{	
+    		
+    		//sets up a default grid for the UI
+    		//resets all structures
     		try {
             	vars = getVocab(vocab.getText());
             	distance = new DistanceState(vars);
@@ -151,14 +150,7 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
             	visual.setRows(grids+1);
 
             	allstates = distance.getPossibleStates();
-	
-            	dist_val = new double[grids][grids];
-            	grid_text = new ArrayList<ArrayList<JTextField>>();
-            	
-            	//init text field arrays
-            	for (int i = 0; i < grids; i++)
-            		grid_text.add(new ArrayList<JTextField>());
-            	
+
             	rebuildGrid(allstates);
             	        
             	//set up reports area
@@ -174,11 +166,9 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
                 reports.add(t_result);
                 JButton addrep = new JButton("Add Report");
                 reports.add(addrep);
-                JButton print = new JButton("Print Distances");
-                reports.add(print);
                 
                 addrep.addActionListener(this);
-                print.addActionListener(this);
+                //print.addActionListener(this);
 
             	//done setting up grid
             	//update?
@@ -191,12 +181,16 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
             }
     		//this.distance = new DistanceState()
     	}
+    	//Adds a report to the current grid
+    	//updates the grid with newly calculated values
+    	//displays error conditions to the screen
     	else if (s.equals("Add Report"))
     	{
     		boolean error = false;
     		String form, res_char;
     		int res = -1;
     		Report r;
+    		ArrayList<String> errormsg = new ArrayList<String>();
     		
     		res_char = t_result.getText().trim();
     		System.out.println(res_char);
@@ -213,7 +207,7 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
     		try {
     			res = Integer.parseInt(t_result.getText().trim());
     			r = new Report(form, res);
-    			distance.addReport(r);
+    			errormsg = distance.addReport(r);
     		} catch (Exception ex) {
     			addError(ex.getMessage());
     			error = true;
@@ -221,6 +215,11 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
     		
     		if (error)
     			return;
+    		
+    		//build error message pane
+    		for (int i = 0; i < errormsg.size(); i++)
+    			addError(errormsg.get(i));
+    		
     		//rebuild matrix
     		rebuildGrid(distance.getPossibleStates());
     		f.validate();
@@ -228,19 +227,30 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 		
 	}
 	
-	public void addError(String message) {
+	/*
+	 * Adds the error message to the errors pane and resets the frame UI
+	 * 
+	 * @params
+	 * 	String message - Error message to display on the error pane
+	 */
+	private void addError(String message) {
 		JLabel err = new JLabel("Error: " + message);
 		err.setForeground(Color.RED);
 		errors.add(err);
 		f.validate();
 	}
 	
-	public void clearErrors() {
+	/*
+	 * Clears the error pane of all messages
+	 */
+	private void clearErrors() {
 		errors.removeAll();
 		f.validate();
 	}
 
 	/**
+	 * Sets up default JFrame and JPanel
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -285,6 +295,9 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 
 	}
 
+	/*
+	 * 
+	 */
 	@Override
 	public void focusGained(FocusEvent e) {
 		//store original box value
@@ -295,8 +308,9 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 		prev_box_val = grid_text.get(indx).get(indy).getText();
 	}
 
-	//want to check the weight after the user is done with it
-	//when a user selects a button for an action, this will record the last event on a text box as well
+	/*
+	 * 
+	 */
 	@Override
 	public void focusLost(FocusEvent e) {
 		
@@ -308,30 +322,39 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 		indx = (tbox.getY() / tbox.getHeight()) - 1;		
 		//gets the index of for the text box where the event occurrred
 		//seems in reverse, but produces the correct index
-		System.out.println(indx + " " + indy);		
+		System.out.print("Index: " + indx + " " + indy + " ");		
 		
-		double w = Double.parseDouble(grid_text.get(indx).get(indy).getText());
-		System.out.println(w);
-		//this works because its all in order
-		State s1, s2;
-		s1 = distance.getPossibleStates().getBeliefs().get(indx);
-		s2 = distance.getPossibleStates().getBeliefs().get(indy);
-		
-		if (w < 0)
-		{
-			addError("Attempting to set distance below 0");
+		//check whether input could be a double
+		double w;
+		try {
+			w = Double.parseDouble(grid_text.get(indx).get(indy).getText());
+			
+			System.out.println("Value: " + w);
+			//this works because its all in order
+			State s1, s2;
+			s1 = distance.getPossibleStates().getBeliefs().get(indx);
+			s2 = distance.getPossibleStates().getBeliefs().get(indy);
+			
+			//if invalid input, reset to previous value
+			if (w < 0)
+			{
+				addError("Attempting to set distance below 0");
+				grid_text.get(indx).get(indy).setText(prev_box_val);
+				f.validate();
+			}
+			else //set input value to distance object
+			{
+				//arr used for printing and viewing
+				dist_val[indx][indy] = w;
+				distance.setDistance(s1, s2, w);
+			}
+		//if invalid input, reset to previous value
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			addError("Invalid Grid Input");
 			grid_text.get(indx).get(indy).setText(prev_box_val);
 			f.validate();
 		}
-		else 
-		{
-			//arr used for printing and viewing
-			dist_val[indx][indy] = w;
-			distance.setDistance(s1, s2, w);
-		}
-		
-
-		//no need to set UI if successful
 	}
 
 
