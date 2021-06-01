@@ -127,6 +127,27 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
     	}
 	}
 	
+	/*
+	 * Adds the error message to the errors pane and resets the frame UI
+	 * 
+	 * @params
+	 * 	String message - Error message to display on the error pane
+	 */
+	private void addError(String message) {
+		JLabel err = new JLabel("Error: " + message);
+		err.setForeground(Color.RED);
+		errors.add(err);
+		f.validate();
+	}
+	
+	/*
+	 * Clears the error pane of all messages
+	 */
+	private void clearErrors() {
+		errors.removeAll();
+		f.validate();
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
         String s = e.getActionCommand();
@@ -227,26 +248,6 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 		
 	}
 	
-	/*
-	 * Adds the error message to the errors pane and resets the frame UI
-	 * 
-	 * @params
-	 * 	String message - Error message to display on the error pane
-	 */
-	private void addError(String message) {
-		JLabel err = new JLabel("Error: " + message);
-		err.setForeground(Color.RED);
-		errors.add(err);
-		f.validate();
-	}
-	
-	/*
-	 * Clears the error pane of all messages
-	 */
-	private void clearErrors() {
-		errors.removeAll();
-		f.validate();
-	}
 
 	/**
 	 * Sets up default JFrame and JPanel

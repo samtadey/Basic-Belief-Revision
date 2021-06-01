@@ -4,6 +4,7 @@
 package language;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * @author sam_t
@@ -35,6 +36,13 @@ public class BeliefState {
 	 */
 	public BeliefState(ArrayList<State> beliefs) {
 		this.beliefs = beliefs;
+	}
+	
+	
+	public BeliefState(Set<State> beliefs) {
+		this.beliefs = new ArrayList<State>();
+		for (State s : beliefs)
+			this.beliefs.add(s);
 	}
 
 	/*

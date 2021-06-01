@@ -91,6 +91,10 @@ public class State implements Comparable<State> {
 		
 		return this.state_rep.compareTo(o.state_rep);
 	}
+	
+	public String toString() {
+		return this.getState();
+	}
 
 }
 

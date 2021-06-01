@@ -13,6 +13,9 @@ import aima.core.logic.propositional.kb.data.Literal;
 import aima.core.logic.propositional.parsing.PLParser;
 import aima.core.logic.propositional.parsing.ast.Sentence;
 import aima.core.logic.propositional.visitors.ConvertToConjunctionOfClauses;
+import language.BeliefState;
+import language.State;
+import solver.DPLL;
 import solver.Formula;
 import solver.FormulaSet;
 
@@ -22,6 +25,34 @@ import solver.FormulaSet;
  */
 public class InputTranslation {
 	
+    /*
+     * @params
+     * 	String input
+     * 
+     * Recieves a string representation of a BeliefState and converts it into
+     * a BeliefState object.
+     */
+    public static BeliefState parseInput(String input) {
+    	
+	   	BeliefState bstate = new BeliefState();     
+	    for (String line : input.split("\n")) 
+	    {
+	    	bstate.addBelief(new State(line));
+	    }
+	    return bstate;
+    }
+	
+    public static BeliefState convertPropInput(String text, Set<Character> chars) throws ParserException {
+    	FormulaSet formset;
+		BeliefState soln;
+		//probs some checking here
+		formset = InputTranslation.propToCNFForm(text, chars);
+
+		DPLL dpll = new DPLL();
+		soln = dpll.allSatDpllBlock(formset);
+		
+		return soln;
+    }
 	
 	public static FormulaSet propToCNFForm(String formula, Set<Character> vocab) throws ParserException {
 		//parser representation of literals, clauses

@@ -28,38 +28,9 @@ public class BeliefRevision {
 	 * Default Constructor
 	 */
 	public BeliefRevision() {}
-	
-	
-	
-	
-    public static BeliefState convertPropInput(String text, Set<Character> chars) throws ParserException {
-    	FormulaSet formset;
-		BeliefState soln;
-		//probs some checking here
-		formset = InputTranslation.propToCNFForm(text, chars);
 
-		DPLL dpll = new DPLL();
-		soln = dpll.allSatDpllBlock(formset);
-		
-		return soln;
-    }
 	  
-    /*
-     * @params
-     * 	String input
-     * 
-     * Recieves a string representation of a BeliefState and converts it into
-     * a BeliefState object.
-     */
-    public static BeliefState parseInput(String input) {
-    	
-	   	BeliefState bstate = new BeliefState();     
-	    for (String line : input.split("\n")) 
-	    {
-	    	bstate.addBelief(new State(line));
-	    }
-	    return bstate;
-    }
+
     
     //probss move to input processing class
     public static boolean verifyStateInput(String input) {    
@@ -131,28 +102,6 @@ public class BeliefRevision {
 		return dist;
 	}
 	
-
-//	public static double getParametrizedDistance(State s1, State s2, HashMap<Character, Double> weights, Set<Character> vars) {  
-//				
-//		//levels are as such
-//		//B = 1
-//		//C = 2
-//		//D = 3
-//		//A = 4
-//		//weights are assigned to the hashmap in preprossessing
-//		
-//		int i = 0;
-//		double dist = 0;
-//		for (Character c: vars)
-//		{
-//			if (s1.getState().charAt(i) != s2.getState().charAt(i))
-//				dist += weights.get(c);
-//			i++;
-//		}
-//		
-//		
-//		return dist;
-//	}
     
     
     /*
@@ -216,7 +165,6 @@ public class BeliefRevision {
     	if (beliefs.getBeliefs().size() < 1)
     		return -1;
     	
-    	//min = findDistance(beliefs.getBeliefs().get(0), sentence_state);
     	min = d.getDistance(beliefs.getBeliefs().get(0), sentence_state);
     	
     	for (int i = 1; i < beliefs.getBeliefs().size(); i++)
@@ -230,31 +178,5 @@ public class BeliefRevision {
     	return min;
     }
     
-    /*
-     * @params
-     * 		State s1
-     * 		State s2
-     * 
-     * @returns
-     * 		int distance
-     * 
-     * This function compares two States and returns the distance between the two.
-     * The distance is defined as the Hamming Distance between the two States.
-     * 
-     */
-//    private static int findDistance(State s1, State s2) {
-//    	int dist = 0;
-//    	if (s1.getState().length() != s2.getState().length())
-//    	{
-//    		System.out.println("Error: States are not equal length");
-//    		return -1;
-//    	}
-//    	
-//    	for (int i = 0; i < s1.getState().length(); i++)
-//    		if (s1.getState().charAt(i) != s2.getState().charAt(i))
-//    			dist++;
-//    	
-//    	return dist;
-//    }
 
 }

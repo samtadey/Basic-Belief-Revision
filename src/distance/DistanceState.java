@@ -136,6 +136,9 @@ public class DistanceState {
 	 * @params
 	 * 	BeliefState s1, s2
 	 * 	double mod_value
+	 * 
+	 * @return 
+	 * 	ArrayList<String> error messages for any value assignments that do not meet Distance/Reporting constraints
 	 */
 	private ArrayList<String> modByReport(BeliefState b1, BeliefState b2, double mod_value) throws Exception {
 		State s1, s2;
@@ -153,18 +156,22 @@ public class DistanceState {
 				
 				if (current_val != new_val)
 					if (checkTriangleInequality(this.possible_states, s1, s2, new_val, errors))
-						//set val makes no change if val is less than 0
 						this.setDistance(s1, s2, new_val);
-					//else
-						//errors.add(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
-						//System.out.println(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
-						//throw new Exception("Triangle Inequality Violated");
-				//maybe this function should return an array of messages to post
 			}
 		}
 		return errors;
 	}
 	
+	/*
+	 * The function iterates through all combinations of the BeliefState and modifies their distance values by the mod_value parameter
+	 * 
+	 * @params
+	 * 	BeliefState s1
+	 * 	double mod_value
+	 * 
+	 * @return 
+	 * 	ArrayList<String> error messages for any value assignments that do not meet Distance/Reporting constraints
+	 */
 	private ArrayList<String> modByReport(BeliefState b1, double mod_value) throws Exception {
 		State s1, s2;
 		double current_val, new_val;
@@ -181,11 +188,6 @@ public class DistanceState {
 				if (current_val != new_val)
 					if (checkTriangleInequality(this.possible_states, s1, s2, new_val, errors))
 						this.setDistance(s1, s2, new_val);
-					//else
-						//errors.add(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
-						//System.out.println(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated");
-						//throw new Exception("Triangle Inequality Violated");
-				//maybe this function should return an array of messages to post
 			}
 		}
 		return errors;
@@ -243,7 +245,7 @@ public class DistanceState {
 
 		if (r.getReportedVal() == 0)
 		{
-			//iterate through occurances where only one state is is true given the report formula
+			//iterate through occurrences where only one state is is true given the report formula
 			//this means combinations of sat and unsat states
 			try {
 				errors.addAll(modByReport(sat_report, unsat_report, 1));
@@ -253,7 +255,7 @@ public class DistanceState {
 		}
 		else if (r.getReportedVal() == 1)
 		{
-			//iterate through occurrances where both states are true, OR both states are false
+			//iterate through occurrences where both states are true, OR both states are false
 			//so all combinations of sat states, and all combinations of unsat states
 			try {
 				errors.addAll(modByReport(sat_report, -1));

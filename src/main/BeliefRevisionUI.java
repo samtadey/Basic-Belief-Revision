@@ -175,7 +175,7 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
 //    		
 //    		System.out.println("Solutions");
 //    		soln.toConsole();		
-    		soln = BeliefRevision.convertPropInput(convert.getText(), chars);
+    		soln = InputTranslation.convertPropInput(convert.getText(), chars);
     		
     		output.setText(soln.toString());
     	}
@@ -194,21 +194,21 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
         	
         	if (intype.equals(Strings.prop_input))
         	{
-        		b = BeliefRevision.convertPropInput(bel.getText(), chars);
+        		b = InputTranslation.convertPropInput(bel.getText(), chars);
                 System.out.println("Current Beliefs");
                 b.toConsole();
                 
-                c = BeliefRevision.convertPropInput(sent.getText(), chars);
+                c = InputTranslation.convertPropInput(sent.getText(), chars);
                 System.out.println("New Sentence");
                 c.toConsole();
         	}
         	else if (intype.equals(Strings.state_input))
         	{
-        		b = BeliefRevision.parseInput(bel.getText());
+        		b = InputTranslation.parseInput(bel.getText());
                 System.out.println("Current Beliefs");
                 b.toConsole();
                 
-                c = BeliefRevision.parseInput(sent.getText());
+                c = InputTranslation.parseInput(sent.getText());
                 System.out.println("New Sentence");
                 c.toConsole();
         	}
