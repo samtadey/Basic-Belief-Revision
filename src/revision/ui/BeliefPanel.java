@@ -12,28 +12,42 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import constants.Strings;
+
 /**
  * @author sam_t
  *
+ * The BeliefPanel class contains information pertaining to belief in the Belief Revision process. It contains initial beliefs, a sentence to revise by, and
+ * the results of revision. 
  */
 public class BeliefPanel extends JPanel {
 
 	static JTextArea bel, sent, res;
-	static JLabel bel_lab, sent_lab, res_lab;
+	static JLabel bel_lab, sent_lab, res_lab, vocab_lab;
 	
 	static ActionPanel act;
 	
+	/*
+	 * BeliefPanel Constructor
+	 * Sets up the Panel UI
+	 */
 	public BeliefPanel(MainPanel main) {
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        
+        Insets labels = new Insets(10, 40, 0, 0);
+        Insets allfieldsbutright = new Insets(5, 40, 20, 0);
         	
 		this.setBackground(Color.GREEN);
 		
-		bel_lab = new JLabel("Beliefs");
+		//
+		//Belief Column
+		//
+		bel_lab = new JLabel(Strings.belief_beliefs_title);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(10, 40, 0, 20);
+        gbc.insets = labels;
         gbc.weightx = 1;
         this.add(bel_lab, gbc);
 		
@@ -42,15 +56,18 @@ public class BeliefPanel extends JPanel {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.insets = new Insets(0, 40, 20, 40);
+        gbc.insets = allfieldsbutright;
         gbc.weightx = 1;
         this.add(bel, gbc);
         
-		sent_lab = new JLabel("Sentences");
+        //
+        //Sentences Column
+        //
+		sent_lab = new JLabel(Strings.belief_sentence_title);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 1;
         gbc.gridy = 0;
-        gbc.insets = new Insets(10, 20, 0, 20);
+        gbc.insets = labels;
         gbc.weightx = 1;
         this.add(sent_lab, gbc);
 
@@ -59,34 +76,40 @@ public class BeliefPanel extends JPanel {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 1;
         gbc.gridy = 1;
-        gbc.insets = new Insets(0, 20, 20, 40);
+        gbc.insets = allfieldsbutright;
         gbc.weightx = 1;
         this.add(sent, gbc);
         
-		bel_lab = new JLabel("Result");
+        //
+        //Results Column
+        //
+        res_lab = new JLabel(Strings.belief_result_title);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 2;
         gbc.gridy = 0;
-        gbc.insets = new Insets(10, 20, 0, 20);
+        gbc.insets = labels;
         gbc.weightx = 1;
-        this.add(bel_lab, gbc);
+        this.add(res_lab, gbc);
         
         res = new JTextArea(10,10);
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 2;
         gbc.gridy = 1;
-        gbc.insets = new Insets(0, 20, 20, 40);
+        gbc.insets = allfieldsbutright;
         gbc.weightx = 1;
         this.add(res, gbc);
 
-		bel_lab = new JLabel("Propositional Vocabulary");
+        //
+        //Propositional Vocab and Action Column
+        //
+        vocab_lab = new JLabel(Strings.belief_vocab_title);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 3;
         gbc.gridy = 0;
-        gbc.insets = new Insets(10, 20, 0, 20);
+        gbc.insets = labels;
         gbc.weightx = 1;
-        this.add(bel_lab, gbc);
+        this.add(vocab_lab, gbc);
         
         act = new ActionPanel(main, this);
         gbc = new GridBagConstraints();
@@ -94,7 +117,7 @@ public class BeliefPanel extends JPanel {
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.gridx = 3;
         gbc.gridy = 1;
-        gbc.insets = new Insets(0, 20, 20, 40);
+        gbc.insets = new Insets(5, 40, 20, 40); //need to add spacing for the right side for this component
         gbc.weightx = 1;
         this.add(act, gbc);
 	}
