@@ -6,11 +6,14 @@ package distance;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import language.BeliefState;
 import language.State;
 import language.StateHelper;
+import propositional_translation.DistanceHelper;
+import propositional_translation.InputTranslation;
 
 /**
  * @author sam_t
@@ -35,7 +38,7 @@ public class RankingState {
 	 * 	Set<Character> state vocabulary
 	 */
 	public RankingState(ArrayList<Character> vocab) {
-		this.vocab = vocab;
+		 this.vocab = vocab;
 		 rankings = new HashMap<State, Integer>();
 		 groupings = new HashMap<Integer, Set<State>>();
 		 //generate all states for vocab
@@ -50,6 +53,47 @@ public class RankingState {
 		 }
 		 min = DEFAULT_RANK;
 		 groupings.put(DEFAULT_RANK, a);
+	}
+	
+	/*
+	 * RankingState Constructor. Takes a BeliefState and sets those states to the min rank. Sets remaining possible states to a rank based on the 
+	 * minimum Hamming distance between any min rank state.
+	 * 
+	 * @params
+	 * 	BeliefState states
+	 *  ArrayList<Character> vocab
+	 */
+	public RankingState(BeliefState states, ArrayList<Character> vocab) {
+		int rank;
+		Set<State> rank_group;
+		
+		this.vocab = vocab;
+		rankings = new HashMap<State, Integer>();
+		groupings = new HashMap<Integer, Set<State>>();
+		 
+		validstates = new BeliefState(StateHelper.generateStates(vocab.size()));
+		Set<State> a = new HashSet<State>();
+		 
+		//assign rank by Hamming Distance
+		for (State s : validstates.getBeliefs())
+		{
+			rank = DistanceHelper.getMinDistanceHamming(states, s);
+			rankings.put(s, rank);
+			
+			//add to groupings
+			if (groupings.get(rank) == null) 
+			{
+				rank_group = new HashSet<State>();
+				rank_group.add(s);
+				groupings.put(rank, rank_group);
+			}
+			else 
+			{
+				groupings.get(rank).add(s);
+			}
+		}
+		min = 0; //BeliefState states are min rank
+		 
 	}
 	
 	/*
@@ -154,6 +198,55 @@ public class RankingState {
 	}
 	
 	
+	public BeliefState reviseStates(String formula) {
+		BeliefState formstates, minstates;
+		
+		//vocab to set
+		Set<Character> toset = new LinkedHashSet<Character>();
+		for (int i = 0; i < this.vocab.size(); i++)
+			toset.add(this.vocab.get(i));
+		//convert formula to beliefstate
+		formstates = InputTranslation.convertPropInput(formula, toset);
+		//get min states from beliefstates of states
+		minstates = getMinStates(formstates);
+		
+		return minstates;
+	}
+	
+	/*
+	 * 
+	 */
+	public BeliefState getMinStates(BeliefState bstates) {
+		BeliefState mstates;
+		State state;
+		int min, rank;
+		if (bstates.getBeliefs().size() <= 1)
+			return bstates;
+		
+		min = this.getRank(bstates.getBeliefs().get(0));
+		mstates = new BeliefState();
+		
+		for (int i = 1; i < bstates.getBeliefs().size(); i++)
+		{
+			state = bstates.getBeliefs().get(i);
+			rank = this.getRank(state);
+			
+			if (rank < min)
+			{
+				min = rank;
+				//not sure what is more efficient finding min then looping through all states again, or this (looping once but clearing if find new min)
+				mstates.getBeliefs().clear();
+				//mstates.addBelief(state);
+			}
+			
+			if (rank == min)
+				mstates.addBelief(state);
+		}
+		
+		return mstates;
+	}
+	
+	
 	/*
 	 * Converts all min states into a formula. A formula list is a disjunction of formulae. Each formula is a conjunction of all literals.
 	 * 
@@ -221,6 +314,7 @@ public class RankingState {
 	
 	public static void main(String[] args) {
 		BeliefState bstate;
+		ArrayList<State> statelist;
 		ArrayList<String> forms;
 		ArrayList<Character> vocab = new ArrayList<Character>();
 		vocab.add('a');
@@ -273,6 +367,19 @@ public class RankingState {
 		
 		forms = rs.getFormula();
 		System.out.println(forms);
+		
+		
+		//test beliefstate creation with ranking object
+		statelist = new ArrayList<State>();
+		statelist.add(s1);
+		statelist.add(s2);
+
+		bstate = new BeliefState(statelist);
+		
+		rs = new RankingState(bstate, vocab);
+		rs.toConsole();
+		System.out.println();
+		rs.toConsoleGroupings();
 		
 	}
 }

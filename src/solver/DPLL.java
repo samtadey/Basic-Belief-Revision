@@ -38,6 +38,8 @@ public class DPLL {
 			return true;
 		}
 		
+		//change to while
+		//findunitvalues call as while condition
 		newset = new FormulaSet(set);
 		do {
 			units = findUnitValues(newset);
@@ -245,6 +247,8 @@ public class DPLL {
 		{
 			found = false;
 			
+			//can we break at found?
+			//if were removing clauses, we could break
 			for (int j = 0; j < purelist.size() && !found; j++)
 				if (forms.get(i).isSatisfiedBy(purelist.get(j)))
 					found = true;

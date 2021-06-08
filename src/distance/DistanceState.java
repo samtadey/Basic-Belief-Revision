@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import aima.core.logic.common.ParserException;
+import constants.TrustRevisionOperation;
+import constants.TrustRevisionOperator;
 import language.BeliefState;
 import language.State;
 import language.StateHelper;
@@ -140,7 +142,7 @@ public class DistanceState {
 	 * @return 
 	 * 	ArrayList<String> error messages for any value assignments that do not meet Distance/Reporting constraints
 	 */
-	private ArrayList<String> modByReport(BeliefState b1, BeliefState b2, double mod_value) throws Exception {
+	private ArrayList<String> modByReport(BeliefState b1, BeliefState b2, TrustRevisionOperator op, double mod_value) throws Exception {
 		State s1, s2;
 		double current_val, new_val;
 		ArrayList<String> errors = new ArrayList<String>();
@@ -152,7 +154,8 @@ public class DistanceState {
 			{
 				s2 = b2.getBeliefs().get(j);
 				current_val = this.getDistance(s1, s2);
-				new_val = current_val + mod_value;
+				//new_val = current_val + mod_value;
+				new_val = TrustRevisionOperation.reviseValue(current_val, mod_value, op);
 				
 				if (current_val != new_val)
 					if (checkTriangleInequality(this.possible_states, s1, s2, new_val, errors))
@@ -248,7 +251,7 @@ public class DistanceState {
 			//iterate through occurrences where only one state is is true given the report formula
 			//this means combinations of sat and unsat states
 			try {
-				errors.addAll(modByReport(sat_report, unsat_report, 1));
+				errors.addAll(modByReport(sat_report, unsat_report, TrustRevisionOperator.SUBTRACTION, 1));
 			} catch (Exception e) {
 				System.out.println(e);
 			}
@@ -258,8 +261,8 @@ public class DistanceState {
 			//iterate through occurrences where both states are true, OR both states are false
 			//so all combinations of sat states, and all combinations of unsat states
 			try {
-				errors.addAll(modByReport(sat_report, -1));
-				errors.addAll(modByReport(unsat_report, -1));
+				//errors.addAll(modByReport(sat_report, 1));
+				errors.addAll(modByReport(sat_report, unsat_report, TrustRevisionOperator.ADDITION, 1));
 			} catch (Exception e) {
 				System.out.println(e);
 			}
