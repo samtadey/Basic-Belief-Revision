@@ -11,6 +11,7 @@ import java.util.Set;
 
 import aima.core.logic.common.ParserException;
 import distance.DistanceState;
+import distance.RankingState;
 import language.BeliefState;
 import language.State;
 import propositional_translation.InputTranslation;
@@ -178,5 +179,63 @@ public class BeliefRevision {
     	return min;
     }
     
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
+     * 
+     * Belief Revision using RankingState and DistanceState
+     * 
+     */
+    
+    public static RankingState reviseStates(RankingState beliefs, BeliefState sentence, DistanceState distance) {
+    	
+    	//return a reanking state?
+    	GeneralRevisionScore score, temp;
+    	score = new GeneralRevisionScore(beliefs.getValidStates());
+    	
+    	//if no sentence, beliefs do not change
+    	if (sentence.getBeliefs().size() == 0)
+    		return beliefs;
+    	
+    	for (State s: sentence.getBeliefs())
+    	{
+    		temp = scoreStates(beliefs, s, distance);
+    		score.mergeScoresMin(temp);
+    	}
+    	
+    	return score.scoreToRank(beliefs.getVocab());
+    }
+    
+    
+    private static GeneralRevisionScore scoreStates(RankingState beliefs, State sentence, DistanceState distance) {
+    	double min, score, dist;
+    	int rank;
+    	GeneralRevisionScore scoreset = new GeneralRevisionScore(beliefs.getValidStates());
+    	
+    	for (State s : beliefs.getValidStates().getBeliefs())
+    	{
+    		//get belief rank
+    		rank = beliefs.getRank(s);
+    		
+    		//get distance between belief state and sentense state
+    		dist = distance.getDistance(s, sentence);
+    		
+    		score = rank + dist;
+    		
+    		scoreset.setScore(s, score);
+    	}
+    	
+    	return scoreset;
+    }
+    
 }

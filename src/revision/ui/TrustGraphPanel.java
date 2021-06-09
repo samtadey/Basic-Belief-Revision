@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+import constants.Strings;
 import distance.DistanceState;
 import distance.Report;
 import language.BeliefState;
@@ -43,6 +44,10 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5771430681979792609L;
 	static JTextField vocab;
 	static JTextField t_formula;
 	static JTextField t_result;
@@ -56,17 +61,13 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	static GridLayout visual;
 	
 	private static DistanceState distance;
-	private static TrustGraphHandler trusthandle;
 	
-	ArrayList<ArrayList<JTextField>> grid_text;
-	private static double[][] dist_val;
+	static ArrayList<ArrayList<JTextField>> grid_text;
 	
 	static String prev_box_val;
 	
 	
 	public TrustGraphPanel(MainPanel main) {
-		 
-        trusthandle = new TrustGraphHandler();
         
         //default
         visual = new GridLayout(3, 3);
@@ -89,11 +90,6 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 		return vocab;
 	}
 	
-	private void rebuildGrid(BeliefState allstates) {
-		
-		trusthandle.rebuildGrid(this, this, allstates, dist_val, grid_text, distance);
-		
-	}
 	
 	/*
 	 * Adds the error message to the errors pane and resets the frame UI
@@ -118,100 +114,86 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		int grids;
         String s = e.getActionCommand();
-        Set<Character> vars;
-        BeliefState allstates;
         System.out.println("Action Trust Panel");
         System.out.println(s);
              
-		//clearErrors();
          
-    	//if (s.equals("Generate Default Grid"))
-		if (s.equals("Generate Trust Graph"))
-    	{	
-    		
-    		//sets up a default grid for the UI
-    		//resets all structures
-    		
-    		//check if action comes from the gen trust graph button
-    		//access MainPanel -> BeliefPanel -> ActionPanel -> prop_vocab textfield
-    		
-    		
+		if (s.equals(Strings.action_gen_trust_action))
+    	{	       
+			Set<Character> vars;
     		try {
+    			//
+    			//Create new distance object with user specified propositional variables
+    			//
+    			vars = getVocab(BeliefPanel.act.vocab.getText());
+    			//validate vocab?
     			
-    			//must change at some point
-    			vars = getVocab(MainPanel.belief_panel.act.vocab.getText());
-    			
-            	//vars = getVocab(vocab.getText());
             	distance = new DistanceState(vars);
-            	int grids = distance.getPossibleStates().getBeliefs().size();
+            	grids = distance.getPossibleStates().getBeliefs().size();
             	
+            	//
+            	//Init/Reset Grid JTextArea's
+            	//
+            	grid_text = TrustGraphHandler.resetGridItems(grids);
+            	//
+            	//Set GridLayout Row and Column values with possible states
+            	//
             	visual.setColumns(grids+1);
             	visual.setRows(grids+1);
-
-            	allstates = distance.getPossibleStates();
-
-            	rebuildGrid(allstates);
-
+            	//
+        		//Rebuild Matrix with updated trust values
+        		//
+            	TrustGraphHandler.rebuildGrid(this, grid_text, distance);
+        		//
+        		//Refresh Frame
+        		//
                 MainPanel.f.validate();
 
-            	
             } catch (Exception ex) {
             	System.out.println(ex);
-            	//addError(ex.getMessage());
             }
-    		//this.distance = new DistanceState()
     	}
-    	//Adds a report to the current grid
-    	//updates the grid with newly calculated values
-    	//displays error conditions to the screen
-    	else if (s.equals("Add Report"))
+    	else if (s.equals(Strings.report_add_report_action) && distance != null)
     	{
-    		boolean error = false;
-    		String form, res_char;
-    		int res = -1;
-    		Report r;
-    		ArrayList<String> errormsg = new ArrayList<String>();
-    		
-    		res_char = t_result.getText().trim();
-    		System.out.println(res_char);
-    		//validate number value input
-    		if (res_char.length() != 1 || (res_char.charAt(0) != '0' && res_char.charAt(0) != '1'))
-    		{
-    			//addError("Invalid Input: Result - Allowable input, 0 or 1");
-    			error = true;
-    		}
 
-    		//validate prop formula parsing
-    		form = t_formula.getText();
-
-    		try {
-    			res = Integer.parseInt(t_result.getText().trim());
-    			r = new Report(form, res);
-    			errormsg = distance.addReport(r);
-    		} catch (Exception ex) {
-    			//addError(ex.getMessage());
-    			error = true;
-    		}
+    		//Define error collection
+    		ArrayList<String> errormsg;
+    		//
+    		//Add Reports to Trust Graph. Collect any logic errors
+    		//
+    		errormsg = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, distance);
     		
-    		if (error)
-    			return;
-    		
-    		//build error message pane
-    		for (int i = 0; i < errormsg.size(); i++)
-    			//addError(errormsg.get(i));
-    		
-    		//rebuild matrix
-    		rebuildGrid(distance.getPossibleStates());
-    		//f.validate();
+    		grids = distance.getPossibleStates().getBeliefs().size();
+        	//
+    		//Reset JTextAreas in grid before rebuild
+    		//
+    		grid_text = TrustGraphHandler.resetGridItems(grids);
+    		//
+    		//Rebuild Matrix with updated trust values
+    		//
+    		TrustGraphHandler.rebuildGrid(this, grid_text, distance);
+    		//
+    		//Refresh Frame
+    		//
     		MainPanel.f.validate();
+    		
+    		System.out.println(errormsg);
     	}
 		
 	}
 	
+	
+	/*
+	 * Focus Actions
+	 * 
+	 * Focus Gained: Activates when the user clicks on a piece of the grid
+	 * Focus Lost: Activates when the user clicks off a piece of the grid
+	 */
 
 	/*
-	 * 
+	 * Stores the value of of the JTextArea that the user has interacted with
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
@@ -224,14 +206,15 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	}
 
 	/*
-	 * 
+	 * Verifies the validity of user input.
+	 * If input is valid, store the input in the distance object
+	 * If input is not valid, use the stored value retrieved in focusGained to reset to the original value
 	 */
 	@Override
 	public void focusLost(FocusEvent e) {
 		
-		//clearErrors();
-		
 		int indx, indy;
+		State s1, s2;
 		Component tbox = e.getComponent();
 		indy = (tbox.getX() / tbox.getWidth()) - 1;
 		indx = (tbox.getY() / tbox.getHeight()) - 1;		
@@ -246,21 +229,18 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 			
 			System.out.println("Value: " + w);
 			//this works because its all in order
-			State s1, s2;
+
 			s1 = distance.getPossibleStates().getBeliefs().get(indx);
 			s2 = distance.getPossibleStates().getBeliefs().get(indy);
 			
 			//if invalid input, reset to previous value
 			if (w < 0)
 			{
-				//addError("Attempting to set distance below 0");
 				grid_text.get(indx).get(indy).setText(prev_box_val);
-				//f.validate();
+				MainPanel.f.validate();
 			}
 			else //set input value to distance object
 			{
-				//arr used for printing and viewing
-				dist_val[indx][indy] = w;
 				distance.setDistance(s1, s2, w);
 			}
 		//if invalid input, reset to previous value
@@ -268,7 +248,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 			System.out.println(ex.getMessage());
 			//addError("Invalid Grid Input");
 			grid_text.get(indx).get(indy).setText(prev_box_val);
-			//f.validate();
+			MainPanel.f.validate();
 		}
 	}
 

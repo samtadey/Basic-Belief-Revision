@@ -50,7 +50,7 @@ public class MainPanel implements ActionListener {
 		main_panel = new JPanel();
 		graph = new TrustGraphPanel(this);
         belief_panel = new BeliefPanel(this);
-        report_panel = new ReportPanel();
+        report_panel = new ReportPanel(graph);
 		
         
 		main_panel.setLayout(new GridBagLayout());	

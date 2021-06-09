@@ -13,11 +13,13 @@ import java.util.Set;
  */
 public final class PropositionalSymbols {
 	
-	public static final char AND = '&';
-	public static final char OR = '|';
-	public static final char SPACE = ' ';
-	public static final char NEGATION = '~';
+	public static final String AND = "&";
+	public static final String OR = "|";
+	public static final String SPACE = " ";
+	public static final String NEGATION = "~";
+	public static final String IMPLICATIONP1 = "-";
+	public static final String IMPLICATIONP2 = ">";
 	
 	//
-	Set<Character> symbols = new HashSet<Character>(Arrays.asList(AND, OR, SPACE, NEGATION));
+	public static final Set<String> symbols = new HashSet<String>(Arrays.asList(AND, OR, SPACE, NEGATION, IMPLICATIONP1, IMPLICATIONP2));
 }

@@ -96,6 +96,14 @@ public class RankingState {
 		 
 	}
 	
+	public ArrayList<Character> getVocab() {
+		return vocab;
+	}
+	
+	public BeliefState getValidStates() {
+		return validstates;
+	}
+	
 	/*
 	 * Returns the rank of the State object
 	 * 

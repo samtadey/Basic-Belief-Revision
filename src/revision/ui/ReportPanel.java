@@ -30,16 +30,16 @@ public class ReportPanel extends JPanel {
 	
 	JLabel formula, result;
 	
-	ArrayList<JTextField> formulae;
-	ArrayList<JTextField> results;
+	static ArrayList<JTextField> formulae;
+	static ArrayList<JTextField> results;
 
-	JButton add_report_action;
+	static JButton add_report_action;
 	
 	/*
 	 * Report Panel Constructor
 	 * Sets up the GUI 
 	 */
-	public ReportPanel() {
+	public ReportPanel(TrustGraphPanel graph) {
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 		this.setBackground(Color.pink);
@@ -109,6 +109,8 @@ public class ReportPanel extends JPanel {
         gbc.insets = new Insets(50, 20, 10, 20);
 
         this.add(add_report_action, gbc);
+        
+        add_report_action.addActionListener(graph);
         
 	}
 	
