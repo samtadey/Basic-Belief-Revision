@@ -1,5 +1,8 @@
 package constants;
 
+/*
+ * The Strings class defines static String values used throughout the project in areas such as UI displays and action control parameters
+ */
 public final class Strings {
 
 	//
@@ -41,6 +44,7 @@ public final class Strings {
 	//
 	public static final String main_trust_title = "Trust Graph";
 	public static final String main_reports_title = "Reports";
+	public static final String main_errors_title = "Errors";
 
 	//
 	//Belief Panel
@@ -63,5 +67,9 @@ public final class Strings {
 	public static final String report_formula_title = "Formula";
 	public static final String report_result_title = "Result";
 	public static final String report_add_report_action = "Add Reports";
+	
+	
+	//errors
+	public static final String error_gen_trust_prereq = "Trust Graph not set";
 	
 }

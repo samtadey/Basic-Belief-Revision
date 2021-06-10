@@ -262,14 +262,18 @@ public class BeliefRevision {
     	return scoreset;
     }
     
+    
+    
 	public static GeneralRevisionScore mergeScoresMin(GeneralRevisionScore score1, GeneralRevisionScore score2) {
 		GeneralRevisionScore combined = new GeneralRevisionScore();
 		double val1,val2;
 		
-		for (State s : score1.getScoreMap().keySet())
+		for (State s : score1.getScoreKeys())
 		{
-			val1 = score1.getScoreMap().get(s);
-			val2 = score2.getScoreMap().get(s);
+			val1 = score1.getScore(s);
+			val2 = score2.getScore(s);
+			//val1 = score1.getScoreMap().get(s);
+			//val2 = score2.getScoreMap().get(s);
 			if (val1 < val2)
 				combined.setScore(s, val1);
 			else

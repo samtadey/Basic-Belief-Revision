@@ -3,18 +3,16 @@
  */
 package revision.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 
 import constants.Strings;
 
@@ -37,21 +35,25 @@ public class MainPanel implements ActionListener {
 	
 	static JPanel main_panel, report_panel;
 	
-    static JLabel trust_lab, report_lab;
+    static JLabel trust_lab, report_lab, error_lab;
     
     //static ActionPanel act;
     static TrustGraphPanel graph;
     static BeliefPanel belief_panel;
+    static ErrorPanel error_panel;
 	
 	public MainPanel() {
 		f = new JFrame(Strings.project_title);
         f.setSize(1000,1000);
         
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setLocationRelativeTo(null); 
+        
 		main_panel = new JPanel();
 		graph = new TrustGraphPanel(this);
         belief_panel = new BeliefPanel(this);
         report_panel = new ReportPanel(graph);
-		
+		error_panel = new ErrorPanel();
         
 		main_panel.setLayout(new GridBagLayout());	
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -96,6 +98,7 @@ public class MainPanel implements ActionListener {
         //
         //ReportPanel
         //
+        //label
 		report_lab = new JLabel(Strings.main_reports_title);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 1;
@@ -105,6 +108,7 @@ public class MainPanel implements ActionListener {
         gbc.insets = new Insets(10, 0, 0, 20);
         main_panel.add(report_lab, gbc);
         
+        //Report Panel
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 1;
@@ -114,6 +118,32 @@ public class MainPanel implements ActionListener {
         gbc.weightx = REPORT_WEIGHT;
         gbc.weighty = MID_ROW_WEIGHT;
         main_panel.add(report_panel, gbc);
+        
+        //
+        //ErrorPane
+		//
+        //label
+        error_lab = new JLabel(Strings.main_errors_title);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weightx = LABEL_W_X;
+        gbc.weighty = LABEL_W_Y;
+        gbc.insets = new Insets(10, 40, 0, 20);
+        main_panel.add(error_lab, gbc);
+        
+        //ErrorPane
+        gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        //gbc.anchor = GridBagConstraints.NORTH;
+        gbc.insets = new Insets(5, 40, 40, 40);
+        gbc.weightx = 1;
+        gbc.weighty = 0.1;
+        main_panel.add(error_panel, gbc);
+        
 	
 		f.add(main_panel);
 

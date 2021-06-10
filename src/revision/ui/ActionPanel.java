@@ -35,9 +35,14 @@ import revision.ui.settings.UISettings;
  */
 public class ActionPanel extends JPanel{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	JTextField vocab;
 	
-	JButton gen_trust, revise;
+	JButton gen_trust, revise, clr_errors;
 	JLabel actions;
 	
 	//static MainPanel main_panel;
@@ -99,6 +104,16 @@ public class ActionPanel extends JPanel{
         gbc.weightx = 1;
         gbc.weighty = 1;
         this.add(revise, gbc);
+        
+//        //button
+//        clr_errors = new JButton("Clear Errors");
+//        gbc.fill = GridBagConstraints.HORIZONTAL;
+//        gbc.gridx = 0;
+//        gbc.gridy = 4;
+//        gbc.weightx = 1;
+//        gbc.weighty = 1;
+//        gbc.insets = leftcol;
+//        this.add(clr_errors, gbc);
 		
         
 		/*

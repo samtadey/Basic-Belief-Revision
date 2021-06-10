@@ -5,35 +5,24 @@ package revision.ui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
 
 import constants.Strings;
 import distance.DistanceState;
-import distance.Report;
-import language.BeliefState;
 import language.State;
+import revision.ui.handler.ErrorHandler;
 import revision.ui.handler.TrustGraphHandler;
 import revision.ui.settings.UISettings;
 
@@ -86,27 +75,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	}
 	
 	
-	/*
-	 * Adds the error message to the errors pane and resets the frame UI
-	 * 
-	 * @params
-	 * 	String message - Error message to display on the error pane
-	 */
-//	private void addError(String message) {
-//		JLabel err = new JLabel("Error: " + message);
-//		err.setForeground(Color.RED);
-//		errors.add(err);
-//		//f.validate();
-//	}
-//	
-//	/*
-//	 * Clears the error pane of all messages
-//	 */
-//	private void clearErrors() {
-//		errors.removeAll();
-//		//f.validate();
-//	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		int grids;
@@ -148,10 +117,18 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 
             } catch (Exception ex) {
             	System.out.println(ex);
+            	ErrorHandler.addError(Strings.action_gen_trust_action, ex.toString());
             }
     	}
-    	else if (s.equals(Strings.report_add_report_action) && distance != null)
+    	else if (s.equals(Strings.report_add_report_action))
     	{
+    		
+    		if (distance == null) 
+    		{
+    			//set error
+				ErrorHandler.addError(Strings.report_add_report_action, Strings.action_gen_trust_action, Strings.error_gen_trust_prereq);
+    			return;
+    		}
 
     		//Define error collection
     		ArrayList<String> errormsg;
@@ -159,11 +136,15 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     		//Add Reports to Trust Graph. Collect any logic errors
     		//
     		errormsg = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, distance);
-    		
-    		grids = distance.getPossibleStates().getBeliefs().size();
+    		//
+    		//set errors to errorpane
+    		//
+    		ErrorHandler.addErrorGroup(Strings.report_add_report_action, errormsg);
+    		System.out.println(errormsg);
         	//
     		//Reset JTextAreas in grid before rebuild
     		//
+    		grids = distance.getPossibleStates().getBeliefs().size();
     		grid_text = TrustGraphHandler.resetGridItems(grids);
     		//
     		//Rebuild Matrix with updated trust values
@@ -173,8 +154,6 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     		//Refresh Frame
     		//
     		MainPanel.f.validate();
-    		
-    		System.out.println(errormsg);
     	}
 		
 	}

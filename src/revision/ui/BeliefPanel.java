@@ -20,6 +20,7 @@ import distance.RankingState;
 import language.BeliefState;
 import main.BeliefRevision;
 import propositional_translation.InputTranslation;
+import revision.ui.handler.ErrorHandler;
 import revision.ui.settings.UISettings;
 
 /**
@@ -136,34 +137,58 @@ public class BeliefPanel extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("Belief Panel");
+		String action = e.getActionCommand();
+		
+
 		String bel_string, sent_string;
 		RankingState bel_rank, updated_rank;
 		BeliefState sent_state, bel_state;
 		DistanceState dist;
 		
-		//get input
-		bel_string = bel.getText();
-		sent_string = sent.getText();
-		
-		//convert beliefs to RankingState
-		bel_state = InputTranslation.convertPropInput(bel_string, TrustGraphPanel.distance.getVocab());
-		bel_rank = new RankingState(bel_state, InputTranslation.setToArr(TrustGraphPanel.distance.getVocab()));
-		
-		sent_state = InputTranslation.convertPropInput(sent_string, TrustGraphPanel.distance.getVocab());
-		
-		dist = TrustGraphPanel.distance;
-		
-		updated_rank = BeliefRevision.reviseStates(bel_rank, sent_state, dist);
-		//rustGraphPanel.distance
-		StringBuilder output = new StringBuilder();
-		//res.setText(updated_rank.getFormula().get(0));
-		
-		for (String s : updated_rank.getFormula())
+		if (action.equals(Strings.action_revise_action))
 		{
-			output.append(s + "\n");
+			//validate input parameters
+			//beliefs exist
+			//sentence exists
+			//distance object is not null
+			if (TrustGraphPanel.distance == null)
+			{
+				//set error
+				ErrorHandler.addError(Strings.action_revise_action, Strings.action_gen_trust_action, Strings.error_gen_trust_prereq);
+				return;
+			}
+			
+			//get input
+			bel_string = bel.getText();
+			sent_string = sent.getText();
+			
+			try {
+				//convert beliefs to RankingState
+				bel_state = InputTranslation.convertPropInput(bel_string, TrustGraphPanel.distance.getVocab());
+				bel_rank = new RankingState(bel_state, InputTranslation.setToArr(TrustGraphPanel.distance.getVocab()));
+				
+				sent_state = InputTranslation.convertPropInput(sent_string, TrustGraphPanel.distance.getVocab());
+				
+				dist = TrustGraphPanel.distance;
+				
+				updated_rank = BeliefRevision.reviseStates(bel_rank, sent_state, dist);
+				
+				//rustGraphPanel.distance
+				StringBuilder output = new StringBuilder();
+				//res.setText(updated_rank.getFormula().get(0));
+				
+				for (String s : updated_rank.getFormula())
+					output.append(s + "\n");
+				
+				res.setText(output.toString());
+			} catch (Exception ex) {
+				System.out.println(ex.toString());
+				ErrorHandler.addError(Strings.action_revise_action, ex.toString());
+				//set error
+			}
+
+
 		}
 		
-		res.setText(output.toString());
 	}
 }
