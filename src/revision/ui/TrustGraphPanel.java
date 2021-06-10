@@ -48,19 +48,13 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	 * 
 	 */
 	private static final long serialVersionUID = 5771430681979792609L;
-	static JTextField vocab;
-	static JTextField t_formula;
-	static JTextField t_result;
 	
-	static JLabel l_vocab;
-	static JLabel formula;
-	static JLabel rep_res;
-	
+	static JTextField vocab, t_formula, t_result;
+	static JLabel l_vocab, formula, rep_res;
 	static JButton gen_grid;
 	
 	static GridLayout visual;
-	
-	private static DistanceState distance;
+	static DistanceState distance;
 	
 	static ArrayList<ArrayList<JTextField>> grid_text;
 	

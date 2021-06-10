@@ -3,7 +3,9 @@
  */
 package propositional_translation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import aima.core.logic.common.ParserException;
@@ -40,6 +42,23 @@ public class InputTranslation {
 	    	bstate.addBelief(new State(line));
 	    }
 	    return bstate;
+    }
+    
+    public static Set<Character> arrToSet(ArrayList<Character> arr) {
+    	Set<Character> set = new LinkedHashSet<Character>();
+    	for (Character c: arr)
+    		set.add(c);
+    	
+    	return set;
+    }
+    
+    public static ArrayList<Character> setToArr(Set<Character> set) {
+    	ArrayList<Character> arr = new ArrayList<Character>();
+    	
+    	for (Character c : set)
+    		arr.add(c);
+    	
+    	return arr;
     }
 	
     public static BeliefState convertPropInput(String text, Set<Character> chars) throws ParserException {

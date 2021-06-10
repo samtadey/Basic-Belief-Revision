@@ -50,10 +50,6 @@ public class ActionPanel extends JPanel implements ActionListener {
 		gen_trust = new JButton(Strings.action_gen_trust_action);
 		revise = new JButton(Strings.action_revise_action);
 		
-
-		//order of execution
-		//this
-		//MainPanel
 		
 		/*
 		 * The TrustGraphPanel class listens for this action
@@ -66,7 +62,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 		 * The MainPanel class listens for this action.
 		 * When this action is taken Initial Beliefs and Trust are used to perform belief revision.
 		 */
-		revise.addActionListener(main);
+		revise.addActionListener(beliefpan);
 		revise.addActionListener(this);
 		
 		this.add(vocab);
@@ -88,7 +84,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		System.out.println("Action Taken ActionPanel");
-		BeliefPanel.sent.setText(e.getActionCommand().toString());
+		//BeliefPanel.sent.setText(e.getActionCommand().toString());
 		
 		String action = e.toString();
 		

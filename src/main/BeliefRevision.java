@@ -197,6 +197,18 @@ public class BeliefRevision {
      * 
      */
     
+    /*
+     * The reviseStates method does belief revision by comparing a RankingState (Initial belief values) and DistanceState (Trust values between The agent and a reporting agent)
+     * The result of revision is an updated belief system represented by a RankingState
+     * 
+     * @params
+     * 		RankingState beliefs
+     * 		BeliefState sentence
+     * 		DistanceState distance
+     * 
+     * @return
+     * 		RankingState as the result of belief revision
+     */
     public static RankingState reviseStates(RankingState beliefs, BeliefState sentence, DistanceState distance) {
     	
     	//return a reanking state?
@@ -210,13 +222,24 @@ public class BeliefRevision {
     	for (State s: sentence.getBeliefs())
     	{
     		temp = scoreStates(beliefs, s, distance);
-    		score.mergeScoresMin(temp);
+    		score = mergeScoresMin(score, temp);
     	}
     	
     	return score.scoreToRank(beliefs.getVocab());
     }
     
-    
+    /*
+     * The scoreStates method scores every state in the RankingState beliefs by each State's ranking value and the distance between every 
+     * belief state and the sentence state. The return value is the result of the sum between this rank and the distance function.
+     * 
+     * @params
+     * 		RankingState beliefs
+     * 		State sentence
+     * 		DistanceState distance
+     * 
+     * @return
+     * 		GeneralRevisionScore as the score given to each state 
+     */
     private static GeneralRevisionScore scoreStates(RankingState beliefs, State sentence, DistanceState distance) {
     	double min, score, dist;
     	int rank;
@@ -237,5 +260,22 @@ public class BeliefRevision {
     	
     	return scoreset;
     }
+    
+	public static GeneralRevisionScore mergeScoresMin(GeneralRevisionScore score1, GeneralRevisionScore score2) {
+		GeneralRevisionScore combined = new GeneralRevisionScore();
+		double val1,val2;
+		
+		for (State s : score1.getScoreMap().keySet())
+		{
+			val1 = score1.getScoreMap().get(s);
+			val2 = score2.getScoreMap().get(s);
+			if (val1 < val2)
+				combined.setScore(s, val1);
+			else
+				combined.setScore(s, val2);
+		}
+		
+		return combined;
+	}
     
 }

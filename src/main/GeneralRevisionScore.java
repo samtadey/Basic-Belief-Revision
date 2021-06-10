@@ -16,7 +16,7 @@ import language.State;
  */
 public class GeneralRevisionScore {
 	
-	private final double DEFAULT_SCORE = -1.0;
+	private final double DEFAULT_SCORE = Double.MAX_VALUE;
 
 	private HashMap<State, Double> scoremap;
 	
@@ -40,21 +40,8 @@ public class GeneralRevisionScore {
 	}
 	
 	
-	public GeneralRevisionScore mergeScoresMin(GeneralRevisionScore score) {
-		GeneralRevisionScore combined = new GeneralRevisionScore();
-		double val1,val2;
-		
-		for (State s : this.scoremap.keySet())
-		{
-			val1 = this.scoremap.get(s);
-			val2 = score.scoremap.get(s);
-			if (val1 < val2)
-				combined.setScore(s, val1);
-			else
-				combined.setScore(s, val2);
-		}
-		
-		return combined;
+	public HashMap<State, Double> getScoreMap() {
+		return scoremap;
 	}
 	
 	

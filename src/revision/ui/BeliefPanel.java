@@ -7,12 +7,19 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import constants.Strings;
+import distance.DistanceState;
+import distance.RankingState;
+import language.BeliefState;
+import main.BeliefRevision;
+import propositional_translation.InputTranslation;
 
 /**
  * @author sam_t
@@ -20,7 +27,7 @@ import constants.Strings;
  * The BeliefPanel class contains information pertaining to belief in the Belief Revision process. It contains initial beliefs, a sentence to revise by, and
  * the results of revision. 
  */
-public class BeliefPanel extends JPanel {
+public class BeliefPanel extends JPanel implements ActionListener {
 
 	static JTextArea bel, sent, res;
 	static JLabel bel_lab, sent_lab, res_lab, vocab_lab;
@@ -32,6 +39,7 @@ public class BeliefPanel extends JPanel {
 	 * Sets up the Panel UI
 	 */
 	public BeliefPanel(MainPanel main) {
+		
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         
@@ -120,5 +128,38 @@ public class BeliefPanel extends JPanel {
         gbc.insets = new Insets(5, 40, 20, 40); //need to add spacing for the right side for this component
         gbc.weightx = 1;
         this.add(act, gbc);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		System.out.println("Belief Panel");
+		String bel_string, sent_string;
+		RankingState bel_rank, updated_rank;
+		BeliefState sent_state, bel_state;
+		DistanceState dist;
+		
+		//get input
+		bel_string = bel.getText();
+		sent_string = sent.getText();
+		
+		//convert beliefs to RankingState
+		bel_state = InputTranslation.convertPropInput(bel_string, TrustGraphPanel.distance.getVocab());
+		bel_rank = new RankingState(bel_state, InputTranslation.setToArr(TrustGraphPanel.distance.getVocab()));
+		
+		sent_state = InputTranslation.convertPropInput(sent_string, TrustGraphPanel.distance.getVocab());
+		
+		dist = TrustGraphPanel.distance;
+		
+		updated_rank = BeliefRevision.reviseStates(bel_rank, sent_state, dist);
+		//rustGraphPanel.distance
+		StringBuilder output = new StringBuilder();
+		//res.setText(updated_rank.getFormula().get(0));
+		
+		for (String s : updated_rank.getFormula())
+		{
+			output.append(s + "\n");
+		}
+		
+		res.setText(output.toString());
 	}
 }
