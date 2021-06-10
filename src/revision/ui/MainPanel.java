@@ -55,7 +55,8 @@ public class MainPanel implements ActionListener {
         
 		main_panel.setLayout(new GridBagLayout());	
 		GridBagConstraints gbc = new GridBagConstraints();
-		main_panel.setBackground(Color.YELLOW);
+		
+		//main_panel.setBackground(Color.YELLOW);
 
 		//
 		//BeliefPanel

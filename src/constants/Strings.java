@@ -48,11 +48,12 @@ public final class Strings {
 	public static final String belief_beliefs_title = "Beliefs";
 	public static final String belief_sentence_title = "Sentences";
 	public static final String belief_result_title = "Results";
-	public static final String belief_vocab_title = "Propositional Vocabulary";
+	public static final String belief_action_title = "Actions";
 	
 	//
 	//Action Panel
 	//
+	public static final String action_vocab_title = "Propositional Vocabulary";
 	public static final String action_revise_action = "Revise";
 	public static final String action_gen_trust_action = "Generate Trust Graph";
 	

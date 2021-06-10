@@ -20,6 +20,7 @@ import distance.RankingState;
 import language.BeliefState;
 import main.BeliefRevision;
 import propositional_translation.InputTranslation;
+import revision.ui.settings.UISettings;
 
 /**
  * @author sam_t
@@ -46,7 +47,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         Insets labels = new Insets(10, 40, 0, 0);
         Insets allfieldsbutright = new Insets(5, 40, 20, 0);
         	
-		this.setBackground(Color.GREEN);
+		//this.setBackground(Color.GREEN);
 		
 		//
 		//Belief Column
@@ -66,6 +67,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         gbc.gridy = 1;
         gbc.insets = allfieldsbutright;
         gbc.weightx = 1;
+        bel.setBorder(UISettings.componentborder);
         this.add(bel, gbc);
         
         //
@@ -86,6 +88,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         gbc.gridy = 1;
         gbc.insets = allfieldsbutright;
         gbc.weightx = 1;
+        sent.setBorder(UISettings.componentborder);
         this.add(sent, gbc);
         
         //
@@ -106,12 +109,13 @@ public class BeliefPanel extends JPanel implements ActionListener {
         gbc.gridy = 1;
         gbc.insets = allfieldsbutright;
         gbc.weightx = 1;
+        res.setBorder(UISettings.componentborder);
         this.add(res, gbc);
 
         //
         //Propositional Vocab and Action Column
         //
-        vocab_lab = new JLabel(Strings.belief_vocab_title);
+        vocab_lab = new JLabel(Strings.belief_action_title);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 3;
         gbc.gridy = 0;
@@ -121,8 +125,8 @@ public class BeliefPanel extends JPanel implements ActionListener {
         
         act = new ActionPanel(main, this);
         gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.BOTH;
+        //gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.gridx = 3;
         gbc.gridy = 1;
         gbc.insets = new Insets(5, 40, 20, 40); //need to add spacing for the right side for this component

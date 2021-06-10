@@ -250,9 +250,10 @@ public class BeliefRevision {
     		//get belief rank
     		rank = beliefs.getRank(s);
     		
-    		//get distance between belief state and sentense state
+    		//get distance between belief state and sentence state
     		dist = distance.getDistance(s, sentence);
     		
+    		//score the state with its rank and distance to sentence state
     		score = rank + dist;
     		
     		scoreset.setScore(s, score);

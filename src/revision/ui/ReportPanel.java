@@ -9,12 +9,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import constants.Strings;
+import revision.ui.settings.UISettings;
 
 /**
  * @author sam_t
@@ -42,7 +44,8 @@ public class ReportPanel extends JPanel {
 	public ReportPanel(TrustGraphPanel graph) {
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-		this.setBackground(Color.pink);
+		//this.setBackground(Color.pink);
+		this.setBorder(UISettings.panelborder);
 		
 		formulae = new ArrayList<JTextField>();
 		results = new ArrayList<JTextField>();

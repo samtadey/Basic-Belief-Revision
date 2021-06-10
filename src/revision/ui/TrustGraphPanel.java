@@ -35,6 +35,7 @@ import distance.Report;
 import language.BeliefState;
 import language.State;
 import revision.ui.handler.TrustGraphHandler;
+import revision.ui.settings.UISettings;
 
 /**
  * @author sam_t
@@ -67,8 +68,8 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
         visual = new GridLayout(3, 3);
         this.setLayout(visual);
 
-        this.setBackground(Color.CYAN);
-
+        this.setBackground(Color.WHITE);
+        this.setBorder(UISettings.panelborder);
 	}
 
 	private Set<Character> getVocab(String input) throws Exception {
