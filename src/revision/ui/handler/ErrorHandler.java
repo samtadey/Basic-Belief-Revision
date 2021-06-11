@@ -11,8 +11,9 @@ import javax.swing.JTextArea;
 import revision.ui.ErrorPanel;
 
 /**
+ * The ErrorHandler manages the ErrorPane. The handler can add messages to the pane, or clear the pane of contents
+ * 
  * @author sam_t
- *
  */
 public class ErrorHandler {
 	
@@ -21,30 +22,57 @@ public class ErrorHandler {
 	static JTextArea errors = ErrorPanel.error_messages;
 
 	
-	//error msg for actions requiring prerequisite actions
+	/**
+	 * Adds an error message to the ErrorPane
+	 * 
+	 * @param action String action being taken when the error occurred
+	 * @param prereq String action that must be taken before the action currently being taken
+	 * @param message String message to display as the specific error
+	 */
 	public static void addError(String action, String prereq, String message) {
 		errors.append(timeOfDay() + ": Action: " + action + " Requires: " + prereq + " Message: " + message + "\n");
 	}
 	
-	//basic error msg
+	/**
+	 * Adds an error message to the ErrorPane
+	 * 
+	 * @param action String action being taken when the error occurred
+	 * @param message String message to display as the specific error
+	 */
 	public static void addError(String action, String message) {
 		errors.append(timeOfDay() + ": Action: " + action + " Message: " + message + "\n");
 	}
 	
-	//multiple error msg to add
+	/**
+	 * Adds a group of messages to the ErrorPane
+	 * 
+	 * @param action String action being taken when the error occurred
+	 * @param message String message to display as the specific error
+	 */
 	public static void addErrorGroup(String action, ArrayList<String> messages) {
 		for (String msg : messages)
 			addError(action, msg);
 	}
 	
-	//clear error action
+	/**
+	 * Clears the ErrorPane of all displayed errors
+	 */
 	public void clearErrors() {
 		errors.removeAll();
 	}
 	
-	//helpers
-	//get time of day
+	/*
+	 * Helpers
+	 */
+	
+	/**
+	 * Returns a the time of day as a String
+	 * 
+	 * @return Time of Day as a String
+	 */
 	private static String timeOfDay() {
+		if (String.valueOf(calendar.get(Calendar.MINUTE)).length() < 2)
+			return new String(calendar.get(Calendar.HOUR_OF_DAY) + ":0" + calendar.get(Calendar.MINUTE));
 		return new String(calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
 	}
 }

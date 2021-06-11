@@ -68,8 +68,17 @@ public final class Strings {
 	public static final String report_result_title = "Result";
 	public static final String report_add_report_action = "Add Reports";
 	
+	//file
+	public static final String file_open_file = "Open File";
+	
 	
 	//errors
+	public static final String error_bad_vocab = "Bad Vocab Input";
 	public static final String error_gen_trust_prereq = "Trust Graph not set";
+	public static final String error_bad_vocab_input = "Incorrect Propositional Vocabulary Input Format";
+	
+	//exceptions
+	public static final String exception_missing_file_param =  "At least one State/Rank pair missing";
+	public static final String exception_bad_state_length = "State length in file does not match vocabulary size";
 	
 }

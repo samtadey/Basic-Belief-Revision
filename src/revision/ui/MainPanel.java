@@ -24,6 +24,7 @@ public class MainPanel implements ActionListener {
 	
 	static final int TOP_ROW_WEIGHT = 1;
 	static final int MID_ROW_WEIGHT = 5;
+	static final int BOT_ROW_WEIGHT = 1;
 	
 	static final int GRID_WEIGHT = 4;
 	static final int REPORT_WEIGHT = 1;
@@ -88,7 +89,7 @@ public class MainPanel implements ActionListener {
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
 
         gbc.insets = new Insets(5, 40, 40, 40);
         gbc.weightx = GRID_WEIGHT;
@@ -112,7 +113,7 @@ public class MainPanel implements ActionListener {
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.insets = new Insets(5, 0, 40, 40);
         gbc.weightx = REPORT_WEIGHT;
@@ -126,7 +127,7 @@ public class MainPanel implements ActionListener {
         error_lab = new JLabel(Strings.main_errors_title);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.weightx = LABEL_W_X;
         gbc.weighty = LABEL_W_Y;
         gbc.insets = new Insets(10, 40, 0, 20);
@@ -136,7 +137,7 @@ public class MainPanel implements ActionListener {
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         //gbc.anchor = GridBagConstraints.NORTH;
         gbc.insets = new Insets(5, 40, 40, 40);
