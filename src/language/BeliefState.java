@@ -4,6 +4,7 @@
 package language;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * @author sam_t
@@ -26,6 +27,7 @@ public class BeliefState {
 		this.beliefs = new ArrayList<State>();
 	}
 	
+	
 	/*
 	 * @params
 	 * 	 ArrayList<State>
@@ -34,6 +36,13 @@ public class BeliefState {
 	 */
 	public BeliefState(ArrayList<State> beliefs) {
 		this.beliefs = beliefs;
+	}
+	
+	
+	public BeliefState(Set<State> beliefs) {
+		this.beliefs = new ArrayList<State>();
+		for (State s : beliefs)
+			this.beliefs.add(s);
 	}
 
 	/*
@@ -74,6 +83,23 @@ public class BeliefState {
 	 */
 	public void removeBelief(int idx) throws IndexOutOfBoundsException {
 		this.beliefs.remove(idx);
+	}
+	
+	/*
+	 * Want this to resemble a set
+	 */
+	public boolean contains(State s) {
+		for (State os : this.beliefs)
+			if (os.equals(s))
+				return true;
+		return false;
+	}
+	
+	public String toString() {
+		StringBuilder build = new StringBuilder();
+		for (int i = 0; i < this.beliefs.size(); i++)
+			build.append("[ " + this.beliefs.get(i).getState() + " ]\n");
+		return build.toString();
 	}
 	
 	/*
