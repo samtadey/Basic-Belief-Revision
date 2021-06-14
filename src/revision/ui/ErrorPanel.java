@@ -33,7 +33,10 @@ public class ErrorPanel extends JPanel {
 	
 	public ErrorPanel() {
 		
+		//allows component to fill to outer layout size
 		this.setLayout(new BorderLayout());
+		
+		
 		//this.setBorder(UISettings.panelborder);
 		//this.setBackground(Color.RED);
 		

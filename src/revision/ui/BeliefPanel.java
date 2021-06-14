@@ -3,13 +3,19 @@
  */
 package revision.ui;
 
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -21,6 +27,7 @@ import language.BeliefState;
 import main.BeliefRevision;
 import propositional_translation.InputTranslation;
 import revision.ui.handler.ErrorHandler;
+import revision.ui.handler.FileHandler;
 import revision.ui.settings.UISettings;
 
 /**
@@ -31,10 +38,22 @@ import revision.ui.settings.UISettings;
  */
 public class BeliefPanel extends JPanel implements ActionListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	String[] bel_input_choice = Strings.belief_combo;
+	
 	static JTextArea bel, sent, res;
 	static JLabel bel_lab, sent_lab, res_lab, vocab_lab;
+	static JComboBox<String> belief_input;
+	static JButton file_upload;
 	
 	static ActionPanel act;
+	static RankingPanel rank;
+	
+	private Insets allfieldsbutright;
 	
 	/*
 	 * BeliefPanel Constructor
@@ -46,7 +65,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         GridBagConstraints gbc = new GridBagConstraints();
         
         Insets labels = new Insets(10, 40, 0, 0);
-        Insets allfieldsbutright = new Insets(5, 40, 20, 0);
+        allfieldsbutright = new Insets(5, 40, 20, 0);
         	
 		//this.setBackground(Color.GREEN);
 		
@@ -61,15 +80,41 @@ public class BeliefPanel extends JPanel implements ActionListener {
         gbc.weightx = 1;
         this.add(bel_lab, gbc);
 		
-        bel = new JTextArea(10,10);
+//        bel = new JTextArea(10,10);
+//        gbc = new GridBagConstraints();
+//        gbc.fill = GridBagConstraints.BOTH;
+//        gbc.gridx = 0;
+//        gbc.gridy = 1;
+//        gbc.insets = allfieldsbutright;
+//        gbc.weightx = 1;
+//        bel.setBorder(UISettings.componentborder);
+//        this.add(bel, gbc);
+        
+        rank = new RankingPanel();
         gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.insets = allfieldsbutright;
         gbc.weightx = 1;
-        bel.setBorder(UISettings.componentborder);
-        this.add(bel, gbc);
+        //rank.setBorder(UISettings.componentborder);
+        this.add(rank, gbc);
+        
+        //Belief Type Combo Box
+        belief_input = new JComboBox<String>(Strings.belief_combo);
+        //belief_input.addItem(rank.getCardByString());
+        gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.insets = allfieldsbutright;
+        gbc.weightx = 1;
+        //belief_input.setBorder(UISettings.componentborder);
+        this.add(belief_input, gbc);
+        //listener for combobox change
+
+        belief_input.addActionListener(this);
         
         //
         //Sentences Column
@@ -138,13 +183,19 @@ public class BeliefPanel extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String action = e.getActionCommand();
-		
 
-		String bel_string, sent_string;
-		RankingState bel_rank, updated_rank;
+		String bel_string, sent_string, combo_item;
+		RankingState bel_rank = null, updated_rank;
 		BeliefState sent_state, bel_state;
 		DistanceState dist;
 		
+        //determines which Panel to display in the Ranking Panel
+		//Based on the combobox selection
+        CardLayout cl = (CardLayout)(RankingPanel.cardholder.getLayout());
+	    cl.show(RankingPanel.cardholder, (String)belief_input.getSelectedItem());
+	    
+		
+		//
 		if (action.equals(Strings.action_revise_action))
 		{
 			//validate input parameters
@@ -158,29 +209,41 @@ public class BeliefPanel extends JPanel implements ActionListener {
 				return;
 			}
 			
-			//get input
-			bel_string = bel.getText();
-			sent_string = sent.getText();
-			
 			try {
-				//convert beliefs to RankingState
-				bel_state = InputTranslation.convertPropInput(bel_string, TrustGraphPanel.distance.getVocab());
-				bel_rank = new RankingState(bel_state, InputTranslation.setToArr(TrustGraphPanel.distance.getVocab()));
 				
+				combo_item = (String) belief_input.getSelectedItem();
+				//check ranking combobox for type of input
+				if (combo_item.equals(Strings.belief_combo_hamming))
+				{
+					bel_string = RankingPanel.bel.getText();
+					bel_state = InputTranslation.convertPropInput(bel_string, TrustGraphPanel.distance.getVocab());
+					bel_rank = new RankingState(bel_state, InputTranslation.setToArr(TrustGraphPanel.distance.getVocab()));
+				}
+				else if (combo_item.equals(Strings.belief_combo_file))
+				{
+					bel_rank = RankingPanel.rankings_from_file;
+				}
+				
+				//check that ranking function is not null
+				if (bel_rank == null)
+				{
+					ErrorHandler.addError(Strings.action_revise_action, Strings.error_revise_no_ranking);
+					return;
+				}
+				
+				sent_string = sent.getText();
 				sent_state = InputTranslation.convertPropInput(sent_string, TrustGraphPanel.distance.getVocab());
-				
 				dist = TrustGraphPanel.distance;
-				
 				updated_rank = BeliefRevision.reviseStates(bel_rank, sent_state, dist);
 				
-				//rustGraphPanel.distance
+				//take updated ranking function
+				//add it to the results textarea
 				StringBuilder output = new StringBuilder();
-				//res.setText(updated_rank.getFormula().get(0));
-				
 				for (String s : updated_rank.getFormula())
 					output.append(s + "\n");
 				
 				res.setText(output.toString());
+				
 			} catch (Exception ex) {
 				System.out.println(ex.toString());
 				ErrorHandler.addError(Strings.action_revise_action, ex.toString());

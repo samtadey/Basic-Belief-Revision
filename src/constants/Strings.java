@@ -54,6 +54,13 @@ public final class Strings {
 	public static final String belief_result_title = "Results";
 	public static final String belief_action_title = "Actions";
 	
+	public static final String belief_combo_hamming = "Hamming Ranking";
+	public static final String belief_combo_file = "File Ranking";
+	public static final String[] belief_combo = {belief_combo_hamming, belief_combo_file};
+	
+	public static final String ranking_file_choose = "Choose File";
+	public static final String ranking_file_generate = "Generate File";
+	
 	//
 	//Action Panel
 	//
@@ -76,6 +83,7 @@ public final class Strings {
 	public static final String error_bad_vocab = "Bad Vocab Input";
 	public static final String error_gen_trust_prereq = "Trust Graph not set";
 	public static final String error_bad_vocab_input = "Incorrect Propositional Vocabulary Input Format";
+	public static final String error_revise_no_ranking = "Belief Rankings not set";
 	
 	//exceptions
 	public static final String exception_missing_file_param =  "At least one State/Rank pair missing";
