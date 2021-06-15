@@ -123,7 +123,7 @@ public class RankingPanel extends JPanel implements ActionListener {
 	    if (action.equals(Strings.ranking_file_choose))
 	    {
 			ArrayList<Character> vars;
-	    	RankingState rank;
+	    	//RankingState rank;
 			int returnVal;
     		//vocabulary must be set
     		//check
@@ -143,6 +143,7 @@ public class RankingPanel extends JPanel implements ActionListener {
                 try {
                     read = new FileHandler(file);
                     rankings_from_file = read.readFileToRanking(vars);
+                    rankings_from_file.toConsoleGroupings();
                     file_selected.setText(file.getName());
                     read.closeFile();
                 } catch (Exception ex) {

@@ -20,7 +20,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import constants.Strings;
+import constants.UIToOperatorPairs;
 import distance.DistanceState;
+import distance.revision.TriangleInequalityOperator;
 import language.State;
 import revision.ui.handler.ErrorHandler;
 import revision.ui.handler.TrustGraphHandler;
@@ -91,7 +93,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     			//
     			//Create new distance object with user specified propositional variables
     			//
-    			vars = getVocab(BeliefPanel.act.vocab.getText());
+    			vars = getVocab(ActionPanel.vocab.getText());
     			//validate vocab?
     			
             	distance = new DistanceState(vars);
@@ -122,6 +124,8 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     	}
     	else if (s.equals(Strings.report_add_report_action))
     	{
+    		String triangle_ineq_action;
+    		TriangleInequalityOperator op;
     		
     		if (distance == null) 
     		{
@@ -133,9 +137,19 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     		//Define error collection
     		ArrayList<String> errormsg;
     		//
+    		//Get 
+    		//
+    		try {
+    			triangle_ineq_action = ConstraintPanel.button_name;
+    			op = UIToOperatorPairs.triangle_ineq.get(triangle_ineq_action);
+    		} catch (Exception ex) {
+    			System.out.println("Problem with radio button pairs");
+    			return;
+    		}
+    		//
     		//Add Reports to Trust Graph. Collect any logic errors
     		//
-    		errormsg = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, distance);
+    		errormsg = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, distance, op);
     		//
     		//set errors to errorpane
     		//

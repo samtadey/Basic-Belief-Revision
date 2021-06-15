@@ -75,6 +75,14 @@ public final class Strings {
 	public static final String report_result_title = "Result";
 	public static final String report_add_report_action = "Add Reports";
 	
+	//
+	//Constraints Panel
+	//
+	public static final String constr_title = "Triangle Inequality Response";
+	public static final String constr_value_unchange = "Value Unchanged";
+	public static final String constr_next_avail = "Next Available Value";
+	
+	
 	//file
 	public static final String file_open_file = "Open File";
 	
@@ -84,6 +92,11 @@ public final class Strings {
 	public static final String error_gen_trust_prereq = "Trust Graph not set";
 	public static final String error_bad_vocab_input = "Incorrect Propositional Vocabulary Input Format";
 	public static final String error_revise_no_ranking = "Belief Rankings not set";
+	public static final String error_no_default_rank = "Default rank value not set.";
+	
+	public static final String errorStateNotPossible(String st) {
+		return "State: " + st + " not defined in possible states.";
+	}
 	
 	//exceptions
 	public static final String exception_missing_file_param =  "At least one State/Rank pair missing";

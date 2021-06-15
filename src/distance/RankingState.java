@@ -55,6 +55,24 @@ public class RankingState {
 		 groupings.put(DEFAULT_RANK, a);
 	}
 	
+	public RankingState(ArrayList<Character> vocab, int default_rank) {
+		 this.vocab = vocab;
+		 rankings = new HashMap<State, Integer>();
+		 groupings = new HashMap<Integer, Set<State>>();
+		 //generate all states for vocab
+		 validstates = new BeliefState(StateHelper.generateStates(vocab.size()));
+		 Set<State> a = new HashSet<State>();
+		 
+		 //assign default rank
+		 for (State s: validstates.getBeliefs())
+		 {
+			 rankings.put(s, default_rank);
+			 a.add(s);
+		 }
+		 min = default_rank;
+		 groupings.put(default_rank, a);
+	}
+	
 	/*
 	 * RankingState Constructor. Takes a BeliefState and sets those states to the min rank. Sets remaining possible states to a rank based on the 
 	 * minimum Hamming distance between any min rank state.

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package constants;
+package distance.revision;
 
 /**
  * @author sam_t
