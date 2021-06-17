@@ -11,10 +11,12 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import constants.ArithmeticOperations;
 import constants.Strings;
 import revision.ui.settings.UISettings;
 
@@ -29,11 +31,15 @@ public class ReportPanel extends JPanel {
 	static final int NUM_FIELDS = 5;
 	static final int FORM_COL = 0;
 	static final int RES_COL = 1;
+	static final int OP_COL = 2;
+	static final int WEIGHT_COL = 3;
 	
-	JLabel formula, result;
+	JLabel formula, result, operation, weight;
 	
 	static ArrayList<JTextField> formulae;
 	static ArrayList<JTextField> results;
+	static ArrayList<JComboBox<String>> operations;
+	static ArrayList<JTextField> weights;
 
 	static JButton add_report_action;
 	
@@ -49,6 +55,8 @@ public class ReportPanel extends JPanel {
 		
 		formulae = new ArrayList<JTextField>();
 		results = new ArrayList<JTextField>();
+		operations = new ArrayList<JComboBox<String>>();
+		weights = new ArrayList<JTextField>();
 		
 		Insets leftcol = new Insets(10, 20, 0, 20);
 		Insets rightcol = new Insets(10, 0, 0, 20);
@@ -71,6 +79,22 @@ public class ReportPanel extends JPanel {
         gbc.insets = rightcol;
         gbc.weightx = 1;
         this.add(result, gbc);
+        
+		operation = new JLabel("Operator");
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.insets = rightcol;
+        gbc.weightx = 1;
+        this.add(operation, gbc);
+        
+		weight = new JLabel("Weight");
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.insets = rightcol;
+        gbc.weightx = 1;
+        this.add(weight, gbc);
         
         
         //formulae column
@@ -103,6 +127,35 @@ public class ReportPanel extends JPanel {
             this.add(res, gbc);
         }
 
+        //result column
+        JComboBox<String> op;
+        for (int i = 1; i < NUM_FIELDS+1; i++)
+        {
+        	op = new JComboBox<String>(ArithmeticOperations.operators);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = OP_COL;
+            gbc.gridy = i;
+            gbc.insets = rightcol;
+            gbc.weightx = 1;
+        	
+            operations.add(op);
+            this.add(op, gbc);
+        }
+        
+        //weights column
+        JTextField weight;
+        for (int i = 1; i < NUM_FIELDS+1; i++)
+        {
+        	weight = new JTextField();
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = WEIGHT_COL;
+            gbc.gridy = i;
+            gbc.insets = rightcol;
+            gbc.weightx = 1;
+        	
+            weights.add(weight);
+            this.add(weight, gbc);
+        }
         
         //action button
         add_report_action = new JButton(Strings.report_add_report_action);

@@ -3,6 +3,8 @@
  */
 package distance.revision;
 
+import constants.ArithmeticOperations;
+
 /**
  * @author sam_t
  *
@@ -23,22 +25,22 @@ public class TrustRevisionOperation {
 	 * @return
 	 * 		double: new value produced by the oldvalue, modifier, and the type of operation
 	 */
-	public static double reviseValue(double oldval, double modifier, TrustRevisionOperator op) {
+	public static double reviseValue(double oldval, double modifier, String op) {
 		
 		double val;
 		
 		switch(op)
 		{
-			case ADDITION:
+			case ArithmeticOperations.ADDITION:
 				val = oldval + modifier;
 				break;
-			case SUBTRACTION:
+			case ArithmeticOperations.SUBTRACTION:
 				val = oldval - modifier;
 				break;
-			case MULTIPLICATION:
+			case ArithmeticOperations.MULTIPLICATION:
 				val = oldval * modifier;
 				break;
-			case DIVISION:
+			case ArithmeticOperations.DIVISION:
 				val = oldval / modifier;
 				break;
 			default:

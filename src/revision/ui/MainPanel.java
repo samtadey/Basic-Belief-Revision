@@ -26,7 +26,7 @@ public class MainPanel implements ActionListener {
 	static final int MID_ROW_WEIGHT = 5;
 	static final int BOT_ROW_WEIGHT = 1;
 	
-	static final int GRID_WEIGHT = 4;
+	static final int GRID_WEIGHT = 5;
 	static final int REPORT_WEIGHT = 1;
 	
 	static final int LABEL_W_X = 1;
@@ -46,7 +46,7 @@ public class MainPanel implements ActionListener {
 	
 	public MainPanel() {
 		f = new JFrame(Strings.project_title);
-        f.setSize(1000,1000);
+        f.setSize(1250,1000);
         
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLocationRelativeTo(null); 

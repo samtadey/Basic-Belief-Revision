@@ -2,15 +2,13 @@ package distance;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 import aima.core.logic.common.ParserException;
-import distance.revision.TriangleInequalityOperation;
-import distance.revision.TriangleInequalityOperator;
+import constants.ArithmeticOperations;
+import distance.revision.TriangleInequalityResponse;
 import distance.revision.TrustRevisionOperation;
-import distance.revision.TrustRevisionOperator;
 import language.BeliefState;
 import language.State;
 import language.StateHelper;
@@ -144,11 +142,11 @@ public class DistanceState {
 	 * @return 
 	 * 	ArrayList<String> error messages for any value assignments that do not meet Distance/Reporting constraints
 	 */
-	private ArrayList<String> modByReport(BeliefState b1, BeliefState b2, TrustRevisionOperator trust_op, double mod_value, 
-			TriangleInequalityOperator tri_op) throws Exception {
+	private ArrayList<String> modByReport(BeliefState b1, BeliefState b2, String trust_op, double mod_value, 
+			TriangleInequalityResponse tri_res) throws Exception {
 		
-		State s1, s2;
-		double current_val, new_val;
+		State s1, s2, intermediate;
+		double current_val, new_val, lst_invalid_val;
 		ArrayList<String> errors = new ArrayList<String>();
 		
 		for (int i = 0; i < b1.getBeliefs().size(); i++)
@@ -157,21 +155,27 @@ public class DistanceState {
 			for (int j = 0; j < b2.getBeliefs().size(); j++)
 			{
 				s2 = b2.getBeliefs().get(j);
+				
 				current_val = this.getDistance(s1, s2);
-
 				new_val = TrustRevisionOperation.reviseValue(current_val, mod_value, trust_op);
 				
 				if (current_val != new_val)
 				{
-					if (checkTriangleInequality(this.possible_states, s1, s2, new_val, errors))
+					intermediate = checkTriangleInequality(s1, s2, new_val);
+					//if inter is not null -> the state returned has violated triangle inequality
+					if (intermediate != null)
 					{
-						//wrong
-						System.out.println(tri_op);
-						//new_val is wrong value
+						//get value that violates triangle inequality
+						lst_invalid_val = this.getDistance(s1, intermediate) + this.getDistance(intermediate, s2);
+						//set errors
+						errors.add(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
+								+ intermediate.getState() + " value proposed: " + new_val);
 						//invalid value is (s,t) + (t,u)
-						//new_val = TriangleInequalityOperation.handleTriangleInequality(current_val, new_val, 0.5, tri_op);
-						this.setDistance(s1, s2, new_val);
+						//handle triangle inequality with TriangleInequalityResponse object
+						new_val = tri_res.handleTriangleInequality(current_val, lst_invalid_val);
 					}
+					//set distance value to the return value
+					this.setDistance(s1, s2, new_val);
 				}
 			}
 		}
@@ -183,34 +187,46 @@ public class DistanceState {
 	 * Checks a proposed distance value for triangle inequality among intermediate states
 	 * 
 	 * @returns
-	 * 	boolean indicating whether triangle inequality is violated by the new distance value.
+	 * 	State that violates triangle inequality between the States s and u. 
+	 *  Returns null if triangle inequality is not violated
 	 */
-	private boolean checkTriangleInequality(BeliefState possible_states, State s, State u, double proposed_val, ArrayList<String> errors) {
-		double non_hypot;
+	public State checkTriangleInequality(State s, State u, double proposed_val) {
+		double hypot, edge_val;
+		double a,b,c; //actuals
+		//State tri_ineq = null;
 		
-		for (State t : possible_states.getBeliefs())
+		for (State t : this.possible_states.getBeliefs())
 		{
 			if (!s.equals(t) && !u.equals(t))
 			{
-				//non_hypot = Math.max(this.getDistance(s, t), this.getDistance(t, u));
-				non_hypot = this.getDistance(s, t) + this.getDistance(t, u);
-				if (proposed_val > non_hypot)
-				{
-					errors.add(s.getState() + "/" + u.getState() + " Triangle Inequality Violated by " + t.getState() + " value proposed: " + proposed_val);
-					System.out.println(s.getState() + "/" + u.getState() + " Triangle Inequality Violated by " + t.getState() + " value proposed: " + proposed_val);
-					return false;
-				}
+				a = this.getDistance(s, t);
+				b = this.getDistance(t, u);
+				c = this.getDistance(s, u);
 
+				hypot = a + b;
+				
+				//we are increasing a value
+				if (proposed_val > c)
+				{
+					if (proposed_val > hypot)
+						return t;
+				}
+				else //decreasing a value
+				{		
+					edge_val = proposed_val + a;
+					if (edge_val < b)
+						return t;
+						//return s;
+					edge_val = proposed_val + b;
+					if (edge_val < a)
+						return t;
+					
+				}
 			}
 		}
-		return true;
+		return null;
 	}
 	
-//	private double handleTriangleInequality(double val) {
-//		double new_val = val;
-//		
-//		return new_val;
-//	}
 
 	/*
 	 * Modifies the distance function by the Report.
@@ -221,7 +237,7 @@ public class DistanceState {
 	 * @params
 	 * 	Report r
 	 */
-	public ArrayList<String> addReport(Report r, TriangleInequalityOperator op) throws ParserException {
+	public ArrayList<String> addReport(Report r, String operation, double modifier, TriangleInequalityResponse tri_res) throws ParserException {
 		//convert report to states
 		BeliefState sat_report = r.convertFormToStates(this.vocab);
 		BeliefState unsat_report = new BeliefState();
@@ -238,7 +254,7 @@ public class DistanceState {
 		if (r.getReportedVal() == 0)
 		{
 			try {
-				errors.addAll(modByReport(sat_report, unsat_report, TrustRevisionOperator.SUBTRACTION, 1, op));
+				errors.addAll(modByReport(sat_report, unsat_report, operation, modifier, tri_res));
 			} catch (Exception e) {
 				System.out.println(e);
 			}
@@ -246,7 +262,7 @@ public class DistanceState {
 		else if (r.getReportedVal() == 1)
 		{
 			try {
-				errors.addAll(modByReport(sat_report, unsat_report, TrustRevisionOperator.ADDITION, 1, op));
+				errors.addAll(modByReport(sat_report, unsat_report, operation, modifier, tri_res));
 			} catch (Exception e) {
 				System.out.println(e);
 			}

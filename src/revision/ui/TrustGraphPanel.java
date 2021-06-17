@@ -23,6 +23,7 @@ import constants.Strings;
 import constants.UIToOperatorPairs;
 import distance.DistanceState;
 import distance.revision.TriangleInequalityOperator;
+import distance.revision.TriangleInequalityResponse;
 import language.State;
 import revision.ui.handler.ErrorHandler;
 import revision.ui.handler.TrustGraphHandler;
@@ -126,6 +127,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     	{
     		String triangle_ineq_action;
     		TriangleInequalityOperator op;
+    		TriangleInequalityResponse tri_res;
     		
     		if (distance == null) 
     		{
@@ -136,12 +138,14 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 
     		//Define error collection
     		ArrayList<String> errormsg;
+    		
     		//
-    		//Get 
+    		//Set TriangleInequalityResponse object
     		//
     		try {
     			triangle_ineq_action = ConstraintPanel.button_name;
     			op = UIToOperatorPairs.triangle_ineq.get(triangle_ineq_action);
+    			tri_res = new TriangleInequalityResponse(op, 0.5);
     		} catch (Exception ex) {
     			System.out.println("Problem with radio button pairs");
     			return;
@@ -149,7 +153,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     		//
     		//Add Reports to Trust Graph. Collect any logic errors
     		//
-    		errormsg = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, distance, op);
+    		errormsg = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, ReportPanel.operations, ReportPanel.weights, distance, tri_res);
     		//
     		//set errors to errorpane
     		//
@@ -202,7 +206,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	public void focusLost(FocusEvent e) {
 		
 		int indx, indy;
-		State s1, s2;
+		State s1, s2, inter;
 		Component tbox = e.getComponent();
 		indy = (tbox.getX() / tbox.getWidth()) - 1;
 		indx = (tbox.getY() / tbox.getHeight()) - 1;		
@@ -222,18 +226,31 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 			s2 = distance.getPossibleStates().getBeliefs().get(indy);
 			
 			//if invalid input, reset to previous value
-			if (w < 0)
+			if (w > 0)
 			{
-				grid_text.get(indx).get(indy).setText(prev_box_val);
-				MainPanel.f.validate();
+				inter = distance.checkTriangleInequality(s1, s2, w);
+				if (inter != null)
+				{
+					ErrorHandler.addError("Manual Trust Input", s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
+							+ inter.getState() + " value proposed: " + w);
+				}
+				else
+				{
+					distance.setDistance(s1, s2, w);
+					return;
+				}
 			}
-			else //set input value to distance object
-			{
-				distance.setDistance(s1, s2, w);
-			}
+			else
+				ErrorHandler.addError("Manual Trust Input", "Value " + w + " invalid");
+
+			//if distance not valid, will reset to previous value
+			grid_text.get(indx).get(indy).setText(prev_box_val);
+			//set error
+			MainPanel.f.validate();
+			
 		//if invalid input, reset to previous value
 		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
+			ErrorHandler.addError("Manual Trust Input", ex.getMessage());
 			//addError("Invalid Grid Input");
 			grid_text.get(indx).get(indy).setText(prev_box_val);
 			MainPanel.f.validate();
