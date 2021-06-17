@@ -1,37 +1,48 @@
 package constants;
 
+import distance.revision.TriangleInequalityOperator;
+import distance.revision.TriangleInequalityResponse;
+import language.BeliefState;
+import language.State;
+
 /*
  * The Strings class defines static String values used throughout the project in areas such as UI displays and action control parameters
  */
 public final class Strings {
 
-	//
-	//ParametrizedDiffPanel 
-	//
-	public static final String var_up = "Move Up";
-	public static final String var_down = "Move Down";
+//	//
+//	//ParametrizedDiffPanel 
+//	//
+//	public static final String var_up = "Move Up";
+//	public static final String var_down = "Move Down";
+//	
+//	//
+//	//Distance Choices
+//	//
+//	public static final String hamming = "Hamming";
+//	public static final String w_hamming = "Weighted Hamming";
+//	public static final String para = "Parametrized Difference";
+//	public static final String rand = "Random Distance";
+//	
+//	//
+//	//Input Type Choices
+//	//
+//	
+//	public static final String prop_input = "Propositional Formula";
+//	public static final String state_input = "State Representation";
+//	
+//	
+//	//
+//	//Combo Box selectors
+//	//
+//	public static final String[] distance_types = {hamming, w_hamming, para, rand};
+//	public static final String[] input_types = {prop_input, state_input};
+	
 	
 	//
-	//Distance Choices
+	//Formatting
 	//
-	public static final String hamming = "Hamming";
-	public static final String w_hamming = "Weighted Hamming";
-	public static final String para = "Parametrized Difference";
-	public static final String rand = "Random Distance";
-	
-	//
-	//Input Type Choices
-	//
-	
-	public static final String prop_input = "Propositional Formula";
-	public static final String state_input = "State Representation";
-	
-	
-	//
-	//Combo Box selectors
-	//
-	public static final String[] distance_types = {hamming, w_hamming, para, rand};
-	public static final String[] input_types = {prop_input, state_input};
+	public static final String text_format = "0.00";
 	
 	
 	//
@@ -94,8 +105,26 @@ public final class Strings {
 	public static final String error_revise_no_ranking = "Belief Rankings not set";
 	public static final String error_no_default_rank = "Default rank value not set.";
 	
+	
+	//state error
 	public static final String errorStateNotPossible(String st) {
 		return "State: " + st + " not defined in possible states.";
+	}
+	
+	//report error 
+	public static final String errorReportInputInvalid(int report_num) {
+		return "Report #" + report_num + " Invalid Input";
+	}
+	
+	public static final String errorTriHandleType(TriangleInequalityResponse res, State s1, State s2, BeliefState invalid, double old_val, double new_val, double to_set) {
+		if (res.getOp() == TriangleInequalityOperator.VAL_UNCHANGE)
+			return s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
+				+ invalid.toString() + "value before: " + old_val + " value proposed: " + new_val + " value set: " + old_val;
+		if (res.getOp() == TriangleInequalityOperator.NEXT_AVAILABLE)
+			return s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
+					+ invalid.toString() + "value before: " + old_val + " value proposed: " + new_val + " value set: " + to_set;
+		
+		return "No handler operation found";
 	}
 	
 	//exceptions

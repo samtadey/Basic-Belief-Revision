@@ -7,6 +7,7 @@ import java.util.Set;
 
 import aima.core.logic.common.ParserException;
 import constants.ArithmeticOperations;
+import constants.Strings;
 import distance.revision.TriangleInequalityResponse;
 import distance.revision.TrustRevisionOperation;
 import language.BeliefState;
@@ -145,8 +146,10 @@ public class DistanceState {
 	private ArrayList<String> modByReport(BeliefState b1, BeliefState b2, String trust_op, double mod_value, 
 			TriangleInequalityResponse tri_res) throws Exception {
 		
-		State s1, s2, intermediate;
-		double current_val, new_val, lst_invalid_val;
+		BeliefState invalid;
+		State s1, s2;
+		
+		double current_val, new_val, lst_invalid_val, handled_val;
 		ArrayList<String> errors = new ArrayList<String>();
 		
 		for (int i = 0; i < b1.getBeliefs().size(); i++)
@@ -161,25 +164,85 @@ public class DistanceState {
 				
 				if (current_val != new_val)
 				{
-					intermediate = checkTriangleInequality(s1, s2, new_val);
-					//if inter is not null -> the state returned has violated triangle inequality
-					if (intermediate != null)
+					invalid = checkTriangleInequality(s1, s2, new_val);
+					
+					if (invalid.getBeliefs().size() > 0)
 					{
-						//get value that violates triangle inequality
-						lst_invalid_val = this.getDistance(s1, intermediate) + this.getDistance(intermediate, s2);
-						//set errors
-						errors.add(s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
-								+ intermediate.getState() + " value proposed: " + new_val);
-						//invalid value is (s,t) + (t,u)
-						//handle triangle inequality with TriangleInequalityResponse object
-						new_val = tri_res.handleTriangleInequality(current_val, lst_invalid_val);
+						//since errors were generated
+						//find the value that does not produce any errors
+						if (new_val > current_val)
+							lst_invalid_val = findMaxAvailValue(s1,s2,invalid);
+						else 
+							lst_invalid_val = findMinAvailValue(s1,s2,invalid);
+
+						//value will be set based on tri_res object and available values
+						handled_val = tri_res.handleTriangleInequality(current_val, lst_invalid_val);
+						
+						//set error Triangle Inequality errors
+						//provide information on how it was handled
+						errors.add(Strings.errorTriHandleType(tri_res, s1, s2, invalid, current_val, new_val, handled_val));
+
+						//set new_val to the handled_val
+						new_val = handled_val;
 					}
-					//set distance value to the return value
+					
+					//set if old val not equal to new
 					this.setDistance(s1, s2, new_val);
 				}
 			}
 		}
 		return errors;
+	}
+	
+	/**
+	 * Iterates through all states in the beliefstate that would become invalid by triangle inequality. Produces the max value that 
+	 * satisfies triangle inequality for all states in b
+	 * 
+	 * MinMax
+	 * 
+	 * @param s
+	 * @param u
+	 * @param b
+	 * @return
+	 */
+	private double findMaxAvailValue(State s, State u, BeliefState b) {
+		double min = Double.MAX_VALUE, current;
+		
+		for (State t : b.getBeliefs())
+		{
+			current = this.getDistance(s, t) + this.getDistance(t, u);
+			System.out.print(current + ",");
+			if (current < min)
+				min = current;
+		}
+		System.out.println();
+		
+		return min;
+	}
+	
+	/**
+	 * Desc
+	 * 
+	 * MaxMin
+	 * 
+	 * @param s
+	 * @param u
+	 * @param b
+	 * @return
+	 */
+	private double findMinAvailValue(State s, State u, BeliefState b) {
+		double max = 0, current;
+		
+		for (State t : b.getBeliefs())
+		{
+
+			current = Math.abs(this.getDistance(s, t) - this.getDistance(t, u));
+			System.out.print(current + ",");
+			if (current > max)
+				max = current;
+		}
+		System.out.println();
+		return max;
 	}
 	
 	
@@ -190,7 +253,8 @@ public class DistanceState {
 	 * 	State that violates triangle inequality between the States s and u. 
 	 *  Returns null if triangle inequality is not violated
 	 */
-	public State checkTriangleInequality(State s, State u, double proposed_val) {
+	public BeliefState checkTriangleInequality(State s, State u, double proposed_val) {
+		BeliefState allinvalid = new BeliefState();
 		double hypot, edge_val;
 		double a,b,c; //actuals
 		//State tri_ineq = null;
@@ -209,22 +273,22 @@ public class DistanceState {
 				if (proposed_val > c)
 				{
 					if (proposed_val > hypot)
-						return t;
+						allinvalid.addBelief(t);
 				}
 				else //decreasing a value
 				{		
 					edge_val = proposed_val + a;
 					if (edge_val < b)
-						return t;
+						allinvalid.addBelief(t);
 						//return s;
 					edge_val = proposed_val + b;
 					if (edge_val < a)
-						return t;
+						allinvalid.addBelief(t);
 					
 				}
 			}
 		}
-		return null;
+		return allinvalid;
 	}
 	
 

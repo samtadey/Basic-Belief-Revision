@@ -7,6 +7,8 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -18,6 +20,7 @@ import javax.swing.JTextField;
 
 import constants.ArithmeticOperations;
 import constants.Strings;
+import revision.ui.handler.ErrorHandler;
 import revision.ui.settings.UISettings;
 
 /**
@@ -26,13 +29,15 @@ import revision.ui.settings.UISettings;
  * be used to modify the trust values in the TrustGraphPanel. 
  *
  */
-public class ReportPanel extends JPanel {
+public class ReportPanel extends JPanel implements ActionListener {
 	
 	static final int NUM_FIELDS = 5;
 	static final int FORM_COL = 0;
 	static final int RES_COL = 1;
 	static final int OP_COL = 2;
 	static final int WEIGHT_COL = 3;
+	
+	static final String DEFAULT_WEIGHT_VALUE = "1";
 	
 	JLabel formula, result, operation, weight;
 	
@@ -112,6 +117,23 @@ public class ReportPanel extends JPanel {
             this.add(form, gbc);
         }
         
+
+
+        //operations column
+        JComboBox<String> op;
+        for (int i = 1; i < NUM_FIELDS+1; i++)
+        {
+        	op = new JComboBox<String>(ArithmeticOperations.operators);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = OP_COL;
+            gbc.gridy = i;
+            gbc.insets = rightcol;
+            gbc.weightx = 1;
+        	op.addActionListener(this);
+            operations.add(op);
+            this.add(op, gbc);
+        }
+        
         //result column
         JTextField res;
         for (int i = 1; i < NUM_FIELDS+1; i++)
@@ -122,24 +144,16 @@ public class ReportPanel extends JPanel {
             gbc.gridy = i;
             gbc.insets = rightcol;
             gbc.weightx = 1;
-        	
+            
+        	res.setEditable(false);
+        	try {
+        		res.setText(handleResultValue(i-1));
+        	} catch (Exception ex) {
+        		res.setText("error");
+        	}
+
             results.add(res);
             this.add(res, gbc);
-        }
-
-        //result column
-        JComboBox<String> op;
-        for (int i = 1; i < NUM_FIELDS+1; i++)
-        {
-        	op = new JComboBox<String>(ArithmeticOperations.operators);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.gridx = OP_COL;
-            gbc.gridy = i;
-            gbc.insets = rightcol;
-            gbc.weightx = 1;
-        	
-            operations.add(op);
-            this.add(op, gbc);
         }
         
         //weights column
@@ -152,6 +166,8 @@ public class ReportPanel extends JPanel {
             gbc.gridy = i;
             gbc.insets = rightcol;
             gbc.weightx = 1;
+            
+            weight.setText(DEFAULT_WEIGHT_VALUE);
         	
             weights.add(weight);
             this.add(weight, gbc);
@@ -168,6 +184,62 @@ public class ReportPanel extends JPanel {
         
         add_report_action.addActionListener(graph);
         
+	}
+	
+	
+	/**
+	 * Changes the results textfield value to match the corresponding combobox value.
+	 * Arithmetic operations that increase values return a "1"
+	 * Operations that decrease values return a "0"
+	 * 
+	 * @param idx
+	 * @return String
+	 * @throws Exception if the index is out of bounds  
+	 */
+	private String handleResultValue(int idx) throws Exception {
+		if (idx >= operations.size())
+			throw new Exception("handleResultValue index out of bounds");
+		
+		String operator = (String) operations.get(idx).getSelectedItem();
+		
+		if (operator.equals(ArithmeticOperations.ADDITION)|| operator.equals(ArithmeticOperations.MULTIPLICATION))
+			return "1";
+		else //if (operator == ArithmeticOperations.SUBTRACTION || operator == ArithmeticOperations.DIVISION)
+			return "0";
+	}
+
+	/**
+	 * Changes a results textfield to correspond to the value of the combobox
+	 * Addition, multiplication return 1
+	 * Subtraction, division return 0
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		String action = e.getActionCommand();
+		//System.out.println(action);
+		int i = 0;
+		
+		if (action.equals("comboBoxChanged"))
+		{
+			//iterate through combobox objects until the one that triggered the action
+			//is found
+			for (Object o : operations)
+			{
+				if (e.getSource() == o)
+					break;
+				i++;
+			}
+			
+			//if the combobox is found, update the corresponding result textfield value
+			try {
+				results.get(i).setText(handleResultValue(i));
+			} catch (Exception ex) {
+				ErrorHandler.addError(action, ex.getMessage());
+			}
+		}
+		
+		
 	}
 	
 }

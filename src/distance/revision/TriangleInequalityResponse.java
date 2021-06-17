@@ -38,19 +38,21 @@ public class TriangleInequalityResponse {
 	//positives only right now
 	//if that
 	//there will be much more to the logic of this method
-	public double handleTriangleInequality(double oldval, double invalid) {
-		System.out.println("oldval: " + oldval + ", invalid: " + invalid);
+	public double handleTriangleInequality(double oldval, double next_avail) {
+		//System.out.println("oldval: " + oldval + ", invalid: " + invalid);
 		//definitely not working properly
 		switch (this.op)
 		{
 			case VAL_UNCHANGE:
 				return oldval;
-			case NEXT_VALID:
-				//check that the new value is not less than the previous value
-				if (invalid - this.modifier > oldval)
-					return invalid - this.modifier;
-				else 
-					return oldval;
+			case NEXT_AVAILABLE:
+				return next_avail;
+//			case NEXT_VALID:
+//				//check that the new value is not less than the previous value
+//				if (invalid - this.modifier > oldval)
+//					return invalid - this.modifier;
+//				else 
+//					return oldval;
 			default:
 				return oldval;
 		}

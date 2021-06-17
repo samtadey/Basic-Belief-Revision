@@ -4,18 +4,18 @@
 package revision.ui.handler;
 
 import java.awt.GridBagConstraints;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import aima.core.logic.common.ParserException;
 import constants.PropositionalSymbols;
+import constants.Strings;
 import distance.DistanceState;
 import distance.Report;
-import distance.revision.TriangleInequalityOperator;
 import distance.revision.TriangleInequalityResponse;
 import language.BeliefState;
 import language.State;
@@ -55,9 +55,10 @@ public class TrustGraphHandler {
 		double dist;
 		JTextField tf;
 		BeliefState allstates = distance.getPossibleStates();
-		int grids = allstates.getBeliefs().size();
+		DecimalFormat dc = new DecimalFormat(Strings.text_format);
+		//int grids = allstates.getBeliefs().size();
 		
-		GridBagConstraints gbc = new GridBagConstraints();
+		//GridBagConstraints gbc = new GridBagConstraints();
 		
 		grid.removeAll();
 	
@@ -78,18 +79,16 @@ public class TrustGraphHandler {
     				s1 = allstates.getBeliefs().get(i);
     				s2 = allstates.getBeliefs().get(j);
     				dist = distance.getDistance(s1, s2);
-    				tf = new JTextField(Double.toString(dist));
+    				//decimal formatting
+    				tf = new JTextField(dc.format(dist));
+    				//tf = new JTextField(Double.toString(dist));
     				if (i == j || j > i)
     					tf.setEditable(false);
     				
     				
     				//add listener
     				tf.addFocusListener(grid);
-    				//add distance to data structure
-    				//dist_val[i][j] = dist;
-    				//add to jtext array // this box maps to the distance array
     				grid_text.get(i).add(tf);
-    				//add to ui
     				grid.add(tf);
     			}
     		}
@@ -129,7 +128,7 @@ public class TrustGraphHandler {
 		//3. record error messages
 		for (int i = 0; i < t_formula.size(); i++)
 		{
-			if (validateReportInput(t_formula.get(i), t_result.get(i)))
+			if (validateReportInput(t_formula.get(i), t_result.get(i), t_weights.get(i), distance.getVocab()))
 			{
 				try {
 					r = new Report(t_formula.get(i).getText(), Integer.parseInt(t_result.get(i).getText()));
@@ -144,12 +143,11 @@ public class TrustGraphHandler {
 			}
 			else 
 			{
-				//if both fields are empty, do not indicate an error, since there is none. 
-				if ( (t_formula.get(i) == null && t_result.get(i) != null) || (t_formula.get(i) != null && t_result.get(i) == null) )
-				{
-					int report_num = i+1;
-					errormsg.add("Report:" + report_num + " Invalid Input");
-				}
+				//if formula is empty, do not consider this report an 'error'.
+				//this is just a report not to be considered
+				///if ( (t_formula.get(i) == null && t_result.get(i) != null) || (t_formula.get(i) != null && t_result.get(i) == null) )
+				if (!t_formula.get(i).getText().isEmpty())
+					errormsg.add(Strings.errorReportInputInvalid(i+1));
 			}
 		}
 		
@@ -190,9 +188,16 @@ public class TrustGraphHandler {
 	 * @returns
 	 * 		boolean: result of validation
 	 */
-	private static boolean validateReportInput(JTextField t_formula, JTextField t_result) {
+	private static boolean validateReportInput(JTextField t_formula, JTextField t_result, JTextField t_weight, Set<Character> vocab) {
 		String res_char, form_string;
 		char symbol;
+		
+		//
+		//if formula empty, not valid report
+		//
+		if (t_formula.getText().isEmpty())
+			return false;
+		
 		
 		//
 		//Validate that result is one character and either 0 or 1
@@ -204,6 +209,15 @@ public class TrustGraphHandler {
 			return false;
 		
 		//
+		//Validate weight is a double
+		//
+		try {
+			Double.parseDouble(t_weight.getText());
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		
+		//
 		//Validate that formula 
 		//
 		form_string = t_formula.getText().trim();
@@ -212,6 +226,11 @@ public class TrustGraphHandler {
 		for (int i = 0; i < form_string.length(); i++)
 		{
 			symbol = form_string.charAt(i);
+			//if symbol alphabetic, but is not contained in the vocab, is not valid 
+			if (Character.isAlphabetic(symbol) && !vocab.contains(symbol))
+				return false;
+			
+			//if not a prop variable and not a defined prop symbol, not valid
 			if (!Character.isAlphabetic(symbol) && !PropositionalSymbols.symbols.contains(Character.toString(symbol)))
 				return false;
 		}

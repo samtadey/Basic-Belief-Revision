@@ -24,6 +24,7 @@ import constants.UIToOperatorPairs;
 import distance.DistanceState;
 import distance.revision.TriangleInequalityOperator;
 import distance.revision.TriangleInequalityResponse;
+import language.BeliefState;
 import language.State;
 import revision.ui.handler.ErrorHandler;
 import revision.ui.handler.TrustGraphHandler;
@@ -206,7 +207,8 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	public void focusLost(FocusEvent e) {
 		
 		int indx, indy;
-		State s1, s2, inter;
+		State s1, s2;
+		BeliefState invalid;
 		Component tbox = e.getComponent();
 		indy = (tbox.getX() / tbox.getWidth()) - 1;
 		indx = (tbox.getY() / tbox.getHeight()) - 1;		
@@ -228,11 +230,11 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 			//if invalid input, reset to previous value
 			if (w > 0)
 			{
-				inter = distance.checkTriangleInequality(s1, s2, w);
-				if (inter != null)
+				invalid = distance.checkTriangleInequality(s1, s2, w);
+				if (invalid.getBeliefs().size() > 0)
 				{
 					ErrorHandler.addError("Manual Trust Input", s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
-							+ inter.getState() + " value proposed: " + w);
+							+ invalid.toString() + " value proposed: " + w);
 				}
 				else
 				{
