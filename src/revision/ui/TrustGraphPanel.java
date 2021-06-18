@@ -21,9 +21,12 @@ import javax.swing.JTextField;
 
 import constants.Strings;
 import constants.UIToOperatorPairs;
+import distance.DistanceMap;
 import distance.DistanceState;
 import distance.revision.TriangleInequalityOperator;
 import distance.revision.TriangleInequalityResponse;
+import distance.revision.TriangleInequalityResponseNextValid;
+import distance.revision.TriangleInequalityResponseNoChange;
 import language.BeliefState;
 import language.State;
 import revision.ui.handler.ErrorHandler;
@@ -99,7 +102,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     			//validate vocab?
     			
             	distance = new DistanceState(vars);
-            	grids = distance.getPossibleStates().getBeliefs().size();
+            	grids = distance.getMap().getPossibleStates().getBeliefs().size();
             	
             	//
             	//Init/Reset Grid JTextArea's
@@ -126,16 +129,12 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     	}
     	else if (s.equals(Strings.report_add_report_action))
     	{
-    		String triangle_ineq_action;
-    		TriangleInequalityOperator op;
-    		TriangleInequalityResponse tri_res;
+    		//String triangle_ineq_action;
+    		//TriangleInequalityOperator op;
+    		TriangleInequalityResponse tri_res = ConstraintPanel.tri_res;
     		
-    		if (distance == null) 
-    		{
-    			//set error
-				ErrorHandler.addError(Strings.report_add_report_action, Strings.action_gen_trust_action, Strings.error_gen_trust_prereq);
+    		if (!validMembers(distance, tri_res))
     			return;
-    		}
 
     		//Define error collection
     		ArrayList<String> errormsg;
@@ -143,14 +142,25 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     		//
     		//Set TriangleInequalityResponse object
     		//
-    		try {
-    			triangle_ineq_action = ConstraintPanel.button_name;
-    			op = UIToOperatorPairs.triangle_ineq.get(triangle_ineq_action);
-    			tri_res = new TriangleInequalityResponse(op, 0.5);
-    		} catch (Exception ex) {
-    			System.out.println("Problem with radio button pairs");
-    			return;
-    		}
+//    		try {
+//    			triangle_ineq_action = ConstraintPanel.button_name;
+//    			op = UIToOperatorPairs.triangle_ineq.get(triangle_ineq_action);
+//    			
+//    			switch (op) {
+//    				case NEXT_VALID: 
+//    					System.out.println("next valid");
+//    					tri_res = new TriangleInequalityResponseNextValid(op);
+//    					break;
+//    				default:
+//    					System.out.println("no change");
+//    					tri_res = new TriangleInequalityResponseNoChange(op);
+//    			}
+//    			
+//    			//tri_res = new TriangleInequalityResponse(op);
+//    		} catch (Exception ex) {
+//    			System.out.println("Problem with radio button pairs");
+//    			return;
+//    		}
     		//
     		//Add Reports to Trust Graph. Collect any logic errors
     		//
@@ -163,7 +173,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
         	//
     		//Reset JTextAreas in grid before rebuild
     		//
-    		grids = distance.getPossibleStates().getBeliefs().size();
+    		grids = distance.getMap().getPossibleStates().getBeliefs().size();
     		grid_text = TrustGraphHandler.resetGridItems(grids);
     		//
     		//Rebuild Matrix with updated trust values
@@ -205,10 +215,13 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	 */
 	@Override
 	public void focusLost(FocusEvent e) {
-		
 		int indx, indy;
+		double upd_dist,current_dist, new_val;
 		State s1, s2;
-		BeliefState invalid;
+		//BeliefState invalid;
+		TriangleInequalityResponse tri_res;
+		ArrayList<String> errors = new ArrayList<String>();
+		
 		Component tbox = e.getComponent();
 		indy = (tbox.getX() / tbox.getWidth()) - 1;
 		indx = (tbox.getY() / tbox.getHeight()) - 1;		
@@ -217,49 +230,87 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 		System.out.print("Index: " + indx + " " + indy + " ");		
 		
 		//check whether input could be a double
-		double w;
 		try {
-			w = Double.parseDouble(grid_text.get(indx).get(indy).getText());
-			
-			System.out.println("Value: " + w);
+			new_val = Double.parseDouble(grid_text.get(indx).get(indy).getText());
+			System.out.println("Value: " + new_val);
 			//this works because its all in order
-
-			s1 = distance.getPossibleStates().getBeliefs().get(indx);
-			s2 = distance.getPossibleStates().getBeliefs().get(indy);
+			s1 = distance.getMap().getPossibleStates().getBeliefs().get(indx);
+			s2 = distance.getMap().getPossibleStates().getBeliefs().get(indy);
 			
 			//if invalid input, reset to previous value
-			if (w > 0)
+			if (new_val > 0)
 			{
-				invalid = distance.checkTriangleInequality(s1, s2, w);
-				if (invalid.getBeliefs().size() > 0)
-				{
-					ErrorHandler.addError("Manual Trust Input", s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
-							+ invalid.toString() + " value proposed: " + w);
-				}
-				else
-				{
-					distance.setDistance(s1, s2, w);
-					return;
-				}
+				tri_res = ConstraintPanel.tri_res;
+				
+				//checks important member objects are not null
+				//sets error messages if null
+	    		if (!validMembers(distance, tri_res))
+	    			return;
+				
+	    		current_dist = distance.getMap().getDistance(s1, s2);
+				distance.setMapMember(s1, s2, current_dist, new_val, tri_res, errors);
+				//newly calculated distance
+				upd_dist = distance.getMap().getDistance(s1, s2);
+				
+				//set new value
+				//grid_text.get(indx).get(indy).setText(Double.toString(upd_dist));
+				grid_text.get(indx).get(indy).setText(TrustGraphHandler.setFormattedText(upd_dist));
+				//set errors to pane
+				ErrorHandler.addErrorGroup(Strings.action_trust_graph_manual, errors);
 			}
 			else
-				ErrorHandler.addError("Manual Trust Input", "Value " + w + " invalid");
-
-			//if distance not valid, will reset to previous value
-			grid_text.get(indx).get(indy).setText(prev_box_val);
-			//set error
-			MainPanel.f.validate();
+			{
+				resetManualInputTarget(indx,indy,Strings.action_trust_graph_manual, "Value " + new_val + " invalid");
+			}
 			
 		//if invalid input, reset to previous value
 		} catch (Exception ex) {
-			ErrorHandler.addError("Manual Trust Input", ex.getMessage());
-			//addError("Invalid Grid Input");
-			grid_text.get(indx).get(indy).setText(prev_box_val);
-			MainPanel.f.validate();
+			resetManualInputTarget(indx,indy,Strings.action_trust_graph_manual,ex.getMessage());
 		}
 	}
 
 
+	/**
+	 * The resetManualInputTarget resets a trust graph panel that has had invalid input entered into it.
+	 * 
+	 * @param indx x-index of the panel 
+	 * @param indy y-index of the panel
+	 * @param action action taken to display in the error pane
+	 * @param error_message error message to display in the error pane
+	 */
+	private void resetManualInputTarget(int indx, int indy, String action, String error_message) {
+		//adds message to error pane
+		ErrorHandler.addError(action, error_message);
+		//resets the text to the previous value
+		grid_text.get(indx).get(indy).setText(prev_box_val);
+	}
+	
+	/**
+	 * Validates the DistanceState and TriangleInequalityResponse objects
+	 * If either object is null, returns false and sets the ErrorPane
+	 * 
+	 * @param distance DistanceState object
+	 * @param tri_res TriangleInequalityResponse object
+	 * @return boolean indicating whether any of the object parameters are null
+	 */
+	private boolean validMembers(DistanceState distance, TriangleInequalityResponse tri_res) {
+		boolean isvalid = true;
+		
+		if (distance == null) 
+		{
+			//set error
+			ErrorHandler.addError(Strings.report_add_report_action, Strings.report_add_report_action, Strings.error_gen_trust_prereq);
+			isvalid = false;
+		}
+		
+		if (tri_res == null)
+		{
+			ErrorHandler.addError(Strings.report_add_report_action, Strings.report_add_report_action, Strings.error_constraint_tri_eq);
+			isvalid = false;
+		}
+		
+		return isvalid;
+	}
 
 
 }

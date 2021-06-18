@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 
 import constants.PropositionalSymbols;
 import constants.Strings;
+import distance.DistanceMap;
 import distance.DistanceState;
 import distance.Report;
 import distance.revision.TriangleInequalityResponse;
@@ -31,12 +32,18 @@ import revision.ui.TrustGraphPanel;
  */
 public class TrustGraphHandler {
 
+	static DecimalFormat dc = new DecimalFormat(Strings.text_format);
+	
 	public static ArrayList<ArrayList<JTextField>> resetGridItems(int grids) {
 		ArrayList<ArrayList<JTextField>> grid_text = new ArrayList<ArrayList<JTextField>>();
     	for (int i = 0; i < grids; i++)
     		grid_text.add(new ArrayList<JTextField>());
     	
     	return grid_text;
+	}
+	
+	public static String setFormattedText(double val) {
+		return dc.format(val);
 	}
 	
 	/*
@@ -54,8 +61,8 @@ public class TrustGraphHandler {
 		State s1, s2;
 		double dist;
 		JTextField tf;
-		BeliefState allstates = distance.getPossibleStates();
-		DecimalFormat dc = new DecimalFormat(Strings.text_format);
+		BeliefState allstates = distance.getMap().getPossibleStates();
+		//DecimalFormat dc = new DecimalFormat(Strings.text_format);
 		//int grids = allstates.getBeliefs().size();
 		
 		//GridBagConstraints gbc = new GridBagConstraints();
@@ -78,9 +85,9 @@ public class TrustGraphHandler {
     			{
     				s1 = allstates.getBeliefs().get(i);
     				s2 = allstates.getBeliefs().get(j);
-    				dist = distance.getDistance(s1, s2);
+    				dist = distance.getMap().getDistance(s1, s2);
     				//decimal formatting
-    				tf = new JTextField(dc.format(dist));
+    				tf = new JTextField(setFormattedText(dist));
     				//tf = new JTextField(Double.toString(dist));
     				if (i == j || j > i)
     					tf.setEditable(false);
@@ -128,7 +135,7 @@ public class TrustGraphHandler {
 		//3. record error messages
 		for (int i = 0; i < t_formula.size(); i++)
 		{
-			if (validateReportInput(t_formula.get(i), t_result.get(i), t_weights.get(i), distance.getVocab()))
+			if (validateReportInput(t_formula.get(i), t_result.get(i), t_weights.get(i), distance.getMap().getVocab()))
 			{
 				try {
 					r = new Report(t_formula.get(i).getText(), Integer.parseInt(t_result.get(i).getText()));

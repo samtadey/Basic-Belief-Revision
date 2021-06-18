@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import constants.Strings;
+import distance.DistanceMap;
 import distance.DistanceState;
 import distance.RankingState;
 import language.BeliefState;
@@ -187,7 +189,8 @@ public class BeliefPanel extends JPanel implements ActionListener {
 		String bel_string, sent_string, combo_item;
 		RankingState bel_rank = null, updated_rank;
 		BeliefState sent_state, bel_state;
-		DistanceState dist;
+		DistanceMap dist;
+		Set<Character> vocab;
 		
         //determines which Panel to display in the Ranking Panel
 		//Based on the combobox selection
@@ -210,14 +213,16 @@ public class BeliefPanel extends JPanel implements ActionListener {
 			}
 			
 			try {
+				dist = TrustGraphPanel.distance.getMap();
+				vocab = dist.getVocab();
 				
 				combo_item = (String) belief_input.getSelectedItem();
 				//check ranking combobox for type of input
 				if (combo_item.equals(Strings.belief_combo_hamming))
 				{
 					bel_string = RankingPanel.bel.getText();
-					bel_state = InputTranslation.convertPropInput(bel_string, TrustGraphPanel.distance.getVocab());
-					bel_rank = new RankingState(bel_state, InputTranslation.setToArr(TrustGraphPanel.distance.getVocab()));
+					bel_state = InputTranslation.convertPropInput(bel_string, vocab);
+					bel_rank = new RankingState(bel_state, InputTranslation.setToArr(vocab));
 				}
 				else if (combo_item.equals(Strings.belief_combo_file))
 				{
@@ -232,8 +237,8 @@ public class BeliefPanel extends JPanel implements ActionListener {
 				}
 				
 				sent_string = sent.getText();
-				sent_state = InputTranslation.convertPropInput(sent_string, TrustGraphPanel.distance.getVocab());
-				dist = TrustGraphPanel.distance;
+				sent_state = InputTranslation.convertPropInput(sent_string, vocab);
+
 				updated_rank = BeliefRevision.reviseStates(bel_rank, sent_state, dist);
 				
 				//take updated ranking function

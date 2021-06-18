@@ -1,137 +1,55 @@
+/**
+ * 
+ */
 package distance;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import aima.core.logic.common.ParserException;
-import constants.ArithmeticOperations;
 import constants.Strings;
 import distance.revision.TriangleInequalityResponse;
 import distance.revision.TrustRevisionOperation;
 import language.BeliefState;
 import language.State;
-import language.StateHelper;
 
 /**
  * @author sam_t
  *
  */
 public class DistanceState {
+
+	private DistanceMap map;
 	
-	public static final double DEFAULT_VAL = 2.0;
-	
-	private Set<Character> vocab;
-	private BeliefState possible_states;
-	private HashMap<State, HashMap<State, Double>> distances;
-	
-	/*
-	 * Constructor for the DistanceState object
-	 * Initiates all State combinations in the distances member, and sets all the distances to 0.0
-	 * 
-	 * @params
-	 * 	Set<Character> representing the propositional variables
-	 */
 	public DistanceState(Set<Character> vocab) {
-		this.vocab = vocab;
-		//must initialize all possible states with a distance of 0
-		//not easy to generate states as strings, thats why they are 
-		possible_states = new BeliefState(StateHelper.generateStates(vocab.size()));
-		HashMap<State, Double> inner;
-		//state combinations and set distances
+		this.map = new DistanceMap(vocab);
+	}
+
+	public DistanceMap getMap() {
+		return map;
+	}
+
+	public void setMap(DistanceMap map) {
+		this.map = map;
+	}
+	
+	public void setMapMember(State s1, State s2, double current_val, double new_val, TriangleInequalityResponse tri_res, ArrayList<String> errors) {
+		BeliefState invalid;
 		
-		distances = new HashMap<State, HashMap<State, Double>>();
-		for (int i = 0; i < possible_states.getBeliefs().size() - 1; i++)
-		{
-			inner = new HashMap<State, Double>();
-			for (int j = i+1; j < possible_states.getBeliefs().size(); j++)	
-				inner.put(possible_states.getBeliefs().get(j), DEFAULT_VAL);
-			distances.put(possible_states.getBeliefs().get(i), inner);
-		}
-	}
-	
-	/*
-	 * Getter function for the vocab member variable
-	 * 
-	 * @returns 
-	 * 	Set<Character> as the propositional characters
-	 */
-	public Set<Character> getVocab() {
-		return this.vocab;
-	}
-	
-	/*
-	 * Getter function for the distances member variable
-	 * 
-	 * @returns
-	 * 	distances as a HashMap<State, HashMap<State, Double>>
-	 */
-	public HashMap<State, HashMap<State, Double>> getDistances() {
-		return this.distances;
-	}
-	
-	
-	public BeliefState getPossibleStates() {
-		return this.possible_states;
-	}
-	/*
-	 * Getter function for the distance between two state objects
-	 * 
-	 * @params
-	 * 	State s1
-	 * 	State s2
-	 * @returns
-	 * 	The distance between the two parameter states as a double.
-	 * 	If the states are equal, the distance returned is 0.
-	 */
-	public double getDistance(State s1, State s2) throws NullPointerException {
-		
-		int result = s1.compareTo(s2);
-		//do a string compare
-		//smaller states will always be the first argument
-		if (result < 0)
-			return this.distances.get(s1).get(s2);
-		//first state is larger, therefore we must switch order
-		else if (result > 0)
-			return this.distances.get(s2).get(s1);
-		
-		//states are equal
-		return 0.0;
-	}
-	
-	/*
-	 * Setter function for the distance between two state objects
-	 * 
-	 * @params
-	 * 	State s1
-	 * 	State s2
-	 *  double dist as the distance between s1 and s2
-	 * 
-	 * @throws
-	 * 
-	 */
-	public void setDistance(State s1, State s2, double dist) throws NullPointerException {
-		
-		if (dist < 0)
-		{
-			//should I set the distance TO zero in this case?
-			//throw new DistanceStateException("Attempting to set " + s1.getState() + "/" + s2.getState() + " below zero");
-			System.out.println("Attempting to set " + s1.getState() + "/" + s2.getState() + " below zero: No Change");
+		if (current_val == new_val)
 			return;
-		}
 		
-		int result = s1.compareTo(s2);
+		//check triangle inequality validity given the naive value generated
+		invalid = checkTriangleInequality(s1, s2, new_val);
 		
-		if (result < 0)
-			this.distances.get(s1).replace(s2, dist);
-		//first state is larger, therefore we must switch order
-		else if (result > 0)
-			this.distances.get(s2).replace(s1, dist);
+		//if any invalid states have been found
+		//the new_val must be changed to satisfy triangle inequality
+		if (invalid.getBeliefs().size() > 0)
+			new_val = calcDistanceValueTriIneq(s1,s2,invalid,current_val,new_val,tri_res,errors);
 		
-		//if states are equal to nothign
+		//set the map with the new value
+		map.setDistance(s1, s2, new_val);
 	}
-	
 	
 	/*
 	 * The function iterates through all combinations of the BeliefStates and modifies their distance values by the mod_value parameter
@@ -146,10 +64,8 @@ public class DistanceState {
 	private ArrayList<String> modByReport(BeliefState b1, BeliefState b2, String trust_op, double mod_value, 
 			TriangleInequalityResponse tri_res) throws Exception {
 		
-		BeliefState invalid;
 		State s1, s2;
-		
-		double current_val, new_val, lst_invalid_val, handled_val;
+		double current_val, new_val;
 		ArrayList<String> errors = new ArrayList<String>();
 		
 		for (int i = 0; i < b1.getBeliefs().size(); i++)
@@ -158,91 +74,46 @@ public class DistanceState {
 			for (int j = 0; j < b2.getBeliefs().size(); j++)
 			{
 				s2 = b2.getBeliefs().get(j);
-				
-				current_val = this.getDistance(s1, s2);
+				//current value in the grid
+				current_val = map.getDistance(s1, s2);
+				//naive value assignment
+				//assigns the value to the user designated value
 				new_val = TrustRevisionOperation.reviseValue(current_val, mod_value, trust_op);
-				
-				if (current_val != new_val)
-				{
-					invalid = checkTriangleInequality(s1, s2, new_val);
-					
-					if (invalid.getBeliefs().size() > 0)
-					{
-						//since errors were generated
-						//find the value that does not produce any errors
-						if (new_val > current_val)
-							lst_invalid_val = findMaxAvailValue(s1,s2,invalid);
-						else 
-							lst_invalid_val = findMinAvailValue(s1,s2,invalid);
-
-						//value will be set based on tri_res object and available values
-						handled_val = tri_res.handleTriangleInequality(current_val, lst_invalid_val);
-						
-						//set error Triangle Inequality errors
-						//provide information on how it was handled
-						errors.add(Strings.errorTriHandleType(tri_res, s1, s2, invalid, current_val, new_val, handled_val));
-
-						//set new_val to the handled_val
-						new_val = handled_val;
-					}
-					
-					//set if old val not equal to new
-					this.setDistance(s1, s2, new_val);
-				}
+				//constraint controlled setter function for the DistanceState
+				//sets the distance value based on current constraints and constraint handlers
+				this.setMapMember(s1, s2, current_val, new_val, tri_res, errors);
 			}
 		}
+		//return error messages
 		return errors;
 	}
 	
 	/**
-	 * Iterates through all states in the beliefstate that would become invalid by triangle inequality. Produces the max value that 
-	 * satisfies triangle inequality for all states in b
 	 * 
-	 * MinMax
-	 * 
-	 * @param s
-	 * @param u
-	 * @param b
+	 * @param s1
+	 * @param s2
+	 * @param invalid
+	 * @param current_val
+	 * @param new_val
+	 * @param tri_res
+	 * @param errors
 	 * @return
 	 */
-	private double findMaxAvailValue(State s, State u, BeliefState b) {
-		double min = Double.MAX_VALUE, current;
+	private double calcDistanceValueTriIneq(State s1, State s2, BeliefState invalid, double current_val, double new_val, 
+			TriangleInequalityResponse tri_res, ArrayList<String> errors) {
 		
-		for (State t : b.getBeliefs())
-		{
-			current = this.getDistance(s, t) + this.getDistance(t, u);
-			System.out.print(current + ",");
-			if (current < min)
-				min = current;
-		}
-		System.out.println();
-		
-		return min;
-	}
-	
-	/**
-	 * Desc
-	 * 
-	 * MaxMin
-	 * 
-	 * @param s
-	 * @param u
-	 * @param b
-	 * @return
-	 */
-	private double findMinAvailValue(State s, State u, BeliefState b) {
-		double max = 0, current;
-		
-		for (State t : b.getBeliefs())
-		{
+		double handled_val;
 
-			current = Math.abs(this.getDistance(s, t) - this.getDistance(t, u));
-			System.out.print(current + ",");
-			if (current > max)
-				max = current;
-		}
-		System.out.println();
-		return max;
+		//value will be set based on tri_res object and available values
+		handled_val = tri_res.handleTriangleInequality(s1, s2, invalid, this.map, current_val, new_val);
+		
+		//set error Triangle Inequality errors
+		//provide information on how it was handled
+		errors.add(Strings.errorTriHandleType(tri_res, s1, s2, invalid, current_val, new_val, handled_val));
+
+		//set new_val to the handled_val
+		//new_val = handled_val;
+		return handled_val;
 	}
 	
 	
@@ -253,19 +124,19 @@ public class DistanceState {
 	 * 	State that violates triangle inequality between the States s and u. 
 	 *  Returns null if triangle inequality is not violated
 	 */
-	public BeliefState checkTriangleInequality(State s, State u, double proposed_val) {
+	private BeliefState checkTriangleInequality(State s, State u, double proposed_val) {
 		BeliefState allinvalid = new BeliefState();
 		double hypot, edge_val;
 		double a,b,c; //actuals
 		//State tri_ineq = null;
 		
-		for (State t : this.possible_states.getBeliefs())
+		for (State t : map.getPossibleStates().getBeliefs())
 		{
 			if (!s.equals(t) && !u.equals(t))
 			{
-				a = this.getDistance(s, t);
-				b = this.getDistance(t, u);
-				c = this.getDistance(s, u);
+				a = map.getDistance(s, t);
+				b = map.getDistance(t, u);
+				c = map.getDistance(s, u);
 
 				hypot = a + b;
 				
@@ -303,13 +174,13 @@ public class DistanceState {
 	 */
 	public ArrayList<String> addReport(Report r, String operation, double modifier, TriangleInequalityResponse tri_res) throws ParserException {
 		//convert report to states
-		BeliefState sat_report = r.convertFormToStates(this.vocab);
+		BeliefState sat_report = r.convertFormToStates(map.getVocab());
 		BeliefState unsat_report = new BeliefState();
 		ArrayList<String> errors = new ArrayList<String>();
 		
 		//BeliefState unsat_report = //add all but sat_report;
 		//if does not contain state in sat, must be a member of the unsat group
-		for (State state: this.possible_states.getBeliefs())
+		for (State state: map.getPossibleStates().getBeliefs())
 		{
 			if (!sat_report.contains(state))
 				unsat_report.addBelief(state);
@@ -337,51 +208,4 @@ public class DistanceState {
 	}
 	
 	
-	/*
-	 * Prints state combinations and their distances to the console
-	 */
-	public void stateToConsole() {
-		for (Map.Entry<State, HashMap<State, Double>> entry: distances.entrySet())
-		{
-			State key = entry.getKey();
-			for (Map.Entry<State, Double> inner: entry.getValue().entrySet())
-			{
-				System.out.println(key.getState() + " " + inner.getKey().getState() + " =  " + inner.getValue());
-			}
-		}
-	}
-	
-	
-//	public static void main(String[] args) {
-////		Set<Character> vocab = new LinkedHashSet<Character>();
-////		vocab.add('A');
-////		vocab.add('B');
-////		vocab.add('C');
-////		
-//////		
-//////		State s1 = new State("000");
-//////		State s2 = new State("001");
-//////		State s3 = new State("111");
-//////		State s4 = new State("101");
-//////		State s5 = new State("010");
-//////		
-////		DistanceState dist = new DistanceState(vocab);	
-////		Report r = new Report("A & B", 0);
-////		Report r2 = new Report("A & B", 1);
-////		dist.stateToConsole();
-////		dist.addReport(r);
-////		System.out.println("After Adding Report");
-////		dist.stateToConsole();
-////		dist.addReport(r2);
-////		System.out.println("After Adding Report 2");
-////		dist.stateToConsole();
-////		
-////		dist.stateToConsole();
-//	}
-//
-	
-	
 }
-
-
-

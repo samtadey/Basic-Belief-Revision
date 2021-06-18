@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.Set;
 
 import aima.core.logic.common.ParserException;
-import distance.DistanceState;
+import distance.DistanceMap;
 import distance.RankingState;
 import language.BeliefState;
 import language.State;
@@ -117,7 +117,7 @@ public class BeliefRevision {
      * object are compared for the minimum distance. States in the sentence object with the minimum distance to any State in teh beliefs
      * object are stored and returned by the method.
      */
-    public static BeliefState reviseStates(BeliefState beliefs, BeliefState sentence, DistanceState d) {
+    public static BeliefState reviseStates(BeliefState beliefs, BeliefState sentence, DistanceMap d) {
     	
     	if (beliefs.getBeliefs().size() == 0 || sentence.getBeliefs().size() == 0)
     		return sentence;
@@ -160,7 +160,7 @@ public class BeliefRevision {
      * The distance between two states is defined by the Hamming Distance between two States
      * When the State sentence_state has been compared to all states in the belief state, the minimum distance is returned.
      */
-    private static double findStateMinDistance(BeliefState beliefs, State sentence_state, DistanceState d) {
+    private static double findStateMinDistance(BeliefState beliefs, State sentence_state, DistanceMap d) {
     	double min, curr;
     	
     	if (beliefs.getBeliefs().size() < 1)
@@ -209,7 +209,7 @@ public class BeliefRevision {
      * @return
      * 		RankingState as the result of belief revision
      */
-    public static RankingState reviseStates(RankingState beliefs, BeliefState sentence, DistanceState distance) {
+    public static RankingState reviseStates(RankingState beliefs, BeliefState sentence, DistanceMap distance) {
     	
     	//return a reanking state?
     	GeneralRevisionScore score, temp;
@@ -240,7 +240,7 @@ public class BeliefRevision {
      * @return
      * 		GeneralRevisionScore as the score given to each state 
      */
-    private static GeneralRevisionScore scoreStates(RankingState beliefs, State sentence, DistanceState distance) {
+    private static GeneralRevisionScore scoreStates(RankingState beliefs, State sentence, DistanceMap distance) {
     	double min, score, dist;
     	int rank;
     	GeneralRevisionScore scoreset = new GeneralRevisionScore(beliefs.getValidStates());

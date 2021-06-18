@@ -87,6 +87,11 @@ public final class Strings {
 	public static final String report_add_report_action = "Add Reports";
 	
 	//
+	//Trust Graph
+	//
+	public static final String action_trust_graph_manual = "Manual Trust Input";
+	
+	//
 	//Constraints Panel
 	//
 	public static final String constr_title = "Triangle Inequality Response";
@@ -104,7 +109,7 @@ public final class Strings {
 	public static final String error_bad_vocab_input = "Incorrect Propositional Vocabulary Input Format";
 	public static final String error_revise_no_ranking = "Belief Rankings not set";
 	public static final String error_no_default_rank = "Default rank value not set.";
-	
+	public static final String error_constraint_tri_eq = "Triangle Inequality Handler Not Set";
 	
 	//state error
 	public static final String errorStateNotPossible(String st) {
@@ -117,10 +122,10 @@ public final class Strings {
 	}
 	
 	public static final String errorTriHandleType(TriangleInequalityResponse res, State s1, State s2, BeliefState invalid, double old_val, double new_val, double to_set) {
-		if (res.getOp() == TriangleInequalityOperator.VAL_UNCHANGE)
+		if (res.getOp() == TriangleInequalityOperator.NO_CHANGE)
 			return s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
 				+ invalid.toString() + "value before: " + old_val + " value proposed: " + new_val + " value set: " + old_val;
-		if (res.getOp() == TriangleInequalityOperator.NEXT_AVAILABLE)
+		if (res.getOp() == TriangleInequalityOperator.NEXT_VALID)
 			return s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
 					+ invalid.toString() + "value before: " + old_val + " value proposed: " + new_val + " value set: " + to_set;
 		

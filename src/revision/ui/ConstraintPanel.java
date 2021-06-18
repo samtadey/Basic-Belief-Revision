@@ -15,6 +15,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import constants.Strings;
+import distance.revision.TriangleInequalityOperator;
+import distance.revision.TriangleInequalityResponse;
+import distance.revision.TriangleInequalityResponseNextValid;
+import distance.revision.TriangleInequalityResponseNoChange;
 import revision.ui.settings.UISettings;
 
 /**
@@ -30,10 +34,11 @@ public class ConstraintPanel extends JPanel implements ActionListener {
 	
 	static String button_name;
 	
-	JRadioButton val_un, next_avail;
-	JTextField next_avail_text;
-	
+	static JRadioButton val_un, next_avail;
+	//JTextField next_avail_text;
 	ButtonGroup group;
+	
+	static TriangleInequalityResponse tri_res;
 
 	public ConstraintPanel() {
 		
@@ -46,6 +51,8 @@ public class ConstraintPanel extends JPanel implements ActionListener {
         val_un = new JRadioButton(Strings.constr_value_unchange);
         //default selected
         val_un.setSelected(true);
+        tri_res = new TriangleInequalityResponseNoChange(TriangleInequalityOperator.NO_CHANGE);
+        
         button_name = val_un.getActionCommand();
         
         gbc.fill = GridBagConstraints.NONE;
@@ -67,15 +74,15 @@ public class ConstraintPanel extends JPanel implements ActionListener {
         this.add(next_avail, gbc);
         
         
-        next_avail_text = new JTextField(5);
-        next_avail_text.setEditable(false);
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.insets = new Insets(0, 20, 0, 20);
-        gbc.weightx = 1;
-        //gbc.weighty = 1;
-        this.add(next_avail_text, gbc);
+//        next_avail_text = new JTextField(5);
+//        next_avail_text.setEditable(false);
+//        gbc.fill = GridBagConstraints.NONE;
+//        gbc.gridx = 0;
+//        gbc.gridy = 2;
+//        gbc.insets = new Insets(0, 20, 0, 20);
+//        gbc.weightx = 1;
+//        //gbc.weighty = 1;
+//        this.add(next_avail_text, gbc);
      
         
         group = new ButtonGroup();
@@ -98,14 +105,14 @@ public class ConstraintPanel extends JPanel implements ActionListener {
 		//used during the Add Report Action
 		button_name = action;
 		
-		//allow textfield editable
+//		//allow textfield editable
 		if (action.equals(Strings.constr_next_avail))
 		{
-			next_avail_text.setEditable(true);
+	        tri_res = new TriangleInequalityResponseNextValid(TriangleInequalityOperator.NEXT_VALID);
 		}
 		else if (action.equals(Strings.constr_value_unchange))
 		{
-			next_avail_text.setEditable(false);
+	        tri_res = new TriangleInequalityResponseNoChange(TriangleInequalityOperator.NO_CHANGE);
 		}
 		
 	}

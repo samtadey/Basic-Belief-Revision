@@ -17,7 +17,7 @@ import revision.ui.ErrorPanel;
  */
 public class ErrorHandler {
 	
-	static Calendar calendar = Calendar.getInstance();
+	static Calendar calendar;
 	
 	static JTextArea errors = ErrorPanel.error_messages;
 
@@ -71,6 +71,8 @@ public class ErrorHandler {
 	 * @return Time of Day as a String
 	 */
 	private static String timeOfDay() {
+		calendar = Calendar.getInstance();
+		
 		if (String.valueOf(calendar.get(Calendar.MINUTE)).length() < 2)
 			return new String(calendar.get(Calendar.HOUR_OF_DAY) + ":0" + calendar.get(Calendar.MINUTE));
 		return new String(calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));

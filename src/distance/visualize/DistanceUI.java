@@ -25,7 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import distance.DistanceState;
+import distance.DistanceMap;
 import distance.Report;
 import language.BeliefState;
 import language.State;
@@ -56,7 +56,7 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
 	
 	static GridLayout visual;
 	
-	private static DistanceState distance;
+	private static DistanceMap distance;
 	
 	ArrayList<ArrayList<JTextField>> grid_text;
 	private static double[][] dist_val;
@@ -164,7 +164,7 @@ public class DistanceUI extends JFrame implements ActionListener, FocusListener 
     		//resets all structures
     		try {
             	vars = getVocab(vocab.getText());
-            	distance = new DistanceState(vars);
+            	distance = new DistanceMap(vars);
             	int grids = distance.getPossibleStates().getBeliefs().size();
             	
             	visual.setColumns(grids+1);

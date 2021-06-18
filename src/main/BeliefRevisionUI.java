@@ -31,7 +31,7 @@ import aima.core.logic.propositional.visitors.ConvertToCNF;
 import aima.core.logic.propositional.visitors.ConvertToConjunctionOfClauses;
 import constants.Strings;
 import data.UiData;
-import distance.DistanceState;
+import distance.DistanceMap;
 import language.BeliefState;
 import language.State;
 import propositional_translation.InputTranslation;
@@ -81,7 +81,7 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
     static JTextArea convert;
     
     
-    private void doHamming(BeliefState beliefs, BeliefState sentence, DistanceState d) {
+    private void doHamming(BeliefState beliefs, BeliefState sentence, DistanceMap d) {
         State bel, sent;
         double dist;
         for (int i = 0; i < beliefs.getBeliefs().size(); i++)
@@ -99,7 +99,7 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
     }
     
     
-    private void doWeightHamming(BeliefState beliefs, BeliefState sentence, HashMap<Character, Double> weights, DistanceState d) {
+    private void doWeightHamming(BeliefState beliefs, BeliefState sentence, HashMap<Character, Double> weights, DistanceMap d) {
         State bel, sent;
         double dist;
         for (int i = 0; i < beliefs.getBeliefs().size(); i++)
@@ -116,7 +116,7 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
         }
     }
     
-    private void doRandom(BeliefState beliefs, BeliefState sentence, DistanceState d) {
+    private void doRandom(BeliefState beliefs, BeliefState sentence, DistanceMap d) {
         State bel, sent;
         double dist;
         for (int i = 0; i < beliefs.getBeliefs().size(); i++)
@@ -143,7 +143,7 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
     	BeliefState b, c, d;
         String s = e.getActionCommand();
         String combo, intype;
-        DistanceState distance;
+        DistanceMap distance;
         
         //retains order
         //still not sure where these are coming from
@@ -222,7 +222,7 @@ public class BeliefRevisionUI extends JFrame implements ActionListener {
             combo = (String) varlistpanel.getChooser().getSelectedItem();
             System.out.println(combo);
             
-            distance = new DistanceState(chars);
+            distance = new DistanceMap(chars);
             
             //error checking?
             

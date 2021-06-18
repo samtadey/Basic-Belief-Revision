@@ -11,13 +11,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import distance.DistanceState;
+import distance.DistanceMap;
 import distance.Report;
 import language.State;
 
 public class TestDistanceState {
 	
-	private DistanceState distState;
+	private DistanceMap distState;
 	
 	private Set<Character> vocab;
 	
@@ -38,7 +38,7 @@ public class TestDistanceState {
 		vocab.add('B');
 		vocab.add('C');
 		
-		distState = new DistanceState(vocab);
+		distState = new DistanceMap(vocab);
 		
 		s1 = new State("000");
 		s2 = new State("111");
@@ -56,11 +56,11 @@ public class TestDistanceState {
 	
 	@Test
 	public void getDistanceValueOfStatesInOrder() {
-		assertEquals(" " , DistanceState.DEFAULT_VAL, distState.getDistance(s1, s2), 0.5);
+		assertEquals(" " , DistanceMap.DEFAULT_VAL, distState.getDistance(s1, s2), 0.5);
 	}
 	@Test
 	public void getDistanceValueOfStatesOutOfOrder() {
-		assertEquals(" " , DistanceState.DEFAULT_VAL, distState.getDistance(s2, s1), 0.5);
+		assertEquals(" " , DistanceMap.DEFAULT_VAL, distState.getDistance(s2, s1), 0.5);
 	}
 	@Test
 	public void getDistanceValueOfStateNotExist() throws Exception {
@@ -82,14 +82,14 @@ public class TestDistanceState {
 		double val = 3.0;
 		
 		distState.setDistance(s1, s2, val);
-		assertEquals(" " , DistanceState.DEFAULT_VAL, distState.getDistance(s1, s2), val);
+		assertEquals(" " , DistanceMap.DEFAULT_VAL, distState.getDistance(s1, s2), val);
 	}
 	@Test
 	public void setDistanceValueToValueBelowZero() {
 		double val = -2.0;
 		double val_before = distState.getDistance(s1, s2);
 		distState.setDistance(s1, s2, val);
-		assertEquals(" " , DistanceState.DEFAULT_VAL, distState.getDistance(s1, s2), val_before);
+		assertEquals(" " , DistanceMap.DEFAULT_VAL, distState.getDistance(s1, s2), val_before);
 	}
 	
 //	//nothing will happen if key doesn't exist in hashmap

@@ -98,7 +98,7 @@ public class BeliefState {
 	public String toString() {
 		StringBuilder build = new StringBuilder();
 		for (int i = 0; i < this.beliefs.size(); i++)
-			build.append("[ " + this.beliefs.get(i).getState() + " ]\n");
+			build.append("[ " + this.beliefs.get(i).getState() + " ],");
 		return build.toString();
 	}
 	

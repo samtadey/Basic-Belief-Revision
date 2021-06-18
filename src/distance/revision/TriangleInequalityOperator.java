@@ -2,8 +2,7 @@ package distance.revision;
 
 public enum TriangleInequalityOperator {
 
-	VAL_UNCHANGE,
+	NO_CHANGE,
 	NEXT_VALID,
-	NEXT_AVAILABLE,
 	
 }
