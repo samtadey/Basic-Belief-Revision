@@ -207,5 +207,42 @@ public class DistanceState {
 
 	}
 	
+	//precourser matrix?
+	/**
+	 * Construct a Minimax distance DistanceMap computing the shortest path between all pairs of states in the DistanceMap member object.
+	 * 
+	 * @return
+	 */
+	public DistanceMap miniMaxDistance(DistanceMap map) {
+		DistanceMap mm_dist = new DistanceMap(map);
+		State si,sj,sk;
+		ArrayList<State> states;
+		int i,j,k,n;
+		double inter_dist;
+		
+		n = map.getPossibleStates().getBeliefs().size();
+		states = map.getPossibleStates().getBeliefs();
+		
+		for (k = 0; k < n; k++)
+		{
+			sk = states.get(k);
+			for (j = 0; j < n; j++)
+			{
+				sj = states.get(j);
+				for (i = 0; i < n; i++)
+				{
+					si = states.get(i);
+					inter_dist = map.getDistance(si, sk) + map.getDistance(sk, sj);
+					if (inter_dist < map.getDistance(si, sj))
+					{
+						mm_dist.setDistance(si, sk, inter_dist);
+					}
+				}
+			}
+		}
+		
+		return mm_dist;
+	}
+	
 	
 }

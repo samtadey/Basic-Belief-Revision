@@ -3,7 +3,6 @@
  */
 package revision.ui.handler;
 
-import java.awt.GridBagConstraints;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Set;
@@ -14,7 +13,6 @@ import javax.swing.JTextField;
 
 import constants.PropositionalSymbols;
 import constants.Strings;
-import distance.DistanceMap;
 import distance.DistanceState;
 import distance.Report;
 import distance.revision.TriangleInequalityResponse;
@@ -104,7 +102,6 @@ public class TrustGraphHandler {
 	
 	
 	/*
-	 * addReportAll is the driver function behind the Add Reports action in the TrustGraphPanel. 
 	 * 
 	 * @params
 	 * 		ArrayList<JTextField> t_formula: Array of all formula textfields.

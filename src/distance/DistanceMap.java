@@ -50,6 +50,17 @@ public class DistanceMap {
 		}
 	}
 	
+	/**
+	 * Copy constructor
+	 * 
+	 * @param map as the DistanceMap to copy
+	 */
+	public DistanceMap(DistanceMap map) {
+		this.vocab = map.vocab;
+		this.possible_states = map.possible_states;
+		this.distances = map.distances;
+	}
+	
 	/*
 	 * Getter function for the vocab member variable
 	 * 

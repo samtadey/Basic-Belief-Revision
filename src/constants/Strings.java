@@ -97,6 +97,7 @@ public final class Strings {
 	public static final String constr_title = "Triangle Inequality Response";
 	public static final String constr_value_unchange = "Value Unchanged";
 	public static final String constr_next_avail = "Next Available Value";
+	public static final String constr_minimax_dist = "MinMax/MaxMin Distance";
 	
 	
 	//file
@@ -126,6 +127,9 @@ public final class Strings {
 			return s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
 				+ invalid.toString() + "value before: " + old_val + " value proposed: " + new_val + " value set: " + old_val;
 		if (res.getOp() == TriangleInequalityOperator.NEXT_VALID)
+			return s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
+					+ invalid.toString() + "value before: " + old_val + " value proposed: " + new_val + " value set: " + to_set;
+		if (res.getOp() == TriangleInequalityOperator.MINI_MAX_DIST)
 			return s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
 					+ invalid.toString() + "value before: " + old_val + " value proposed: " + new_val + " value set: " + to_set;
 		
