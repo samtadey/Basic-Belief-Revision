@@ -138,6 +138,7 @@ public class DistanceState {
 				b = map.getDistance(t, u);
 				c = map.getDistance(s, u);
 
+				//indirect distance
 				hypot = a + b;
 				
 				//we are increasing a value
@@ -148,6 +149,8 @@ public class DistanceState {
 				}
 				else //decreasing a value
 				{		
+					//proposed val is the updated version of c
+					//the proposed value for (s,u)
 					edge_val = proposed_val + a;
 					if (edge_val < b)
 						allinvalid.addBelief(t);

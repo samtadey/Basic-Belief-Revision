@@ -165,18 +165,14 @@ public class InputTranslation {
 			for (Literal literal : literals)
 			{
 				symbol = literal.getAtomicSentence().getSymbol();
-				
 				if (symbol.length() != 1)
 					throw new ParserException("Variable Length Not 1");
+
+				char propvar = symbol.charAt(0);
+				if (literal.isPositiveLiteral())
+					fclause.addValue(mappingChartoInt.get(propvar));
 				else
-				{
-					char propvar = symbol.charAt(0);
-    				
-    				if (literal.isPositiveLiteral())
-    					fclause.addValue(mappingChartoInt.get(propvar));
-    				else
-    					fclause.addValue(-mappingChartoInt.get(propvar));
-				}
+					fclause.addValue(-mappingChartoInt.get(propvar));
 			}
 			fset.addFormula(fclause);	
 		}
