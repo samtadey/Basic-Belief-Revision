@@ -4,6 +4,7 @@
 package distance;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import aima.core.logic.common.ParserException;
@@ -12,6 +13,8 @@ import distance.revision.TriangleInequalityResponse;
 import distance.revision.TrustRevisionOperation;
 import language.BeliefState;
 import language.State;
+import language.StateHelper;
+import propositional_translation.InputTranslation;
 
 /**
  * @author sam_t
@@ -188,6 +191,8 @@ public class DistanceState {
 			if (!sat_report.contains(state))
 				unsat_report.addBelief(state);
 		}
+		
+		//find weights here?
 
 		if (r.getReportedVal() == 0)
 		{
@@ -210,7 +215,7 @@ public class DistanceState {
 
 	}
 	
-	//precourser matrix?
+	
 	/**
 	 * Construct a Minimax distance DistanceMap computing the shortest path between all pairs of states in the DistanceMap member object.
 	 * 
@@ -246,6 +251,6 @@ public class DistanceState {
 		
 		return mm_dist;
 	}
-	
+
 	
 }

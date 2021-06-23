@@ -23,6 +23,7 @@ import constants.Strings;
 import constants.UIToOperatorPairs;
 import distance.DistanceMap;
 import distance.DistanceState;
+import distance.VariableWeights;
 import distance.revision.TriangleInequalityOperator;
 import distance.revision.TriangleInequalityResponse;
 import distance.revision.TriangleInequalityResponseNextValid;
@@ -138,33 +139,15 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 
     		//Define error collection
     		ArrayList<String> errormsg;
-    		
-    		//
-    		//Set TriangleInequalityResponse object
-    		//
-//    		try {
-//    			triangle_ineq_action = ConstraintPanel.button_name;
-//    			op = UIToOperatorPairs.triangle_ineq.get(triangle_ineq_action);
-//    			
-//    			switch (op) {
-//    				case NEXT_VALID: 
-//    					System.out.println("next valid");
-//    					tri_res = new TriangleInequalityResponseNextValid(op);
-//    					break;
-//    				default:
-//    					System.out.println("no change");
-//    					tri_res = new TriangleInequalityResponseNoChange(op);
-//    			}
-//    			
-//    			//tri_res = new TriangleInequalityResponse(op);
-//    		} catch (Exception ex) {
-//    			System.out.println("Problem with radio button pairs");
-//    			return;
-//    		}
     		//
     		//Add Reports to Trust Graph. Collect any logic errors
     		//
     		errormsg = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, ReportPanel.operations, ReportPanel.weights, distance, tri_res);
+    		//
+    		//Print out new weights after the change
+    		//
+    		VariableWeights vw = new VariableWeights(distance.getMap());
+    		System.out.println(vw.findVariableWeights());
     		//
     		//set errors to errorpane
     		//
