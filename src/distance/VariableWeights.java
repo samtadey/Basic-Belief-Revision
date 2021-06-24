@@ -134,6 +134,8 @@ public class VariableWeights {
 		
 		return weights;
 	}
+	
+	
 
 	
 	//tester class testing out how 

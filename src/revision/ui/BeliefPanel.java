@@ -61,7 +61,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
 	 * BeliefPanel Constructor
 	 * Sets up the Panel UI
 	 */
-	public BeliefPanel(MainPanel main) {
+	public BeliefPanel(MainPanel main, VarWeightsPanel varpan) {
 		
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -171,7 +171,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         gbc.weightx = 1;
         this.add(vocab_lab, gbc);
         
-        act = new ActionPanel(main, this);
+        act = new ActionPanel(main, this, varpan);
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         //gbc.anchor = GridBagConstraints.NORTHWEST;

@@ -4,6 +4,7 @@
 package distance;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -21,11 +22,17 @@ import propositional_translation.InputTranslation;
  *
  */
 public class DistanceState {
+	
+	private static final double MIN_MAP_VAL = 0.1;
 
 	private DistanceMap map;
 	
 	public DistanceState(Set<Character> vocab) {
 		this.map = new DistanceMap(vocab);
+	}
+	
+	public DistanceState(DistanceState map) {
+		this.map = map.map;
 	}
 
 	public DistanceMap getMap() {
@@ -36,11 +43,24 @@ public class DistanceState {
 		this.map = map;
 	}
 	
+	/**
+	 * 
+	 * @param s1
+	 * @param s2
+	 * @param current_val
+	 * @param new_val
+	 * @param tri_res
+	 * @param errors
+	 */
 	public void setMapMember(State s1, State s2, double current_val, double new_val, TriangleInequalityResponse tri_res, ArrayList<String> errors) {
+		
 		BeliefState invalid;
 		
 		if (current_val == new_val)
 			return;
+		
+		if (new_val < MIN_MAP_VAL)
+			new_val = MIN_MAP_VAL;
 		
 		//check triangle inequality validity given the naive value generated
 		invalid = checkTriangleInequality(s1, s2, new_val);
@@ -54,6 +74,37 @@ public class DistanceState {
 		map.setDistance(s1, s2, new_val);
 	}
 	
+	
+	
+	private double applyWeights(State s1, State s2, double mod_val, HashMap<Character, Double> weights, Set<Character> vocab) throws Exception {
+		
+		double weight_sum = 0.0, num_diff = 0.0;
+		ArrayList<Character> vars = InputTranslation.setToArr(vocab);
+		
+		if (s1.getState().length() != s2.getState().length() && s1.getState().length() != vars.size())
+			throw new Exception("Apply Weights: state sizes or vocab sizes not equal");
+		
+		//iterate through states and apply weights
+		//the vocabulary set keeps the variables in the same order as
+		//the characters in the state object
+		for (int i = 0; i < s1.getState().length(); i++)
+		{
+			//state var different between the two states
+			if (s1.getState().charAt(i) != s2.getState().charAt(i))
+			{
+				weight_sum += weights.get(vars.get(i));
+				num_diff++;
+			}
+		}
+		
+		if (weight_sum == 0.0 || num_diff == 0.0)
+			return mod_val;
+		
+		//return the mod value, modified by the weights 
+		return mod_val * (weight_sum / num_diff);
+	}
+
+	
 	/*
 	 * The function iterates through all combinations of the BeliefStates and modifies their distance values by the mod_value parameter
 	 * 
@@ -64,12 +115,13 @@ public class DistanceState {
 	 * @return 
 	 * 	ArrayList<String> error messages for any value assignments that do not meet Distance/Reporting constraints
 	 */
-	private ArrayList<String> modByReport(BeliefState b1, BeliefState b2, String trust_op, double mod_value, 
-			TriangleInequalityResponse tri_res) throws Exception {
+	private DistanceState modByReport(BeliefState b1, BeliefState b2, String trust_op, double mod_value, 
+			TriangleInequalityResponse tri_res, HashMap<Character, Double> var_weights, ArrayList<String> errors) throws Exception {
 		
+		DistanceState update = new DistanceState(this);
 		State s1, s2;
-		double current_val, new_val;
-		ArrayList<String> errors = new ArrayList<String>();
+		double current_val, new_val, mod_val;
+		//ArrayList<String> errors = new ArrayList<String>();
 		
 		for (int i = 0; i < b1.getBeliefs().size(); i++)
 		{
@@ -78,17 +130,22 @@ public class DistanceState {
 			{
 				s2 = b2.getBeliefs().get(j);
 				//current value in the grid
-				current_val = map.getDistance(s1, s2);
+				current_val = update.map.getDistance(s1, s2);
+				//apply weights to mod_value
+				mod_val = applyWeights(s1,s2, mod_value, var_weights, update.map.getVocab());
+				System.out.println(s1.getState() + "/" + s2.getState() + " Mod: " + mod_val);
 				//naive value assignment
 				//assigns the value to the user designated value
-				new_val = TrustRevisionOperation.reviseValue(current_val, mod_value, trust_op);
+				new_val = TrustRevisionOperation.reviseValue(current_val, mod_val, trust_op);
 				//constraint controlled setter function for the DistanceState
 				//sets the distance value based on current constraints and constraint handlers
-				this.setMapMember(s1, s2, current_val, new_val, tri_res, errors);
+				update.setMapMember(s1, s2, current_val, new_val, tri_res, errors);
 			}
 		}
+		
+		return update;
 		//return error messages
-		return errors;
+		//return errors;
 	}
 	
 	/**
@@ -178,11 +235,12 @@ public class DistanceState {
 	 * @params
 	 * 	Report r
 	 */
-	public ArrayList<String> addReport(Report r, String operation, double modifier, TriangleInequalityResponse tri_res) throws ParserException {
+	public DistanceState addReport(Report r, String operation, double modifier, TriangleInequalityResponse tri_res, 
+			HashMap<Character,Double> var_weights, ArrayList<String> errors) throws Exception {
 		//convert report to states
 		BeliefState sat_report = r.convertFormToStates(map.getVocab());
 		BeliefState unsat_report = new BeliefState();
-		ArrayList<String> errors = new ArrayList<String>();
+		//ArrayList<String> errors = new ArrayList<String>();
 		
 		//BeliefState unsat_report = //add all but sat_report;
 		//if does not contain state in sat, must be a member of the unsat group
@@ -193,25 +251,13 @@ public class DistanceState {
 		}
 		
 		//find weights here?
-
+		//add weights to modByReport
+		//false report
 		if (r.getReportedVal() == 0)
-		{
-			try {
-				errors.addAll(modByReport(sat_report, unsat_report, operation, modifier, tri_res));
-			} catch (Exception e) {
-				System.out.println(e);
-			}
-		}
-		else if (r.getReportedVal() == 1)
-		{
-			try {
-				errors.addAll(modByReport(sat_report, unsat_report, operation, modifier, tri_res));
-			} catch (Exception e) {
-				System.out.println(e);
-			}
-
-		}
-		return errors;
+			return modByReport(sat_report, unsat_report, operation, modifier, tri_res, var_weights, errors);
+		//true report
+		else 
+			return modByReport(sat_report, unsat_report, operation, modifier, tri_res, var_weights, errors);
 
 	}
 	

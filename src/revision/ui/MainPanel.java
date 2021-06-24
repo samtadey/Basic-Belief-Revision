@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -43,6 +45,7 @@ public class MainPanel implements ActionListener {
     static BeliefPanel belief_panel;
     static ErrorPanel error_panel;
     static ConstraintPanel constraint_panel;
+    static VarWeightsPanel weights_panel;
 	
 	public MainPanel() {
 		f = new JFrame(Strings.project_title);
@@ -51,12 +54,25 @@ public class MainPanel implements ActionListener {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLocationRelativeTo(null); 
         
+//		Set<Character> w = new LinkedHashSet<Character>();
+//		w.add('a');
+//		w.add('b');
+//		w.add('c');
+//		w.add('d');
+//		w.add('e');
+//		w.add('f');
+		weights_panel = new VarWeightsPanel();
+        
 		main_panel = new JPanel();
 		graph = new TrustGraphPanel(this);
-        belief_panel = new BeliefPanel(this);
+        belief_panel = new BeliefPanel(this, weights_panel);
         report_panel = new ReportPanel(graph);
 		error_panel = new ErrorPanel();
 		constraint_panel = new ConstraintPanel();
+		
+		//tester
+		//add action listener within the VarWeightsPanel
+
         
 		main_panel.setLayout(new GridBagLayout());	
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -70,7 +86,7 @@ public class MainPanel implements ActionListener {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 3;
         gbc.weightx = TOP_ROW_WEIGHT;
         gbc.weighty = TOP_ROW_WEIGHT;
         main_panel.add(belief_panel, gbc);
@@ -120,6 +136,7 @@ public class MainPanel implements ActionListener {
         gbc.insets = new Insets(5, 0, 0, 40);
         gbc.weightx = REPORT_WEIGHT;
         gbc.weighty = MID_ROW_WEIGHT;
+        gbc.gridwidth = 2;
         main_panel.add(report_panel, gbc);
         
         //Constraint Panel
@@ -140,8 +157,20 @@ public class MainPanel implements ActionListener {
         gbc.gridy = 4;
         gbc.insets = new Insets(5, 0, 40, 40);
         gbc.weightx = REPORT_WEIGHT;
-        gbc.weighty = MID_ROW_WEIGHT;
+        gbc.weighty = MID_ROW_WEIGHT-1;
         main_panel.add(constraint_panel, gbc);
+        
+        //Weights Panel
+        //label
+        gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 2;
+        gbc.gridy = 4;
+        gbc.insets = new Insets(5, 0, 40, 40);
+        gbc.weightx = REPORT_WEIGHT;
+        gbc.weighty = MID_ROW_WEIGHT-1;
+        main_panel.add(weights_panel, gbc);
+        
         
         //
         //ErrorPane
@@ -162,7 +191,7 @@ public class MainPanel implements ActionListener {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 0;
         gbc.gridy = 6;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 3;
         //gbc.anchor = GridBagConstraints.NORTH;
         gbc.insets = new Insets(5, 40, 40, 40);
         gbc.weightx = 1;

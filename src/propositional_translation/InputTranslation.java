@@ -48,6 +48,19 @@ public class InputTranslation {
 	    return bstate;
     }
     
+	public static Set<Character> getVocab(String input) throws Exception {
+		Set<Character> vocab = new LinkedHashSet<Character>();
+		
+		for (String var : input.split(",")) 
+	    {
+	    	if (var.length() == 1)
+	    		vocab.add(var.charAt(0));
+	    	else
+	    		throw new Exception("Bad Vocab Input");
+	    }
+		return vocab;
+	}
+    
     /**
      * Converts a specified string input into a list of character
      * 

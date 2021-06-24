@@ -118,8 +118,8 @@ public final class Strings {
 	}
 	
 	//report error 
-	public static final String errorReportInputInvalid(int report_num) {
-		return "Report #" + report_num + " Invalid Input";
+	public static final String errorReportInputInvalid(int report_num, String error_msg) {
+		return "Report #" + report_num + " Invalid Input: " + error_msg;
 	}
 	
 	public static final String errorTriHandleType(TriangleInequalityResponse res, State s1, State s2, BeliefState invalid, double old_val, double new_val, double to_set) {

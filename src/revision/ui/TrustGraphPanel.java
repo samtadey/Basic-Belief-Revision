@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ import distance.revision.TriangleInequalityResponseNextValid;
 import distance.revision.TriangleInequalityResponseNoChange;
 import language.BeliefState;
 import language.State;
+import propositional_translation.InputTranslation;
 import revision.ui.handler.ErrorHandler;
 import revision.ui.handler.TrustGraphHandler;
 import revision.ui.settings.UISettings;
@@ -68,19 +70,6 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
         this.setBackground(Color.WHITE);
         this.setBorder(UISettings.panelborder);
 	}
-
-	private Set<Character> getVocab(String input) throws Exception {
-		Set<Character> vocab = new LinkedHashSet<Character>();
-		
-		for (String var : input.split(",")) 
-	    {
-	    	if (var.length() == 1)
-	    		vocab.add(var.charAt(0));
-	    	else
-	    		throw new Exception("Bad Vocab Input");
-	    }
-		return vocab;
-	}
 	
 	
 
@@ -88,8 +77,8 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	public void actionPerformed(ActionEvent e) {
 		int grids;
         String s = e.getActionCommand();
-        System.out.println("Action Trust Panel");
-        System.out.println(s);
+        //System.out.println("Action Trust Panel");
+        //System.out.println(s);
              
          
 		if (s.equals(Strings.action_gen_trust_action))
@@ -99,7 +88,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     			//
     			//Create new distance object with user specified propositional variables
     			//
-    			vars = getVocab(ActionPanel.vocab.getText());
+    			vars = InputTranslation.getVocab(ActionPanel.vocab.getText());
     			//validate vocab?
     			
             	distance = new DistanceState(vars);
@@ -138,34 +127,40 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     			return;
 
     		//Define error collection
-    		ArrayList<String> errormsg;
-    		//
-    		//Add Reports to Trust Graph. Collect any logic errors
-    		//
-    		errormsg = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, ReportPanel.operations, ReportPanel.weights, distance, tri_res);
-    		//
-    		//Print out new weights after the change
-    		//
-    		VariableWeights vw = new VariableWeights(distance.getMap());
-    		System.out.println(vw.findVariableWeights());
-    		//
-    		//set errors to errorpane
-    		//
-    		ErrorHandler.addErrorGroup(Strings.report_add_report_action, errormsg);
-    		System.out.println(errormsg);
-        	//
-    		//Reset JTextAreas in grid before rebuild
-    		//
-    		grids = distance.getMap().getPossibleStates().getBeliefs().size();
-    		grid_text = TrustGraphHandler.resetGridItems(grids);
-    		//
-    		//Rebuild Matrix with updated trust values
-    		//
-    		TrustGraphHandler.rebuildGrid(this, grid_text, distance);
-    		//
-    		//Refresh Frame
-    		//
-    		MainPanel.f.validate();
+    		ArrayList<String> errormsg = new ArrayList<String>();
+    		HashMap<Character, Double> var_weights;
+    		DistanceState upd;
+    		try {
+	    		//
+	    		//Parse weights
+	    		//
+	    		var_weights = TrustGraphHandler.setVarWeights(VarWeightsPanel.var_lab, VarWeightsPanel.var_weight);
+	    		//
+	    		//Add Reports to Trust Graph. Collect any logic errors
+	    		//
+	    		upd = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, ReportPanel.operations, ReportPanel.weights, distance, tri_res, var_weights, errormsg);
+	    		System.out.println(errormsg);
+	    		//
+	    		//set errors to errorpane
+	    		//
+	    		ErrorHandler.addErrorGroup(Strings.report_add_report_action, errormsg);
+	    		//System.out.println(errormsg);
+	    		//set new DistanceState
+	    		distance.setMap(upd.getMap());
+	    		//
+	    		//Rebuild Matrix with updated trust values
+	    		//
+	    		grids = distance.getMap().getPossibleStates().getBeliefs().size();
+	    		grid_text = TrustGraphHandler.resetGridItems(grids);
+	    		TrustGraphHandler.rebuildGrid(this, grid_text, distance);
+	    		//
+	    		//Refresh Frame
+	    		//
+	    		MainPanel.f.validate();
+    		} catch (Exception ex) {
+    			System.out.println("Panel Handler");
+            	ErrorHandler.addError(Strings.action_gen_trust_action, ex.toString());
+    		}
     	}
 		
 	}
