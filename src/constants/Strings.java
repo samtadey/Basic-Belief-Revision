@@ -78,7 +78,10 @@ public final class Strings {
 	public static final String action_vocab_title = "Propositional Vocabulary";
 	public static final String action_revise_action = "Revise";
 	public static final String action_gen_trust_action = "Generate Trust Graph";
-	
+	//gen weights panel
+	public static final String action_gen_weights = "Gen. Weights";
+	public static final String gen_weights_grid_null = "Trust Grid and/or values not set";
+
 	//
 	//Report Panel 
 	//
@@ -102,6 +105,8 @@ public final class Strings {
 	
 	//file
 	public static final String file_open_file = "Open File";
+	
+
 	
 	
 	//errors
