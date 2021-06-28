@@ -1,7 +1,7 @@
 /**
  * 
  */
-package main;
+package distance.revision;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +19,7 @@ import language.State;
  * will be selected for belief revision.
  *
  */
-public class GeneralRevisionScore {
+public class RevisionStateScore {
 	
 	private final double DEFAULT_SCORE = Double.MAX_VALUE;
 
@@ -29,7 +29,7 @@ public class GeneralRevisionScore {
 	 * Default Constructor
 	 * 	Initializes scoremap member variable
 	 */
-	public GeneralRevisionScore() {
+	public RevisionStateScore() {
 		scoremap = new HashMap<State, Double>();
 	}
 	
@@ -40,7 +40,7 @@ public class GeneralRevisionScore {
 	 * @params
 	 * 		BeliefState validstates: all valid states given a number of variables
 	 */
-	public GeneralRevisionScore(BeliefState validstates) {
+	public RevisionStateScore(BeliefState validstates) {
 		scoremap = new HashMap<State, Double>();
 		
 		for (State s : validstates.getBeliefs())

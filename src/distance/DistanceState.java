@@ -10,8 +10,7 @@ import java.util.Set;
 
 import aima.core.logic.common.ParserException;
 import constants.Strings;
-import distance.revision.TriangleInequalityResponse;
-import distance.revision.TrustRevisionOperation;
+import distance.constraint.TriangleInequalityResponse;
 import language.BeliefState;
 import language.State;
 import language.StateHelper;

@@ -25,10 +25,10 @@ import constants.UIToOperatorPairs;
 import distance.DistanceMap;
 import distance.DistanceState;
 import distance.VariableWeights;
-import distance.revision.TriangleInequalityOperator;
-import distance.revision.TriangleInequalityResponse;
-import distance.revision.TriangleInequalityResponseNextValid;
-import distance.revision.TriangleInequalityResponseNoChange;
+import distance.constraint.TriangleInequalityOperator;
+import distance.constraint.TriangleInequalityResponse;
+import distance.constraint.TriangleInequalityResponseNextValid;
+import distance.constraint.TriangleInequalityResponseNoChange;
 import language.BeliefState;
 import language.State;
 import propositional_translation.InputTranslation;
@@ -138,7 +138,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	    		//
 	    		//Add Reports to Trust Graph. Collect any logic errors
 	    		//
-	    		upd = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, ReportPanel.operations, ReportPanel.weights, distance, tri_res, var_weights, errormsg);
+	    		upd = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, ReportPanel.weights, distance, tri_res, var_weights, errormsg);
 	    		System.out.println(errormsg);
 	    		//
 	    		//set errors to errorpane

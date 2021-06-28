@@ -6,7 +6,8 @@ package constants;
 
 import java.util.Map;
 
-import distance.revision.TriangleInequalityOperator;
+import distance.constraint.TriangleInequalityOperator;
+import distance.revision.RevisionOperator;
 
 
 /**
@@ -21,4 +22,8 @@ public class UIToOperatorPairs {
 				Strings.constr_minimax_dist, TriangleInequalityOperator.MINI_MAX_DIST);
 
 
+	public static final Map<String, RevisionOperator> revision
+		= Map.of(Strings.revision_general, RevisionOperator.GENERAL,
+				Strings.revision_naive, RevisionOperator.NAIVE);
+	
 }

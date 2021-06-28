@@ -1,7 +1,7 @@
 /**
  * 
  */
-package distance.revision;
+package distance;
 
 import constants.ArithmeticOperations;
 

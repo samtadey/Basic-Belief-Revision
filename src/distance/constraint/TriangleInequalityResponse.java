@@ -1,7 +1,7 @@
 /**
  * 
  */
-package distance.revision;
+package distance.constraint;
 
 import distance.DistanceMap;
 import language.BeliefState;

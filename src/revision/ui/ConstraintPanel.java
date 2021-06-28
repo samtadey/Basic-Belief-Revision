@@ -15,11 +15,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import constants.Strings;
-import distance.revision.TriangleInequalityOperator;
-import distance.revision.TriangleInequalityResponse;
-import distance.revision.TriangleInequalityResponseMiniMaxDist;
-import distance.revision.TriangleInequalityResponseNextValid;
-import distance.revision.TriangleInequalityResponseNoChange;
+import distance.constraint.TriangleInequalityOperator;
+import distance.constraint.TriangleInequalityResponse;
+import distance.constraint.TriangleInequalityResponseMiniMaxDist;
+import distance.constraint.TriangleInequalityResponseNextValid;
+import distance.constraint.TriangleInequalityResponseNoChange;
 import revision.ui.settings.UISettings;
 
 /**

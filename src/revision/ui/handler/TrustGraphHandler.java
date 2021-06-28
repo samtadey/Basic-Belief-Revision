@@ -12,11 +12,12 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import constants.ArithmeticOperations;
 import constants.PropositionalSymbols;
 import constants.Strings;
 import distance.DistanceState;
 import distance.Report;
-import distance.revision.TriangleInequalityResponse;
+import distance.constraint.TriangleInequalityResponse;
 import language.BeliefState;
 import language.State;
 import revision.ui.TrustGraphPanel;
@@ -142,21 +143,14 @@ public class TrustGraphHandler {
 	 * @returns
 	 * 		ArrayList<String> errormsg: All internal constraint error messages generated through the addReport process
 	 */
-	public static DistanceState addReportAll(ArrayList<JTextField> t_formula, ArrayList<JTextField> t_result, ArrayList<JComboBox<String>> t_op, 
+	public static DistanceState addReportAll(ArrayList<JTextField> t_formula, ArrayList<JTextField> t_result, 
 			ArrayList<JTextField> t_weights, DistanceState distance, TriangleInequalityResponse tri_res, HashMap<Character, Double> var_weights, ArrayList<String> errormsg) throws Exception {
 		
 		DistanceState update = new DistanceState(distance);
 		Report report;
 		double weight;
 		String op;
-		
-		if (t_formula.size() != t_result.size() || t_formula.size() != t_result.size() || t_formula.size() != t_op.size())
-			throw new Exception("Report inputs not equal size");
-		
-		//for every field available 
-		//1. validate input
-		//2. add report to distance object
-		//3. record error messages
+
 		for (int i = 0; i < t_formula.size(); i++)
 		{
 			//if formula not empty
@@ -164,14 +158,26 @@ public class TrustGraphHandler {
 			if (!t_formula.get(i).getText().isEmpty())
 			{
 				try {
+					//invalid input will be reported in the error pane
 					validateReportInput(t_formula.get(i), t_result.get(i), t_weights.get(i), distance.getMap().getVocab());
 					
+					//create report object
 					report = new Report(t_formula.get(i).getText(), Integer.parseInt(t_result.get(i).getText()));
-					op = (String) t_op.get(i).getSelectedItem();
+					
+					//set operation by report result
+					if (t_result.get(i).getText().equals("0"))
+						op = ArithmeticOperations.SUBTRACTION;
+					else
+						op = ArithmeticOperations.ADDITION;
+					
+					//op = (String) t_op.get(i).getSelectedItem();
+					//get weight for report
 					weight = Double.parseDouble(t_weights.get(i).getText());
 					
+					//run addreport
 					update = update.addReport(report, op, weight, tri_res, var_weights, errormsg);
 				} catch (Exception ex) {
+					//add error to error list
 					errormsg.add(Strings.errorReportInputInvalid(i+1, ex.getMessage()));
 				}
 			}

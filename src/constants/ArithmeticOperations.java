@@ -14,5 +14,5 @@ public class ArithmeticOperations {
 	public static final String MULTIPLICATION = "x";
 	public static final String DIVISION = "÷";
 	
-	public static final String[] operators = {ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION};
+	public static final String[] operators = {ADDITION, SUBTRACTION};
 }

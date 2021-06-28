@@ -130,6 +130,9 @@ public class VarWeightsPanel extends JPanel implements ActionListener {
 			//generate weights from grid
 			//get grid
 			DistanceState distance = TrustGraphPanel.distance;
+			VariableWeights vw = new VariableWeights(distance.getMap());
+			HashMap<Character,Double> weights = vw.findVariableWeights();
+			String lab;
 			
 			//check grid set
 			if (distance == null || distance.getMap() == null)
@@ -139,9 +142,6 @@ public class VarWeightsPanel extends JPanel implements ActionListener {
 			}
 			
 			//find weights
-			VariableWeights vw = new VariableWeights(distance.getMap());
-			HashMap<Character,Double> weights = vw.findVariableWeights();
-			String lab;
 			char c;
 			//set the textfields with corresponding weight value
 			for (int i = 0; i < var_lab.size(); i++)
@@ -159,7 +159,5 @@ public class VarWeightsPanel extends JPanel implements ActionListener {
 				var_weight.get(i).setText(setFormattedText(weights.get(c)));
 			}
 		}
-		
 	}
-
 }

@@ -3,20 +3,21 @@
  */
 package main;
 
-
-
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 
-import aima.core.logic.common.ParserException;
 import distance.DistanceMap;
+import distance.DistanceState;
 import distance.RankingState;
+import distance.revision.RevisionOperator;
+import distance.revision.RevisionStateScore;
+import distance.revision.StateScore;
+import distance.revision.StateScoreResults;
+import distance.revision.StateScoreResultsGeneral;
 import language.BeliefState;
 import language.State;
-import propositional_translation.InputTranslation;
-import solver.DPLL;
-import solver.FormulaSet;
+
 
 
 /**
@@ -25,83 +26,90 @@ import solver.FormulaSet;
  */
 public class BeliefRevision {
 	
-	/*
-	 * Default Constructor
-	 */
-	public BeliefRevision() {}
-
-	  
-
-    
-    //probss move to input processing class
-    public static boolean verifyStateInput(String input) {    
-	    for (String line : input.split("\n")) 
-	    {
-	    	for (int i = 0; i < line.length(); i++)
-	    		if (line.charAt(i) != '0' || line.charAt(i) != '1')
-	    			return false;
-	    }
-	    return true;
-    }
-    
-    //does not accept digits
-    //accepts all other characters
-    public static boolean verifyPropFormulaInput(String input) {
-    	//Character.is
-    	
-    	for (String line: input.split("\n"))
-    	{
-    		for (int i = 0; i < line.length(); i++)
-	    		if (Character.isDigit(line.charAt(i)))
-	    			return false;
-    	}
-    	return true;
-    }
-    
-    
-	public static double getDistanceHamming(State s1, State s2) {
-		double dist = 0;
-		
-    	if (s1.getState().length() != s2.getState().length())
-    	{
-    		System.out.println("Error: States are not equal length");
-    		return -1;
-    	}
-    	
-    	for (int i = 0; i < s1.getState().length(); i++)
-    		if (s1.getState().charAt(i) != s2.getState().charAt(i))
-    			dist++;
-    	
-    	return dist;
-	}
+	RevisionOperator rev;
+	DistanceMap distance;
+	RankingState beliefs;
+	BeliefState sentence;
 	
-	public static double getDistanceRandom(State s1, State s2) {
-		Random rand;
-		int upper;
-		
-		//upper bound not inclusive , therefore range is 0 - length + 1
-		upper = s1.getState().length() + 1;
-		rand = new Random();
-		//will cast and thats fine
-		return rand.nextInt(upper);
-	}
+
 	
-	//Set vars must be an ordered set of variables
-	public static double getDistanceWeightHamming(State s1, State s2, HashMap<Character, Double> weights, Set<Character> vars) {
-		//assuming the set and states are ordered in the same way?
-		// [A, B, C](Set) or 011 (State)
-		int i = 0;
-		double dist = 0;
-		for (Character c: vars)
-		{
-			//
-			if (s1.getState().charAt(i) != s2.getState().charAt(i))
-				dist += weights.get(c);
-			i++;
-		}
-		
-		return dist;
+	public BeliefRevision(RankingState beliefs, BeliefState sentence, DistanceMap distance, RevisionOperator rev_type) {
+		this.beliefs = beliefs;
+		this.sentence = sentence;
+		this.distance = distance;
+		this.rev = rev_type;
 	}
+
+    
+//    //probss move to input processing class
+//    public static boolean verifyStateInput(String input) {    
+//	    for (String line : input.split("\n")) 
+//	    {
+//	    	for (int i = 0; i < line.length(); i++)
+//	    		if (line.charAt(i) != '0' || line.charAt(i) != '1')
+//	    			return false;
+//	    }
+//	    return true;
+//    }
+//    
+//    //does not accept digits
+//    //accepts all other characters
+//    public static boolean verifyPropFormulaInput(String input) {
+//    	//Character.is
+//    	
+//    	for (String line: input.split("\n"))
+//    	{
+//    		for (int i = 0; i < line.length(); i++)
+//	    		if (Character.isDigit(line.charAt(i)))
+//	    			return false;
+//    	}
+//    	return true;
+//    }
+//    
+    
+//	public static double getDistanceHamming(State s1, State s2) {
+//		double dist = 0;
+//		
+//    	if (s1.getState().length() != s2.getState().length())
+//    	{
+//    		System.out.println("Error: States are not equal length");
+//    		return -1;
+//    	}
+//    	
+//    	for (int i = 0; i < s1.getState().length(); i++)
+//    		if (s1.getState().charAt(i) != s2.getState().charAt(i))
+//    			dist++;
+//    	
+//    	return dist;
+//	}
+//	
+//	public static double getDistanceRandom(State s1, State s2) {
+//		Random rand;
+//		int upper;
+//		
+//		//upper bound not inclusive , therefore range is 0 - length + 1
+//		upper = s1.getState().length() + 1;
+//		rand = new Random();
+//		//will cast and thats fine
+//		return rand.nextInt(upper);
+//	}
+	
+//	//Set vars must be an ordered set of variables
+//	public static double getDistanceWeightHamming(State s1, State s2, HashMap<Character, Double> weights, Set<Character> vars) {
+//		//assuming the set and states are ordered in the same way?
+//		// [A, B, C](Set) or 011 (State)
+//		int i = 0;
+//		double dist = 0;
+//		for (Character c: vars)
+//		{
+//			//
+//			if (s1.getState().charAt(i) != s2.getState().charAt(i))
+//				dist += weights.get(c);
+//			i++;
+//		}
+//		
+//		return dist;
+//	}
 	
     
     
@@ -117,36 +125,36 @@ public class BeliefRevision {
      * object are compared for the minimum distance. States in the sentence object with the minimum distance to any State in teh beliefs
      * object are stored and returned by the method.
      */
-    public static BeliefState reviseStates(BeliefState beliefs, BeliefState sentence, DistanceMap d) {
-    	
-    	if (beliefs.getBeliefs().size() == 0 || sentence.getBeliefs().size() == 0)
-    		return sentence;
-    	
-    	BeliefState states = new BeliefState();
-    	double[] idx = new double[sentence.getBeliefs().size()];
-    	double min, curr;
-    	
-    	
-    	min = findStateMinDistance(beliefs, sentence.getBeliefs().get(0), d);
-    	idx[0] = min;
-    	//
-    	for (int i = 1; i < sentence.getBeliefs().size(); i++)
-    	{
-    		curr = findStateMinDistance(beliefs, sentence.getBeliefs().get(i), d);
-    		if (curr < min)
-    			min = curr;
-    		idx[i] = curr;
-    	}
-    	
-    	for (int i = 0; i < idx.length; i++)
-    		if (idx[i] == min)
-    			states.addBelief(sentence.getBeliefs().get(i));
-    	
-    	System.out.println("Min Distance: " + min);
-    	
-    	return states;
-    	
-    }
+//    public BeliefState reviseStates(BeliefState beliefs, BeliefState sentence, DistanceMap d) {
+//    	
+//    	if (beliefs.getBeliefs().size() == 0 || sentence.getBeliefs().size() == 0)
+//    		return sentence;
+//    	
+//    	BeliefState states = new BeliefState();
+//    	double[] idx = new double[sentence.getBeliefs().size()];
+//    	double min, curr;
+//    	
+//    	
+//    	min = findStateMinDistance(beliefs, sentence.getBeliefs().get(0), d);
+//    	idx[0] = min;
+//    	//
+//    	for (int i = 1; i < sentence.getBeliefs().size(); i++)
+//    	{
+//    		curr = findStateMinDistance(beliefs, sentence.getBeliefs().get(i), d);
+//    		if (curr < min)
+//    			min = curr;
+//    		idx[i] = curr;
+//    	}
+//    	
+//    	for (int i = 0; i < idx.length; i++)
+//    		if (idx[i] == min)
+//    			states.addBelief(sentence.getBeliefs().get(i));
+//    	
+//    	System.out.println("Min Distance: " + min);
+//    	
+//    	return states;
+//    	
+//    }
     
     /*
      * @params
@@ -160,7 +168,7 @@ public class BeliefRevision {
      * The distance between two states is defined by the Hamming Distance between two States
      * When the State sentence_state has been compared to all states in the belief state, the minimum distance is returned.
      */
-    private static double findStateMinDistance(BeliefState beliefs, State sentence_state, DistanceMap d) {
+    private double findStateMinDistance(BeliefState beliefs, State sentence_state, DistanceMap d) {
     	double min, curr;
     	
     	if (beliefs.getBeliefs().size() < 1)
@@ -180,16 +188,7 @@ public class BeliefRevision {
     }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
     /*
      * 
@@ -209,11 +208,11 @@ public class BeliefRevision {
      * @return
      * 		RankingState as the result of belief revision
      */
-    public static RankingState reviseStates(RankingState beliefs, BeliefState sentence, DistanceMap distance) {
+    public RankingState reviseStates() {
     	
     	//return a reanking state?
-    	GeneralRevisionScore score, temp;
-    	score = new GeneralRevisionScore(beliefs.getValidStates());
+    	RevisionStateScore score, temp;
+    	score = new RevisionStateScore(beliefs.getValidStates());
     	
     	//if no sentence, beliefs do not change
     	if (sentence.getBeliefs().size() == 0)
@@ -228,6 +227,8 @@ public class BeliefRevision {
     	return score.scoreToRank(beliefs.getVocab());
     }
     
+   
+    
     /*
      * The scoreStates method scores every state in the RankingState beliefs by each State's ranking value and the distance between every 
      * belief state and the sentence state. The return value is the result of the sum between this rank and the distance function.
@@ -240,10 +241,10 @@ public class BeliefRevision {
      * @return
      * 		GeneralRevisionScore as the score given to each state 
      */
-    private static GeneralRevisionScore scoreStates(RankingState beliefs, State sentence, DistanceMap distance) {
-    	double min, score, dist;
+    private static RevisionStateScore scoreStates(RankingState beliefs, State sentence, DistanceMap distance) {
+    	double score, dist;
     	int rank;
-    	GeneralRevisionScore scoreset = new GeneralRevisionScore(beliefs.getValidStates());
+    	RevisionStateScore scoreset = new RevisionStateScore(beliefs.getValidStates());
     	
     	for (State s : beliefs.getValidStates().getBeliefs())
     	{
@@ -264,16 +265,15 @@ public class BeliefRevision {
     
     
     
-	public static GeneralRevisionScore mergeScoresMin(GeneralRevisionScore score1, GeneralRevisionScore score2) {
-		GeneralRevisionScore combined = new GeneralRevisionScore();
+	public static RevisionStateScore mergeScoresMin(RevisionStateScore score1, RevisionStateScore score2) {
+		RevisionStateScore combined = new RevisionStateScore();
 		double val1,val2;
 		
 		for (State s : score1.getScoreKeys())
 		{
 			val1 = score1.getScore(s);
 			val2 = score2.getScore(s);
-			//val1 = score1.getScoreMap().get(s);
-			//val2 = score2.getScoreMap().get(s);
+			
 			if (val1 < val2)
 				combined.setScore(s, val1);
 			else
@@ -282,5 +282,37 @@ public class BeliefRevision {
 		
 		return combined;
 	}
+	
+	
+	//new stuff
+    private StateScoreResults genResultsType(BeliefState sentence) {
+    	if (this.rev == RevisionOperator.GENERAL)
+    		return new StateScoreResultsGeneral(sentence);
+//    	else if (this.rev == RevisionOperator.NAIVE)
+//    		return new StateScoreResultsNaive(sentence);
+    	return null;
+    	
+    }
+    
+    public StateScoreResults produceStateScoreResults() throws Exception {
+    	StateScoreResults results = genResultsType(sentence);
+    	StateScore score;
+    	
+    	//create a statescore for each belief
+    	for (State b : beliefs.getValidStates().getBeliefs())
+    	{
+    		score = new StateScore(b, beliefs.getRank(b));
+    		//add each sentence distance value to each statescore
+    		for (State sent : results.getSentences().getBeliefs())
+    			score.addDistance(distance.getDistance(b, sent));
+    		//add complete statescore to the results object
+    		results.addStateScore(score);
+    	}
+    	
+    	//calculate results for the object
+    	results.setResults();
+ 
+    	return results;
+    }
     
 }

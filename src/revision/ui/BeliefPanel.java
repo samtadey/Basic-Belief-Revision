@@ -25,6 +25,7 @@ import constants.Strings;
 import distance.DistanceMap;
 import distance.DistanceState;
 import distance.RankingState;
+import distance.revision.RevisionOperator;
 import language.BeliefState;
 import main.BeliefRevision;
 import propositional_translation.InputTranslation;
@@ -191,6 +192,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
 		BeliefState sent_state, bel_state;
 		DistanceMap dist;
 		Set<Character> vocab;
+		BeliefRevision revise;
 		
         //determines which Panel to display in the Ranking Panel
 		//Based on the combobox selection
@@ -238,8 +240,10 @@ public class BeliefPanel extends JPanel implements ActionListener {
 				
 				sent_string = sent.getText();
 				sent_state = InputTranslation.convertPropInput(sent_string, vocab);
-
-				updated_rank = BeliefRevision.reviseStates(bel_rank, sent_state, dist);
+				
+				revise = new BeliefRevision(bel_rank, sent_state, dist, RevisionOperator.GENERAL);
+				
+				updated_rank = revise.reviseStates();
 				
 				//take updated ranking function
 				//add it to the results textarea

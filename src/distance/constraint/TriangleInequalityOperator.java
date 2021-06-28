@@ -1,4 +1,4 @@
-package distance.revision;
+package distance.constraint;
 
 public enum TriangleInequalityOperator {
 

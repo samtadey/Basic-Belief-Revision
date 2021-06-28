@@ -1,7 +1,7 @@
 package constants;
 
-import distance.revision.TriangleInequalityOperator;
-import distance.revision.TriangleInequalityResponse;
+import distance.constraint.TriangleInequalityOperator;
+import distance.constraint.TriangleInequalityResponse;
 import language.BeliefState;
 import language.State;
 
@@ -78,6 +78,12 @@ public final class Strings {
 	public static final String action_vocab_title = "Propositional Vocabulary";
 	public static final String action_revise_action = "Revise";
 	public static final String action_gen_trust_action = "Generate Trust Graph";
+	
+	//revision types
+	public static final String revision_general = "General";
+	public static final String revision_naive = "Naive";
+	public static final String[] revision_options = {revision_general, revision_naive};
+	
 	//gen weights panel
 	public static final String action_gen_weights = "Gen. Weights";
 	public static final String gen_weights_grid_null = "Trust Grid and/or values not set";
