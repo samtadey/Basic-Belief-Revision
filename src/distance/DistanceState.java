@@ -10,6 +10,7 @@ import java.util.Set;
 
 import aima.core.logic.common.ParserException;
 import constants.Strings;
+import distance.constraint.TriangleInequalityOperator;
 import distance.constraint.TriangleInequalityResponse;
 import language.BeliefState;
 import language.State;
@@ -30,8 +31,12 @@ public class DistanceState {
 		this.map = new DistanceMap(vocab);
 	}
 	
+	public DistanceState(DistanceMap map) {
+		this.map = new DistanceMap(map);
+	}
+	
 	public DistanceState(DistanceState map) {
-		this.map = map.map;
+		this.map = new DistanceMap(map.getMap());
 	}
 
 	public DistanceMap getMap() {
@@ -62,12 +67,15 @@ public class DistanceState {
 			new_val = MIN_MAP_VAL;
 		
 		//check triangle inequality validity given the naive value generated
-		invalid = checkTriangleInequality(s1, s2, new_val);
-		
-		//if any invalid states have been found
-		//the new_val must be changed to satisfy triangle inequality
-		if (invalid.getBeliefs().size() > 0)
-			new_val = calcDistanceValueTriIneq(s1,s2,invalid,current_val,new_val,tri_res,errors);
+		if (tri_res.getOp() != TriangleInequalityOperator.IGNORE)
+		{
+			invalid = checkTriangleInequality(s1, s2, new_val);
+			
+			//if any invalid states have been found
+			//the new_val must be changed to satisfy triangle inequality
+			if (invalid.getBeliefs().size() > 0)
+				new_val = calcDistanceValueTriIneq(s1,s2,invalid,current_val,new_val,tri_res,errors);
+		}
 		
 		//set the map with the new value
 		map.setDistance(s1, s2, new_val);
@@ -266,15 +274,15 @@ public class DistanceState {
 	 * 
 	 * @return
 	 */
-	public DistanceMap miniMaxDistance(DistanceMap map) {
-		DistanceMap mm_dist = new DistanceMap(map);
+	public DistanceMap miniMaxDistance() {
+		DistanceMap mm_dist = new DistanceMap(this.map);
 		State si,sj,sk;
 		ArrayList<State> states;
 		int i,j,k,n;
 		double inter_dist;
 		
-		n = map.getPossibleStates().getBeliefs().size();
-		states = map.getPossibleStates().getBeliefs();
+		n = this.map.getPossibleStates().getBeliefs().size();
+		states = this.map.getPossibleStates().getBeliefs();
 		
 		for (k = 0; k < n; k++)
 		{
@@ -285,10 +293,10 @@ public class DistanceState {
 				for (i = 0; i < n; i++)
 				{
 					si = states.get(i);
-					inter_dist = map.getDistance(si, sk) + map.getDistance(sk, sj);
-					if (inter_dist < map.getDistance(si, sj))
+					inter_dist = this.map.getDistance(si, sk) + this.map.getDistance(sk, sj);
+					if (inter_dist < this.map.getDistance(si, sj))
 					{
-						mm_dist.setDistance(si, sk, inter_dist);
+						mm_dist.setDistance(si, sj, inter_dist);
 					}
 				}
 			}

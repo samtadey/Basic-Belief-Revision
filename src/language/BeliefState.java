@@ -35,7 +35,11 @@ public class BeliefState {
 	 * Instantiates the object
 	 */
 	public BeliefState(ArrayList<State> beliefs) {
-		this.beliefs = beliefs;
+		this.beliefs = new ArrayList<State>(beliefs);
+	}
+	
+	public BeliefState(BeliefState beliefs) {
+		this.beliefs = new ArrayList<State>(beliefs.getBeliefs());
 	}
 	
 	

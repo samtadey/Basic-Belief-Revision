@@ -10,33 +10,6 @@ import language.State;
  */
 public final class Strings {
 
-//	//
-//	//ParametrizedDiffPanel 
-//	//
-//	public static final String var_up = "Move Up";
-//	public static final String var_down = "Move Down";
-//	
-//	//
-//	//Distance Choices
-//	//
-//	public static final String hamming = "Hamming";
-//	public static final String w_hamming = "Weighted Hamming";
-//	public static final String para = "Parametrized Difference";
-//	public static final String rand = "Random Distance";
-//	
-//	//
-//	//Input Type Choices
-//	//
-//	
-//	public static final String prop_input = "Propositional Formula";
-//	public static final String state_input = "State Representation";
-//	
-//	
-//	//
-//	//Combo Box selectors
-//	//
-//	public static final String[] distance_types = {hamming, w_hamming, para, rand};
-//	public static final String[] input_types = {prop_input, state_input};
 	
 	
 	//
@@ -96,6 +69,16 @@ public final class Strings {
 	public static final String report_add_report_action = "Add Reports";
 	
 	//
+	//MiniMaxDistance Panel
+	//
+	public static final String mmd_title = "MiniMax Distance Checker";
+	public static final String mmd_state1 = "State #1:";
+	public static final String mmd_state2 = "State #2:";
+	public static final String mmd_result = "Distance:";
+	public static final String mmd_action = "Find Distance";
+	
+	
+	//
 	//Trust Graph
 	//
 	public static final String action_trust_graph_manual = "Manual Trust Input";
@@ -143,8 +126,10 @@ public final class Strings {
 		if (res.getOp() == TriangleInequalityOperator.MINI_MAX_DIST)
 			return s1.getState() + "/" + s2.getState() + " Triangle Inequality Violated by " 
 					+ invalid.toString() + "value before: " + old_val + " value proposed: " + new_val + " value set: " + to_set;
+//		if (res.getOp() == TriangleInequalityOperator.IGNORE)
+//			return s1.getState() + "/" + s2.getState() + " Can't set distance value to 0";
 		
-		return "No handler operation found";
+		return "";
 	}
 	
 	//exceptions

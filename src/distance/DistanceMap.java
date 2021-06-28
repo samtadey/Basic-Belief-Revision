@@ -2,6 +2,7 @@ package distance;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,11 +36,11 @@ public class DistanceMap {
 		this.vocab = vocab;
 		//must initialize all possible states with a distance of 0
 		//not easy to generate states as strings, thats why they are 
-		possible_states = new BeliefState(StateHelper.generateStates(vocab.size()));
+		this.possible_states = new BeliefState(StateHelper.generateStates(vocab.size()));
 		HashMap<State, Double> inner;
 		//state combinations and set distances
 		
-		distances = new HashMap<State, HashMap<State, Double>>();
+		this.distances = new HashMap<State, HashMap<State, Double>>();
 		for (int i = 0; i < possible_states.getBeliefs().size() - 1; i++)
 		{
 			inner = new HashMap<State, Double>();
@@ -55,9 +56,22 @@ public class DistanceMap {
 	 * @param map as the DistanceMap to copy
 	 */
 	public DistanceMap(DistanceMap map) {
-		this.vocab = map.vocab;
-		this.possible_states = map.possible_states;
-		this.distances = map.distances;
+		this.vocab =  new LinkedHashSet<Character>(map.vocab);
+		this.possible_states = new BeliefState(map.possible_states);
+		
+		//set map
+		this.distances = new HashMap<State, HashMap<State, Double>>();
+		HashMap<State, Double> inner;
+		
+		for (State s1: map.distances.keySet())
+		{
+			inner = new HashMap<State,Double>();
+			for (State s2 : map.distances.get(s1).keySet())
+			{
+				inner.put(s2, map.getDistance(s1, s2));
+			}
+			this.distances.put(s1, inner);
+		}
 	}
 	
 	/*

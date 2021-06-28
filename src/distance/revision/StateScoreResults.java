@@ -6,11 +6,15 @@ package distance.revision;
 import java.util.ArrayList;
 import java.util.List;
 
+import distance.RankingState;
 import language.BeliefState;
+import language.State;
 
 /**
+ * A StateScoreResults object contains all score results for a Beliefstate. Scores are found and assigned based on the revision sentence
+ * and the type of revision taking place.
+ * 
  * @author sam_t
- *
  */
 public abstract class StateScoreResults {
 	
@@ -19,32 +23,59 @@ public abstract class StateScoreResults {
 	protected List<StateScore> scores;
 	
 	/**
-	 * 
+	 * StateScoreResults constructor
 	 */
 	public StateScoreResults(BeliefState sent) {
 		this.sentences = sent;
 		this.scores = new ArrayList<StateScore>();
 	}
 
-	
+	/**
+	 * Getter for revision sentences
+	 * @return BeliefState
+	 */
 	public BeliefState getSentences() {
 		return this.sentences;
 	}
 	
+	/**
+	 * Getter for all StateScores
+	 * @return List<StateScore>
+	 */
 	public List<StateScore> getScores() {
 		return this.scores;
 	}
 	
+	/**
+	 * Add a StateScore to the scores list
+	 * @param ss StateScore
+	 */
 	public void addStateScore(StateScore ss) {
 		this.scores.add(ss);
 	}
 	
 	
-	//min score
-	//
-//	public BeliefState scoreToBeliefState() {
-//		
-//	}
+	/**
+	 * Converts minimum scoring states into a BeliefState
+	 * 
+	 * @return BeliefState 
+	 */
+	public BeliefState scoreToBeliefState() {
+		BeliefState beliefs = new BeliefState();
+		double min = StateScore.MAX_RESULT;
+		
+		//find min score
+		for (StateScore score : scores)
+			if (score.getResult() < min)
+				min = score.getResult();
+		
+		//add states with min score to the belief state
+		for (StateScore score: scores)
+			if (score.getResult() == min)
+				beliefs.addBelief(score.getState());
+			
+		return beliefs;
+	}
 	
 	
 	/*
@@ -53,9 +84,17 @@ public abstract class StateScoreResults {
 	 * @return
 	 * 	RankingState result of min score values
 	 */
-//	public RankingState scoreToRank(ArrayList<Character> vocab) {
-//		return new RankingState(scoreToBeliefState(), vocab);
-//	}
+	public RankingState scoreToRank(ArrayList<Character> vocab) {
+		return new RankingState(scoreToBeliefState(), vocab);
+	}
 	
+	
+	/**
+	 * setResults implemented by child classes.
+	 * Use StateScoreResult member variables to define the result value for each ScoreState object in
+	 * the scores list.
+	 * 
+	 * @throws Exception
+	 */
 	public abstract void setResults() throws Exception;
 }

@@ -3,6 +3,7 @@
  */
 package main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
@@ -17,6 +18,7 @@ import distance.revision.StateScoreResults;
 import distance.revision.StateScoreResultsGeneral;
 import language.BeliefState;
 import language.State;
+import propositional_translation.InputTranslation;
 
 
 
@@ -31,8 +33,6 @@ public class BeliefRevision {
 	RankingState beliefs;
 	BeliefState sentence;
 	
-
-	
 	public BeliefRevision(RankingState beliefs, BeliefState sentence, DistanceMap distance, RevisionOperator rev_type) {
 		this.beliefs = beliefs;
 		this.sentence = sentence;
@@ -40,78 +40,6 @@ public class BeliefRevision {
 		this.rev = rev_type;
 	}
 
-    
-//    //probss move to input processing class
-//    public static boolean verifyStateInput(String input) {    
-//	    for (String line : input.split("\n")) 
-//	    {
-//	    	for (int i = 0; i < line.length(); i++)
-//	    		if (line.charAt(i) != '0' || line.charAt(i) != '1')
-//	    			return false;
-//	    }
-//	    return true;
-//    }
-//    
-//    //does not accept digits
-//    //accepts all other characters
-//    public static boolean verifyPropFormulaInput(String input) {
-//    	//Character.is
-//    	
-//    	for (String line: input.split("\n"))
-//    	{
-//    		for (int i = 0; i < line.length(); i++)
-//	    		if (Character.isDigit(line.charAt(i)))
-//	    			return false;
-//    	}
-//    	return true;
-//    }
-//    
-    
-//	public static double getDistanceHamming(State s1, State s2) {
-//		double dist = 0;
-//		
-//    	if (s1.getState().length() != s2.getState().length())
-//    	{
-//    		System.out.println("Error: States are not equal length");
-//    		return -1;
-//    	}
-//    	
-//    	for (int i = 0; i < s1.getState().length(); i++)
-//    		if (s1.getState().charAt(i) != s2.getState().charAt(i))
-//    			dist++;
-//    	
-//    	return dist;
-//	}
-//	
-//	public static double getDistanceRandom(State s1, State s2) {
-//		Random rand;
-//		int upper;
-//		
-//		//upper bound not inclusive , therefore range is 0 - length + 1
-//		upper = s1.getState().length() + 1;
-//		rand = new Random();
-//		//will cast and thats fine
-//		return rand.nextInt(upper);
-//	}
-	
-//	//Set vars must be an ordered set of variables
-//	public static double getDistanceWeightHamming(State s1, State s2, HashMap<Character, Double> weights, Set<Character> vars) {
-//		//assuming the set and states are ordered in the same way?
-//		// [A, B, C](Set) or 011 (State)
-//		int i = 0;
-//		double dist = 0;
-//		for (Character c: vars)
-//		{
-//			//
-//			if (s1.getState().charAt(i) != s2.getState().charAt(i))
-//				dist += weights.get(c);
-//			i++;
-//		}
-//		
-//		return dist;
-//	}
-	
-    
     
     /*
      * @params
@@ -283,9 +211,15 @@ public class BeliefRevision {
 		return combined;
 	}
 	
-	
+	//
+	//
 	//new stuff
-    private StateScoreResults genResultsType(BeliefState sentence) {
+    //
+	//
+	
+	
+	
+	private StateScoreResults genResultsType(BeliefState sentence) {
     	if (this.rev == RevisionOperator.GENERAL)
     		return new StateScoreResultsGeneral(sentence);
 //    	else if (this.rev == RevisionOperator.NAIVE)
@@ -313,6 +247,10 @@ public class BeliefRevision {
     	results.setResults();
  
     	return results;
+    }
+    
+    public RankingState revise(StateScoreResults results) {
+    	return results.scoreToRank(InputTranslation.setToArr(distance.getVocab()));
     }
     
 }
