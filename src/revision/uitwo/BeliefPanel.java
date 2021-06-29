@@ -26,11 +26,12 @@ import distance.DistanceMap;
 import distance.DistanceState;
 import distance.RankingState;
 import distance.revision.RevisionOperator;
+import distance.revision.StateScoreResults;
 import language.BeliefState;
 import main.BeliefRevision;
 import propositional_translation.InputTranslation;
-import revision.ui.handler.ErrorHandler;
-import revision.ui.handler.FileHandler;
+import revision.uitwo.handler.ErrorHandler;
+import revision.uitwo.handler.FileHandler;
 import revision.ui.settings.UISettings;
 
 /**
@@ -190,24 +191,23 @@ public class BeliefPanel extends JPanel implements ActionListener {
 		String bel_string, sent_string, combo_item;
 		RankingState bel_rank = null, updated_rank;
 		BeliefState sent_state, bel_state;
-		DistanceMap dist;
+		DistanceMap dist, minimax;
 		Set<Character> vocab;
 		BeliefRevision revise;
-		
+		StateScoreResults scores;
         //determines which Panel to display in the Ranking Panel
 		//Based on the combobox selection
         CardLayout cl = (CardLayout)(RankingPanel.cardholder.getLayout());
 	    cl.show(RankingPanel.cardholder, (String)belief_input.getSelectedItem());
 	    
-		
-		//
+
 		if (action.equals(Strings.action_revise_action))
 		{
 			//validate input parameters
 			//beliefs exist
 			//sentence exists
 			//distance object is not null
-			if (TrustGraphPanel.distance == null)
+			if (TrustGraphPanel.distance == null || TrustGraphPanel.minimax == null)
 			{
 				//set error
 				ErrorHandler.addError(Strings.action_revise_action, Strings.action_gen_trust_action, Strings.error_gen_trust_prereq);
@@ -216,6 +216,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
 			
 			try {
 				dist = TrustGraphPanel.distance.getMap();
+				minimax = TrustGraphPanel.minimax.getMap();
 				vocab = dist.getVocab();
 				
 				combo_item = (String) belief_input.getSelectedItem();
@@ -238,12 +239,17 @@ public class BeliefPanel extends JPanel implements ActionListener {
 					return;
 				}
 				
+				//parse the sentence
 				sent_string = sent.getText();
+				//convert the sentence into a beliefstate
 				sent_state = InputTranslation.convertPropInput(sent_string, vocab);
 				
-				revise = new BeliefRevision(bel_rank, sent_state, dist, RevisionOperator.GENERAL);
-				
-				updated_rank = revise.reviseStates();
+				//create belief revision object
+				revise = new BeliefRevision(bel_rank, sent_state, dist, RevisionOperator.NAIVE);
+				//set score object 
+				scores = revise.produceStateScoreResults(minimax);
+				//produce updated ranking function based on scores
+				updated_rank = revise.reviseStates(scores);
 				
 				//take updated ranking function
 				//add it to the results textarea

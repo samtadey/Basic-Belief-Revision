@@ -142,60 +142,6 @@ public class TrustGraphHandler {
 	}
 	
 	
-	/*
-	 * 
-	 * @params
-	 * 		ArrayList<JTextField> t_formula: Array of all formula textfields.
-	 * 		ArrayList<JTextField> t_result: Array of all result textfields
-	 * 		DistanceState distance: DistanceState object represented by the TrustGraphPanel
-	 * 
-	 * @returns
-	 * 		ArrayList<String> errormsg: All internal constraint error messages generated through the addReport process
-	 */
-	public static DistanceState addReportAll(ArrayList<JTextField> t_formula, ArrayList<JTextField> t_result, 
-			ArrayList<JTextField> t_weights, DistanceState distance, TriangleInequalityResponse tri_res, HashMap<Character, Double> var_weights, ArrayList<String> errormsg) throws Exception {
-		
-		DistanceState update = new DistanceState(distance);
-		Report report;
-		double weight;
-		String op;
-
-		for (int i = 0; i < t_formula.size(); i++)
-		{
-			//if formula not empty
-			//validate input
-			if (!t_formula.get(i).getText().isEmpty())
-			{
-				try {
-					//invalid input will be reported in the error pane
-					validateReportInput(t_formula.get(i), t_result.get(i), t_weights.get(i), distance.getMap().getVocab());
-					
-					//create report object
-					report = new Report(t_formula.get(i).getText(), Integer.parseInt(t_result.get(i).getText()));
-					
-					//set operation by report result
-					if (t_result.get(i).getText().equals("0"))
-						op = ArithmeticOperations.SUBTRACTION;
-					else
-						op = ArithmeticOperations.ADDITION;
-					
-					//op = (String) t_op.get(i).getSelectedItem();
-					//get weight for report
-					weight = Double.parseDouble(t_weights.get(i).getText());
-					
-					//run addreport
-					update = update.addReport(report, op, weight, tri_res, var_weights, errormsg);
-				} catch (Exception ex) {
-					//add error to error list
-					errormsg.add(Strings.errorReportInputInvalid(i+1, ex.getMessage()));
-				}
-			}
-		}
-		
-		return update;
-	}
-	
-	
 	public static DistanceState addReportAll(ArrayList<JTextField> t_formula, ArrayList<JTextField> t_result, 
 			double weight, DistanceState distance, TriangleInequalityResponse tri_res, HashMap<Character, Double> var_weights, ArrayList<String> errormsg) throws Exception {
 		
@@ -282,63 +228,6 @@ public class TrustGraphHandler {
 		
 		return true;
 	}
-	
-	
-	/*
-	 * validateReportInput checks user input for a given reporting field. This function ensures that the correct type
-	 * of input has been used by the user. This function is the first step in the Add Report Action.
-	 * 
-	 * @params
-	 * 		JTextField t_formula: formula field for a report input
-	 * 		JTextField t_result: result field for a report input		
-	 * 
-	 * @returns
-	 * 		boolean: result of validation
-	 */
-	private static boolean validateReportInput(JTextField t_formula, JTextField t_result, JTextField t_weight, Set<Character> vocab) throws Exception {
-		String res_char, form_string;
-		char symbol;
-		
-		//
-		//Validate that result is one character and either 0 or 1
-		//
-		res_char = t_result.getText().trim();
-		System.out.println(res_char);
-		
-		if (res_char.length() != 1 || (res_char.charAt(0) != '0' && res_char.charAt(0) != '1'))
-			throw new Exception("Result must be a 0 or 1");
-		
-		//
-		//Validate weight is a double
-		//
-		try {
-			Double.parseDouble(t_weight.getText());
-		} catch (NumberFormatException ex) {
-			throw new Exception("Weight is not a double");
-		}
-		
-		//
-		//Validate that formula 
-		//
-		form_string = t_formula.getText().trim();
-		System.out.println(form_string);
-		
-		for (int i = 0; i < form_string.length(); i++)
-		{
-			symbol = form_string.charAt(i);
-			//if symbol alphabetic, but is not contained in the vocab, is not valid 
-			if (Character.isAlphabetic(symbol) && !vocab.contains(symbol))
-				throw new Exception("Character not in Propositional Vocabulary");
-			
-			//if not a prop variable and not a defined prop symbol, not valid
-			if (!Character.isAlphabetic(symbol) && !PropositionalSymbols.symbols.contains(Character.toString(symbol)))
-				throw new Exception("Invalid Symbol in Formula Input");
-		}
-		
-		return true;
-	}
-	
-	
 	
 	
 }
