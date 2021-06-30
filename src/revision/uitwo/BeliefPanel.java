@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import constants.Strings;
+import constants.UIToOperatorPairs;
 import distance.DistanceMap;
 import distance.DistanceState;
 import distance.RankingState;
@@ -195,6 +196,8 @@ public class BeliefPanel extends JPanel implements ActionListener {
 		Set<Character> vocab;
 		BeliefRevision revise;
 		StateScoreResults scores;
+		RevisionOperator rev_op;
+		double threshold = 0;
         //determines which Panel to display in the Ranking Panel
 		//Based on the combobox selection
         CardLayout cl = (CardLayout)(RankingPanel.cardholder.getLayout());
@@ -218,6 +221,21 @@ public class BeliefPanel extends JPanel implements ActionListener {
 				dist = TrustGraphPanel.distance.getMap();
 				minimax = TrustGraphPanel.minimax.getMap();
 				vocab = dist.getVocab();
+				
+				//check revision choice
+				if (ActionPanel.revision_type.getSelectedItem().equals(Strings.revision_general))
+					rev_op = UIToOperatorPairs.revision.get(Strings.revision_general);
+				else if (ActionPanel.revision_type.getSelectedItem().equals(Strings.revision_naive))
+				{
+					rev_op = UIToOperatorPairs.revision.get(Strings.revision_naive);
+					//check threshold input
+					//will throw error if not valid
+					threshold = validThresh(ActionPanel.threshold.getText());
+				}
+				else
+					throw new Exception("Revision Choice not set");
+				
+				
 				
 				combo_item = (String) belief_input.getSelectedItem();
 				//check ranking combobox for type of input
@@ -245,7 +263,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
 				sent_state = InputTranslation.convertPropInput(sent_string, vocab);
 				
 				//create belief revision object
-				revise = new BeliefRevision(bel_rank, sent_state, dist, RevisionOperator.NAIVE);
+				revise = new BeliefRevision(bel_rank, sent_state, dist, rev_op, threshold);
 				//set score object 
 				scores = revise.produceStateScoreResults(minimax);
 				//produce updated ranking function based on scores
@@ -267,6 +285,28 @@ public class BeliefPanel extends JPanel implements ActionListener {
 
 
 		}
+	
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param thresh
+	 * @return
+	 * @throws Exception
+	 */
+	private double validThresh(String thresh) throws Exception {
+		double val;
 		
+		try {
+			val = Double.parseDouble(thresh);
+		} catch (Exception ex) {
+			throw new Exception("Threshold value must be a number");
+		}
+		
+		if (val <= 0.0)
+			throw new Exception("Threshold value must be greater than 0");
+		
+		return val;
 	}
 }

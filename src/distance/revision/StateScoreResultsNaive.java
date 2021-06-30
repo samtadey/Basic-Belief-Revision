@@ -7,8 +7,9 @@ import language.BeliefState;
 import language.State;
 
 /**
+ * Sets score objects as the result of Naive Belief Revision
+ * 
  * @author sam_t
- *
  */
 public class StateScoreResultsNaive extends StateScoreResults {
 
@@ -33,12 +34,10 @@ public class StateScoreResultsNaive extends StateScoreResults {
 	 */
 	@Override
 	public void setResults() throws Exception {
-		
 		double min;
 		BeliefState partition = new BeliefState(), result;
 		
-		//for each state
-		//iterate through and find the minimum distance to any sentence state
+		//iterate through all states
 		for (StateScore ss : this.scores)
 		{
 			if (ss.getDistances().size() < 1)
@@ -46,7 +45,7 @@ public class StateScoreResultsNaive extends StateScoreResults {
 			
 			min = ss.getDistances().get(0);
 			
-			//find min
+			//find min distance for each state
 			for (int i = 1; i < ss.getDistances().size(); i++)
 				if (ss.getDistances().get(i) < min)
 					min = ss.getDistances().get(i);
@@ -57,7 +56,7 @@ public class StateScoreResultsNaive extends StateScoreResults {
 				partition.addBelief(ss.getState());
 		}
 		
-		//I think there will always be one state at leaast
+		//I think there will always be one state at least
 		//where ss and a sentence are the same state
 		if (partition.getBeliefs().size() < 1)
 			throw new Exception("No states are accepted by partition threshold value");
@@ -68,7 +67,7 @@ public class StateScoreResultsNaive extends StateScoreResults {
 		//resulting states are selected for revision
 		//revised states are given the best possible score in the 
 		//StateScore object: 0
-		//these states will be selected by the revise method since they hvae the min score
+		//these states will be selected by the revise method since they have the min score
 		for (State s: result.getBeliefs())
 		{
 			for (StateScore ss : this.scores)
@@ -81,7 +80,14 @@ public class StateScoreResultsNaive extends StateScoreResults {
 		
 	}
 	
-	
+	/**
+	 * Hamming Revision between two BeliefStates
+	 * 
+	 * @param beliefs
+	 * @param partition
+	 * @return
+	 * @throws Exception
+	 */
 	private BeliefState hammRevise(BeliefState beliefs, BeliefState partition) throws Exception {
 		
 		BeliefState result = new BeliefState();
@@ -108,6 +114,14 @@ public class StateScoreResultsNaive extends StateScoreResults {
 		return result;
 	}
 	
+	/**
+	 * Finds the min distance from a partition state to all beliefs
+	 * 
+	 * @param beliefs
+	 * @param partition
+	 * @return
+	 * @throws Exception
+	 */
 	private double minDistance(BeliefState beliefs, State partition) throws Exception {
 		double min = Double.MAX_VALUE, diff;
 		
@@ -121,7 +135,15 @@ public class StateScoreResultsNaive extends StateScoreResults {
 		return min;
 	}
 	
-
+	
+	/**
+	 * Finds the Hamming Distance between two State objects
+	 * 
+	 * @param s1
+	 * @param s2
+	 * @return
+	 * @throws Exception
+	 */
 	private double stateDiff(State s1, State s2) throws Exception {
 		if (s1.getState().length() != s1.getState().length())
 			throw new Exception("States not comparable");

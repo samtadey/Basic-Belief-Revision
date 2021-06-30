@@ -33,12 +33,22 @@ public class BeliefRevision {
 	DistanceMap distance;
 	RankingState beliefs;
 	BeliefState sentence;
+	double threshold;
 	
 	public BeliefRevision(RankingState beliefs, BeliefState sentence, DistanceMap distance, RevisionOperator rev_type) {
 		this.beliefs = beliefs;
 		this.sentence = sentence;
 		this.distance = distance;
 		this.rev = rev_type;
+		this.threshold = 0;
+	}
+	
+	public BeliefRevision(RankingState beliefs, BeliefState sentence, DistanceMap distance, RevisionOperator rev_type, double threshold) {
+		this.beliefs = beliefs;
+		this.sentence = sentence;
+		this.distance = distance;
+		this.rev = rev_type;
+		this.threshold = threshold;
 	}
 
     
@@ -125,6 +135,10 @@ public class BeliefRevision {
      * 
      */
     
+    //
+    //old stuff
+    //
+    
     /*
      * The reviseStates method does belief revision by comparing a RankingState (Initial belief values) and DistanceState (Trust values between The agent and a reporting agent)
      * The result of revision is an updated belief system represented by a RankingState
@@ -137,24 +151,24 @@ public class BeliefRevision {
      * @return
      * 		RankingState as the result of belief revision
      */
-//    public RankingState reviseStates() {
-//    	
-//    	//return a reanking state?
-//    	RevisionStateScore score, temp;
-//    	score = new RevisionStateScore(beliefs.getValidStates());
-//    	
-//    	//if no sentence, beliefs do not change
-//    	if (sentence.getBeliefs().size() == 0)
-//    		return beliefs;
-//    	
-//    	for (State s: sentence.getBeliefs())
-//    	{
-//    		temp = scoreStates(beliefs, s, distance);
-//    		score = mergeScoresMin(score, temp);
-//    	}
-//    	
-//    	return score.scoreToRank(beliefs.getVocab());
-//    }
+    public RankingState reviseStates() {
+    	
+    	//return a reanking state?
+    	RevisionStateScore score, temp;
+    	score = new RevisionStateScore(beliefs.getValidStates());
+    	
+    	//if no sentence, beliefs do not change
+    	if (sentence.getBeliefs().size() == 0)
+    		return beliefs;
+    	
+    	for (State s: sentence.getBeliefs())
+    	{
+    		temp = scoreStates(beliefs, s, distance);
+    		score = mergeScoresMin(score, temp);
+    	}
+    	
+    	return score.scoreToRank(beliefs.getVocab());
+    }
     
    
     
@@ -170,47 +184,47 @@ public class BeliefRevision {
      * @return
      * 		GeneralRevisionScore as the score given to each state 
      */
-//    private static RevisionStateScore scoreStates(RankingState beliefs, State sentence, DistanceMap distance) {
-//    	double score, dist;
-//    	int rank;
-//    	RevisionStateScore scoreset = new RevisionStateScore(beliefs.getValidStates());
-//    	
-//    	for (State s : beliefs.getValidStates().getBeliefs())
-//    	{
-//    		//get belief rank
-//    		rank = beliefs.getRank(s);
-//    		
-//    		//get distance between belief state and sentence state
-//    		dist = distance.getDistance(s, sentence);
-//    		
-//    		//score the state with its rank and distance to sentence state
-//    		score = rank + dist;
-//    		
-//    		scoreset.setScore(s, score);
-//    	}
-//    	
-//    	return scoreset;
-//    }
+    private static RevisionStateScore scoreStates(RankingState beliefs, State sentence, DistanceMap distance) {
+    	double score, dist;
+    	int rank;
+    	RevisionStateScore scoreset = new RevisionStateScore(beliefs.getValidStates());
+    	
+    	for (State s : beliefs.getValidStates().getBeliefs())
+    	{
+    		//get belief rank
+    		rank = beliefs.getRank(s);
+    		
+    		//get distance between belief state and sentence state
+    		dist = distance.getDistance(s, sentence);
+    		
+    		//score the state with its rank and distance to sentence state
+    		score = rank + dist;
+    		
+    		scoreset.setScore(s, score);
+    	}
+    	
+    	return scoreset;
+    }
     
     
     
-//	public static RevisionStateScore mergeScoresMin(RevisionStateScore score1, RevisionStateScore score2) {
-//		RevisionStateScore combined = new RevisionStateScore();
-//		double val1,val2;
-//		
-//		for (State s : score1.getScoreKeys())
-//		{
-//			val1 = score1.getScore(s);
-//			val2 = score2.getScore(s);
-//			
-//			if (val1 < val2)
-//				combined.setScore(s, val1);
-//			else
-//				combined.setScore(s, val2);
-//		}
-//		
-//		return combined;
-//	}
+	public static RevisionStateScore mergeScoresMin(RevisionStateScore score1, RevisionStateScore score2) {
+		RevisionStateScore combined = new RevisionStateScore();
+		double val1,val2;
+		
+		for (State s : score1.getScoreKeys())
+		{
+			val1 = score1.getScore(s);
+			val2 = score2.getScore(s);
+			
+			if (val1 < val2)
+				combined.setScore(s, val1);
+			else
+				combined.setScore(s, val2);
+		}
+		
+		return combined;
+	}
 	
 	//
 	//
@@ -243,9 +257,8 @@ public class BeliefRevision {
 	 * @throws Exception
 	 */
     public StateScoreResults produceStateScoreResults() throws Exception {
-    	double threshold = 3;
     	
-    	StateScoreResults results = genResultsType(sentence, beliefs.getMinStates(), threshold);
+    	StateScoreResults results = genResultsType(sentence, beliefs.getMinStates(), this.threshold);
     	StateScore score;
     	
     	//create a statescore for each belief
@@ -274,9 +287,8 @@ public class BeliefRevision {
      * @throws Exception
      */
     public StateScoreResults produceStateScoreResults(DistanceMap minimax) throws Exception {
-    	double threshold = 3;
     	
-    	StateScoreResults results = genResultsType(sentence, beliefs.getMinStates(), threshold);
+    	StateScoreResults results = genResultsType(sentence, beliefs.getMinStates(), this.threshold);
     	StateScore score;
     	
     	//create a statescore for each belief

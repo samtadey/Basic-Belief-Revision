@@ -17,6 +17,7 @@ import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,17 +44,18 @@ import revision.ui.settings.UISettings;
  * on the MainPanel in the Results text area
  * 
  */
-public class ActionPanel extends JPanel {
+public class ActionPanel extends JPanel implements ActionListener {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	static JTextField vocab;
+	static JTextField vocab, threshold;
 	
-	JButton gen_trust, revise, open_file;
-	JLabel actions;
+	static JButton gen_trust, revise, open_file;
+	static JLabel actions, thresh_lab;
+	static JComboBox<String> revision_type;
 	
 	JFileChooser test;
 	
@@ -69,6 +71,7 @@ public class ActionPanel extends JPanel {
 		//this.setBackground(Color.RED);
 		
 		Insets leftcol = new Insets(10, 20, 0, 20);
+		Insets toright = new Insets(10, 0, 0, 20);
 		Insets label = new Insets(0, 20, 0, 20);
 		Insets tbox = new Insets(0, 20, 0, 20);
 		
@@ -81,41 +84,90 @@ public class ActionPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = label;
+        gbc.gridwidth = 3;
         gbc.weightx = 1;
         gbc.weighty = 1;
         this.add(actions, gbc);
 		
         
 		vocab = new JTextField(15);
+		gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.insets = tbox;
+        gbc.gridwidth = 3;
         gbc.weightx = 1;
         gbc.weighty = 1;
         this.add(vocab, gbc);
 		
 
 		gen_trust = new JButton(Strings.action_gen_trust_action);
-        gbc.fill = GridBagConstraints.NONE;
+		gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.SOUTHWEST;
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.insets = leftcol;
+        gbc.gridwidth = 1;
         gbc.weightx = 1;
         gbc.weighty = 1;
         this.add(gen_trust, gbc);
         
 		revise = new JButton(Strings.action_revise_action);
-        gbc.fill = GridBagConstraints.NONE;
+		gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.insets = leftcol;
+        //gbc.gridwidth = 1;
         gbc.weightx = 1;
         gbc.weighty = 1;
         this.add(revise, gbc);
+        
+        
+		revision_type = new JComboBox<String>(Strings.revision_options);
+		gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.insets = toright;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        this.add(revision_type, gbc);
+        
+        
+        thresh_lab = new JLabel(Strings.action_thresh_title);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.SOUTHWEST;
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        gbc.insets = new Insets(10,0,0,0);
+       // gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        this.add(thresh_lab, gbc);
+        
+		threshold = new JTextField(5);
+		//set to inital state
+		threshold.setEditable(false);
+		gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        gbc.insets = new Insets(10,0,10,20);
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        this.add(threshold, gbc);
+        
+        /*
+         * Combobox listener
+         */
+        revision_type.addActionListener(this);
         
 		/*
 		 * The TrustGraphPanel class listens for this action
@@ -134,6 +186,22 @@ public class ActionPanel extends JPanel {
 		
 		
 
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String action = e.getActionCommand();
+		//System.out.println(action);
+		
+		if (revision_type.getSelectedItem().equals(Strings.revision_general))
+		{
+			threshold.setEditable(false);
+		}
+		else if (revision_type.getSelectedItem().equals(Strings.revision_naive))
+		{
+			threshold.setEditable(true);
+		}
 		
 	}
 

@@ -51,6 +51,7 @@ public final class Strings {
 	public static final String action_vocab_title = "Propositional Vocabulary";
 	public static final String action_revise_action = "Revise";
 	public static final String action_gen_trust_action = "Generate Trust Graph";
+	public static final String action_thresh_title = "Threshold";
 	
 	//revision types
 	public static final String revision_general = "General";
