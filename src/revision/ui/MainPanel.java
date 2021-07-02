@@ -54,13 +54,6 @@ public class MainPanel implements ActionListener {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLocationRelativeTo(null); 
         
-//		Set<Character> w = new LinkedHashSet<Character>();
-//		w.add('a');
-//		w.add('b');
-//		w.add('c');
-//		w.add('d');
-//		w.add('e');
-//		w.add('f');
 		weights_panel = new VarWeightsPanel();
         
 		main_panel = new JPanel();
