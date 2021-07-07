@@ -77,7 +77,6 @@ public class StateScoreResultsNaive extends StateScoreResults {
 					break;
 				}
 		}
-		
 	}
 	
 	/**

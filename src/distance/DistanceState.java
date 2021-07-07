@@ -8,10 +8,15 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.mariuszgromada.math.mxparser.Argument;
+import org.mariuszgromada.math.mxparser.Expression;
+import org.mariuszgromada.math.mxparser.Function;
+
 import aima.core.logic.common.ParserException;
 import constants.Strings;
 import distance.constraint.TriangleInequalityOperator;
 import distance.constraint.TriangleInequalityResponse;
+import distance.file.ReportFunction;
 import language.BeliefState;
 import language.State;
 import language.StateHelper;
@@ -79,6 +84,11 @@ public class DistanceState {
 		
 		//set the map with the new value
 		map.setDistance(s1, s2, new_val);
+	}
+	
+	
+	public void setMapMember(State s1, State s2, double val) {
+		map.setDistance(s1, s2, val);
 	}
 	
 	
@@ -153,6 +163,78 @@ public class DistanceState {
 		return update;
 		//return error messages
 		//return errors;
+	}
+	
+	private DistanceState modByReport(BeliefState b1, BeliefState b2, ReportFunction mod, int result, ArrayList<String> errors) throws Exception {
+		
+		DistanceState update = new DistanceState(this);
+		State s1, s2;
+		double current_val, new_val, mod_val;
+		String formula;
+		double formval;
+		//ArrayList<String> errors = new ArrayList<String>();
+		
+		for (int i = 0; i < b1.getBeliefs().size(); i++)
+		{
+			s1 = b1.getBeliefs().get(i);
+			for (int j = 0; j < b2.getBeliefs().size(); j++)
+			{
+				s2 = b2.getBeliefs().get(j);
+				//current value in the grid
+				current_val = update.map.getDistance(s1, s2);
+				
+				formula = getFormula(mod,s1,s2,result);
+				
+				//get upd val funciton
+				formval = updateValue(current_val, formula);
+				//check val is valid function
+				if (valueValid(current_val, formval, result))
+					update.setMapMember(s1,s2,formval);
+				else 
+					throw new Exception("Updated Value does not satisfy TrustGraph Constraints: Formula invalid");
+				
+			}
+		}
+		
+		return update;
+	}
+	
+	private String getFormula(ReportFunction mod, State s1, State s2, int result) throws Exception {
+		if (result == 1)
+			return mod.findPosFormula(s1, s2);
+		else if (result == 0)
+			return mod.findNegFormula(s1, s2);
+		else 
+			throw new Exception("Result field invalid");
+	}
+	
+	
+	private double updateValue(double currentval, String formula) throws Exception {
+		double updatedval;
+		try {
+			updatedval = Double.parseDouble(formula);
+		} catch (Exception ex) {
+			Function test = new Function(formula);
+			Argument v = new Argument(Strings.function_variable + currentval);
+			Expression e = new Expression(Strings.function_title, test, v);
+			updatedval = e.calculate();
+		}
+		return updatedval;
+	}
+	
+	
+	private boolean valueValid(double oldvalue, double newvalue, int result) {
+		if (result == 0)
+		{
+			if (newvalue <= oldvalue && newvalue > 0)
+				return true;
+		}
+		else if (result == 1)
+		{
+			if (newvalue >= oldvalue)
+				return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -252,10 +334,8 @@ public class DistanceState {
 		//BeliefState unsat_report = //add all but sat_report;
 		//if does not contain state in sat, must be a member of the unsat group
 		for (State state: map.getPossibleStates().getBeliefs())
-		{
 			if (!sat_report.contains(state))
 				unsat_report.addBelief(state);
-		}
 		
 		//find weights here?
 		//add weights to modByReport

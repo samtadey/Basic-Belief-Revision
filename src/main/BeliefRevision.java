@@ -261,7 +261,8 @@ public class BeliefRevision {
     	StateScoreResults results = genResultsType(sentence, beliefs.getMinStates(), this.threshold);
     	StateScore score;
     	
-    	//create a statescore for each belief
+    	//create a statescore between ALL states and
+    	//sentence states
     	for (State b : beliefs.getValidStates().getBeliefs())
     	{
     		score = new StateScore(b, beliefs.getRank(b));

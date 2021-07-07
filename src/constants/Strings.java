@@ -10,6 +10,20 @@ import language.State;
  */
 public final class Strings {
 
+	//
+	//Report Value Upload
+	//
+	public static final String report_file_default_header = "-defaults-";
+	public static final String report_file_allcombo_header = "-all combinations-";
+	public static final String report_file_combo_header = "-combinations-";
+	//parsing errors
+	public static final String report_file_error_default = "Default section invalid";
+	public static final String report_file_error_allcombo = "All Combinations section invalid";
+	public static final String report_file_error_combo = "Combinations section invalid";
+	
+	//for teh parser
+	public static final String function_variable = "v = ";
+	public static final String function_title = "f(v)";
 	
 	
 	//

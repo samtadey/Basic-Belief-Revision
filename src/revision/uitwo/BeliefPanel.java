@@ -257,6 +257,8 @@ public class BeliefPanel extends JPanel implements ActionListener {
 					return;
 				}
 				
+				System.out.println("Threshold: " + threshold);
+				
 				//parse the sentence
 				sent_string = sent.getText();
 				//convert the sentence into a beliefstate
