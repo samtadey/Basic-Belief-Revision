@@ -5,6 +5,7 @@ package distance.file;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import constants.Strings;
@@ -17,10 +18,11 @@ import language.State;
 public class ReportFunctionReader {
 	
 	Scanner file_reader;
+	ArrayList<Character> vars;
 	
-	
-	public ReportFunctionReader(File file) throws FileNotFoundException {
+	public ReportFunctionReader(File file, ArrayList<Character> vars) throws FileNotFoundException {
 		file_reader = new Scanner(file);
+		this.vars = vars;
 	}
 	
 	public void close() {
@@ -46,47 +48,24 @@ public class ReportFunctionReader {
 		
 	}
 	
-	//
-	//Do we add a vocabulary to the constructor?
-	//compare with number of vocab members?
-	//
-	public boolean isValidState(String state) {
-		return false;
+	//checks the length of vocab against the length of the
+	//state
+	public boolean isValidState(State state) {
+		return this.vars.size() == state.getState().length();
 	}
 	
+	public void checkStates(State s1) throws Exception {
+		if (!isValidState(s1))
+			throw new Exception(Strings.function_error_state_length(s1));
+	}
 	
-//	public ReportFunction parseFile() throws Exception {
-//		
-//		//default
-//		ReportFunction report = new ReportFunction("1", "1");
-//		String line;
-//		String prev_line = "";
-//		
-//		//parse default section
-//		while (file_reader.hasNextLine())
-//		{
-//			line = file_reader.nextLine();
-//			if (isEmpty(line) || isComment(line))
-//				continue;
-//			
-//			if (line.equals(Strings.report_file_default_header))
-//			{
-//				prev_line = parseDefaults(report);
-//				System.out.println(prev_line);
-//				break;
-//			}
-//		}
-//		
-//		
-//		if (prev_line.equals(Strings.report_file_allcombo_header))
-//			prev_line = parseAllCombo(report);
-//		
-//		if (prev_line.equals(Strings.report_file_combo_header))
-//			prev_line = parseCombo(report);
-//		
-//
-//		return report;
-//	}
+	public void checkStates(State s1, State s2) throws Exception {
+		if (!isValidState(s1))
+			throw new Exception(Strings.function_error_state_length(s1));
+		if (!isValidState(s2))
+			throw new Exception(Strings.function_error_state_length(s2));
+	}
+	
 	
 	public ReportFunction parseFile() throws Exception {
 		
@@ -173,6 +152,9 @@ public class ReportFunctionReader {
 			s1 = new State(items[0].trim());
 			s2 = new State(items[1].trim());
 			
+			//checks validity of states
+			checkStates(s1,s2);
+			
 			report.addToComboPos(s1, s2, items[2].trim());
 			report.addToComboNeg(s1, s2, items[3].trim());
 		}
@@ -201,6 +183,8 @@ public class ReportFunctionReader {
 			
 			s = new State(items[0].trim());
 			
+			checkStates(s);
+			
 			report.addToAllComboPos(s, items[1].trim());
 			report.addToAllComboNeg(s, items[2].trim());
 		}
@@ -208,30 +192,5 @@ public class ReportFunctionReader {
 		return "";
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		File file = new File("D:\\Documents\\CST_BTech\\Summer Research\\report_function.txt");
-		ReportFunction rep;
-		
-		try {
-			ReportFunctionReader read = new ReportFunctionReader(file);
-			rep = read.parseFile();
-			System.out.println("Pos: " + rep.getDefaultPos() + " Neg: " + rep.getDefaultNeg());
-
-			System.out.println(rep.findPosFormula(new State("00"), new State("01")));
-			System.out.println(rep.findPosFormula(new State("00"), new State("11")));
-			
-			System.out.println(rep.findNegFormula(new State("00"), new State("01")));
-			System.out.println(rep.findNegFormula(new State("00"), new State("11")));
-			System.out.println("Close: ");
-			read.close();
-		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
-		}
-
-
-	}
 
 }

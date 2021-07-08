@@ -87,9 +87,7 @@ public class DistanceState {
 	}
 	
 	
-	public void setMapMember(State s1, State s2, double val) {
-		map.setDistance(s1, s2, val);
-	}
+
 	
 	
 	
@@ -165,77 +163,7 @@ public class DistanceState {
 		//return errors;
 	}
 	
-	private DistanceState modByReport(BeliefState b1, BeliefState b2, ReportFunction mod, int result, ArrayList<String> errors) throws Exception {
-		
-		DistanceState update = new DistanceState(this);
-		State s1, s2;
-		double current_val, new_val, mod_val;
-		String formula;
-		double formval;
-		//ArrayList<String> errors = new ArrayList<String>();
-		
-		for (int i = 0; i < b1.getBeliefs().size(); i++)
-		{
-			s1 = b1.getBeliefs().get(i);
-			for (int j = 0; j < b2.getBeliefs().size(); j++)
-			{
-				s2 = b2.getBeliefs().get(j);
-				//current value in the grid
-				current_val = update.map.getDistance(s1, s2);
-				
-				formula = getFormula(mod,s1,s2,result);
-				
-				//get upd val funciton
-				formval = updateValue(current_val, formula);
-				//check val is valid function
-				if (valueValid(current_val, formval, result))
-					update.setMapMember(s1,s2,formval);
-				else 
-					throw new Exception("Updated Value does not satisfy TrustGraph Constraints: Formula invalid");
-				
-			}
-		}
-		
-		return update;
-	}
-	
-	private String getFormula(ReportFunction mod, State s1, State s2, int result) throws Exception {
-		if (result == 1)
-			return mod.findPosFormula(s1, s2);
-		else if (result == 0)
-			return mod.findNegFormula(s1, s2);
-		else 
-			throw new Exception("Result field invalid");
-	}
-	
-	
-	private double updateValue(double currentval, String formula) throws Exception {
-		double updatedval;
-		try {
-			updatedval = Double.parseDouble(formula);
-		} catch (Exception ex) {
-			Function test = new Function(formula);
-			Argument v = new Argument(Strings.function_variable + currentval);
-			Expression e = new Expression(Strings.function_title, test, v);
-			updatedval = e.calculate();
-		}
-		return updatedval;
-	}
-	
-	
-	private boolean valueValid(double oldvalue, double newvalue, int result) {
-		if (result == 0)
-		{
-			if (newvalue <= oldvalue && newvalue > 0)
-				return true;
-		}
-		else if (result == 1)
-		{
-			if (newvalue >= oldvalue)
-				return true;
-		}
-		return false;
-	}
+
 	
 	/**
 	 * 
@@ -314,6 +242,42 @@ public class DistanceState {
 		return allinvalid;
 	}
 	
+	/**
+	 * Construct a Minimax distance DistanceMap computing the shortest path between all pairs of states in the DistanceMap member object.
+	 * 
+	 * @return
+	 */
+	public DistanceMap miniMaxDistance() {
+		DistanceMap mm_dist = new DistanceMap(this.map);
+		State si,sj,sk;
+		ArrayList<State> states;
+		int i,j,k,n;
+		double inter_dist;
+		
+		n = mm_dist.getPossibleStates().getBeliefs().size();
+		states = mm_dist.getPossibleStates().getBeliefs();
+		
+		for (k = 0; k < n; k++)
+		{
+			sk = states.get(k);
+			for (j = 0; j < n; j++)
+			{
+				sj = states.get(j);
+				for (i = 0; i < n; i++)
+				{
+					si = states.get(i);
+					inter_dist = mm_dist.getDistance(si, sk) + mm_dist.getDistance(sk, sj);
+					if (inter_dist < mm_dist.getDistance(si, sj))
+					{
+						mm_dist.setDistance(si, sj, inter_dist);
+					}
+				}
+			}
+		}
+		
+		return mm_dist;
+	}
+	
 
 	/*
 	 * Modifies the distance function by the Report.
@@ -348,41 +312,107 @@ public class DistanceState {
 
 	}
 	
+
+	//
+	//Specific UI2 stuff
+	//
 	
-	/**
-	 * Construct a Minimax distance DistanceMap computing the shortest path between all pairs of states in the DistanceMap member object.
-	 * 
-	 * @return
-	 */
-	public DistanceMap miniMaxDistance() {
-		DistanceMap mm_dist = new DistanceMap(this.map);
-		State si,sj,sk;
-		ArrayList<State> states;
-		int i,j,k,n;
-		double inter_dist;
+	
+	private DistanceState modByReport(BeliefState b1, BeliefState b2, ReportFunction mod, int result, ArrayList<String> errors) throws Exception {
 		
-		n = this.map.getPossibleStates().getBeliefs().size();
-		states = this.map.getPossibleStates().getBeliefs();
+		DistanceState update = new DistanceState(this);
+		State s1, s2;
+		double current_val;
+		String formula;
+		double formval;
+		//ArrayList<String> errors = new ArrayList<String>();
 		
-		for (k = 0; k < n; k++)
+		for (int i = 0; i < b1.getBeliefs().size(); i++)
 		{
-			sk = states.get(k);
-			for (j = 0; j < n; j++)
+			s1 = b1.getBeliefs().get(i);
+			for (int j = 0; j < b2.getBeliefs().size(); j++)
 			{
-				sj = states.get(j);
-				for (i = 0; i < n; i++)
-				{
-					si = states.get(i);
-					inter_dist = this.map.getDistance(si, sk) + this.map.getDistance(sk, sj);
-					if (inter_dist < this.map.getDistance(si, sj))
-					{
-						mm_dist.setDistance(si, sj, inter_dist);
-					}
-				}
+				s2 = b2.getBeliefs().get(j);
+				//current value in the grid
+				current_val = update.map.getDistance(s1, s2);
+				
+				formula = getFormula(mod,s1,s2,result);
+				
+				//get upd val funciton
+				formval = updateValue(current_val, formula, result);
+				//check val is valid function
+				if (valueValid(current_val, formval, result))
+					update.setMapMember(s1,s2,formval);
+				else 
+					throw new Exception("Updated Value does not satisfy TrustGraph Constraints: Formula invalid");
+				
 			}
 		}
 		
-		return mm_dist;
+		return update;
+	}
+	
+	
+	public void setMapMember(State s1, State s2, double val) {
+		map.setDistance(s1, s2, val);
+	}
+	
+	private String getFormula(ReportFunction mod, State s1, State s2, int result) throws Exception {
+		if (result == 1)
+			return mod.findPosFormula(s1, s2);
+		else if (result == 0)
+			return mod.findNegFormula(s1, s2);
+		else 
+			throw new Exception("Result field invalid");
+	}
+	
+	
+	private double updateValue(double currentval, String formula, int rep_result) throws Exception {
+		double updatedval;
+		try {
+			updatedval = Double.parseDouble(formula);
+			if (rep_result == 1)
+				return currentval + updatedval;
+			return currentval - updatedval;
+		} catch (Exception ex) {
+			Function test = new Function(formula);
+			Argument v = new Argument(Strings.function_variable + currentval);
+			Expression e = new Expression(Strings.function_title, test, v);
+			updatedval = e.calculate();
+		}
+		return updatedval;
+	}
+	
+	
+	private boolean valueValid(double oldvalue, double newvalue, int result) {
+		if (result == 0)
+		{
+			if (newvalue <= oldvalue && newvalue > 0)
+				return true;
+		}
+		else if (result == 1)
+		{
+			if (newvalue >= oldvalue)
+				return true;
+		}
+		return false;
+	}
+	
+	
+	public DistanceState addReport(Report r, ReportFunction mod, ArrayList<String> errors) throws Exception {
+		
+		BeliefState sat_report = r.convertFormToStates(map.getVocab());
+		BeliefState unsat_report = new BeliefState();
+		int result = r.getReportedVal();
+		
+		//BeliefState unsat_report = //add all but sat_report;
+		//if does not contain state in sat, must be a member of the unsat group
+		for (State state: map.getPossibleStates().getBeliefs())
+			if (!sat_report.contains(state))
+				unsat_report.addBelief(state);
+		
+		return modByReport(sat_report, unsat_report, mod, result, errors);
+		
 	}
 
 	

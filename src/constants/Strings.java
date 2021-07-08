@@ -24,6 +24,9 @@ public final class Strings {
 	//for teh parser
 	public static final String function_variable = "v = ";
 	public static final String function_title = "f(v)";
+	public static final String function_error_state_length(State s) {
+		return "Invalid state in file: " + s.getState();
+	}
 	
 	
 	//
@@ -82,6 +85,7 @@ public final class Strings {
 	public static final String report_formula_title = "Formula";
 	public static final String report_result_title = "Result";
 	public static final String report_add_report_action = "Add Reports";
+	public static final String report_upload_functions = "Upload Functions";
 	
 	//
 	//MiniMaxDistance Panel

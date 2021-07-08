@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -30,6 +31,8 @@ import distance.constraint.TriangleInequalityResponse;
 import distance.constraint.TriangleInequalityResponseIgnore;
 import distance.constraint.TriangleInequalityResponseNextValid;
 import distance.constraint.TriangleInequalityResponseNoChange;
+import distance.file.ReportFunction;
+import distance.file.ReportFunctionReader;
 import language.BeliefState;
 import language.State;
 import propositional_translation.InputTranslation;
@@ -127,26 +130,31 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
     	{
     		//String triangle_ineq_action;
     		//TriangleInequalityOperator op;
-    		TriangleInequalityResponse tri_res = new TriangleInequalityResponseIgnore(TriangleInequalityOperator.IGNORE);
+    		//TriangleInequalityResponse tri_res = new TriangleInequalityResponseIgnore(TriangleInequalityOperator.IGNORE);
     		
-    		if (!validMembers(distance, tri_res))
+    		if (!validMembers(distance))
     			return;
 
     		//Define error collection
     		ArrayList<String> errormsg = new ArrayList<String>();
-    		HashMap<Character, Double> var_weights;
     		DistanceState upd;
+    		ReportFunction mod;
+    		
     		try {
     			vars = InputTranslation.getVocab(ActionPanel.vocab.getText());
-	    		//
-	    		//Parse weights
-	    		//
-	    		var_weights = TrustGraphHandler.setWeightsOne(vars);
-	    		
+
+    			//
+    			//File will be uploaded before this point
+    			//
+    			if (ReportPanel.report_func != null)
+    				mod = ReportPanel.report_func;
+    			else
+    				mod = new ReportFunction(); //default
+    			
 	    		//
 	    		//Add Reports to Trust Graph. Collect any logic errors
 	    		//
-	    		upd = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, 1.0, distance, tri_res, var_weights, errormsg);
+	    		upd = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, mod, distance, errormsg);
 	    		System.out.println(errormsg);
 	    		//
 	    		//set errors to errorpane
@@ -165,13 +173,6 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	    		//New minimax graph
 	    		//
 	    		minimax.setMap(distance.miniMaxDistance());
-	    		//
-	    		//Refresh Frame
-	    		//
-	    		System.out.println("Graph");
-	    		distance.getMap().stateToConsole();
-	    		System.out.println("MiniMax");
-	    		minimax.getMap().stateToConsole();
 	    		
 	    		MainPanel.f.validate();
     		} catch (Exception ex) {
@@ -239,7 +240,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 				
 				//checks important member objects are not null
 				//sets error messages if null
-	    		if (!validMembers(distance, tri_res))
+	    		if (!validMembers(distance))
 	    			return;
 				
 	    		current_dist = distance.getMap().getDistance(s1, s2);
@@ -257,10 +258,10 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 				//recalculate minimax
 				minimax.setMap(distance.miniMaxDistance());
 				
-	    		System.out.println("Graph");
-	    		distance.getMap().stateToConsole();
-	    		System.out.println("MiniMax");
-	    		minimax.getMap().stateToConsole();
+//	    		System.out.println("Graph");
+//	    		distance.getMap().stateToConsole();
+//	    		System.out.println("MiniMax");
+//	    		minimax.getMap().stateToConsole();
 			}
 			else
 			{
@@ -297,7 +298,7 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	 * @param tri_res TriangleInequalityResponse object
 	 * @return boolean indicating whether any of the object parameters are null
 	 */
-	private boolean validMembers(DistanceState distance, TriangleInequalityResponse tri_res) {
+	private boolean validMembers(DistanceState distance) {
 		boolean isvalid = true;
 		
 		if (distance == null) 
@@ -307,11 +308,6 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 			isvalid = false;
 		}
 		
-		if (tri_res == null)
-		{
-			ErrorHandler.addError(Strings.report_add_report_action, Strings.report_add_report_action, Strings.error_constraint_tri_eq);
-			isvalid = false;
-		}
 		
 		return isvalid;
 	}

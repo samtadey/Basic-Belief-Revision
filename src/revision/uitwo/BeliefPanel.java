@@ -72,8 +72,6 @@ public class BeliefPanel extends JPanel implements ActionListener {
         Insets labels = new Insets(10, 40, 0, 0);
         allfieldsbutright = new Insets(5, 40, 20, 0);
         	
-		//this.setBackground(Color.GREEN);
-		
 		//
 		//Belief Column
 		//
@@ -85,15 +83,6 @@ public class BeliefPanel extends JPanel implements ActionListener {
         gbc.weightx = 1;
         this.add(bel_lab, gbc);
 		
-//        bel = new JTextArea(10,10);
-//        gbc = new GridBagConstraints();
-//        gbc.fill = GridBagConstraints.BOTH;
-//        gbc.gridx = 0;
-//        gbc.gridy = 1;
-//        gbc.insets = allfieldsbutright;
-//        gbc.weightx = 1;
-//        bel.setBorder(UISettings.componentborder);
-//        this.add(bel, gbc);
         
         rank = new RankingPanel();
         gbc = new GridBagConstraints();
