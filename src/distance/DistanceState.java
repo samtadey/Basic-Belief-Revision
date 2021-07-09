@@ -318,6 +318,18 @@ public class DistanceState {
 	//
 	
 	
+	/**
+	 * Modify the DistanceState based on each State combination between b1 and b2. 
+	 * An edge value between two state vertexes will be modified by a value found in the ReportFunction object
+	 * 
+	 * @param b1
+	 * @param b2
+	 * @param mod
+	 * @param result
+	 * @param errors
+	 * @return
+	 * @throws Exception
+	 */
 	private DistanceState modByReport(BeliefState b1, BeliefState b2, ReportFunction mod, int result, ArrayList<String> errors) throws Exception {
 		
 		DistanceState update = new DistanceState(this);
@@ -325,7 +337,6 @@ public class DistanceState {
 		double current_val;
 		String formula;
 		double formval;
-		//ArrayList<String> errors = new ArrayList<String>();
 		
 		for (int i = 0; i < b1.getBeliefs().size(); i++)
 		{
@@ -333,19 +344,21 @@ public class DistanceState {
 			for (int j = 0; j < b2.getBeliefs().size(); j++)
 			{
 				s2 = b2.getBeliefs().get(j);
+				
 				//current value in the grid
 				current_val = update.map.getDistance(s1, s2);
 				
-				formula = getFormula(mod,s1,s2,result);
+				//get formula
+				formula = findFormula(mod, s1, s2, result);
 				
-				//get upd val funciton
+				//update trust graph value with formula
 				formval = updateValue(current_val, formula, result);
-				//check val is valid function
+				
+				//set value in trust graph if the value is valid
 				if (valueValid(current_val, formval, result))
 					update.setMapMember(s1,s2,formval);
 				else 
 					throw new Exception("Updated Value does not satisfy TrustGraph Constraints: Formula invalid");
-				
 			}
 		}
 		
@@ -353,11 +366,29 @@ public class DistanceState {
 	}
 	
 	
+	/**
+	 * An unrestricted setMapMember method. Sets s1 and s2 in the DistanceMap to the val parameter.
+	 * 
+	 * @param s1
+	 * @param s2
+	 * @param val
+	 */
 	public void setMapMember(State s1, State s2, double val) {
 		map.setDistance(s1, s2, val);
 	}
 	
-	private String getFormula(ReportFunction mod, State s1, State s2, int result) throws Exception {
+	/**
+	 * Find the formula based on the type of report being applied to the DistanceState.
+	 * Positive formula for positive reports and negative formula for negative reports.
+	 * 
+	 * @param mod
+	 * @param s1
+	 * @param s2
+	 * @param result
+	 * @return
+	 * @throws Exception
+	 */
+	private String findFormula(ReportFunction mod, State s1, State s2, int result) throws Exception {
 		if (result == 1)
 			return mod.findPosFormula(s1, s2);
 		else if (result == 0)
@@ -366,14 +397,24 @@ public class DistanceState {
 			throw new Exception("Result field invalid");
 	}
 	
-	
+	/**
+	 * Find the updated value to set in the DistanceState. Return the new value produced using this formula.
+	 * 
+	 * @param currentval
+	 * @param formula
+	 * @param rep_result
+	 * @return
+	 * @throws Exception
+	 */
 	private double updateValue(double currentval, String formula, int rep_result) throws Exception {
 		double updatedval;
+		//if the formula is a double set it
 		try {
 			updatedval = Double.parseDouble(formula);
 			if (rep_result == 1)
 				return currentval + updatedval;
 			return currentval - updatedval;
+		//if the formula is a formula parse and find the new value using the formula
 		} catch (Exception ex) {
 			Function test = new Function(formula);
 			Argument v = new Argument(Strings.function_variable + currentval);
@@ -383,7 +424,17 @@ public class DistanceState {
 		return updatedval;
 	}
 	
-	
+	/**
+	 * Determines if the new value calculated using the formula is a valid value given the report.
+	 * New values produced by a positive report must be >= the old value
+	 * New values produced by a negative report must be <= the old value
+	 * Values must be greater than 0.
+	 * 
+	 * @param oldvalue
+	 * @param newvalue
+	 * @param result
+	 * @return
+	 */
 	private boolean valueValid(double oldvalue, double newvalue, int result) {
 		if (result == 0)
 		{
@@ -398,22 +449,29 @@ public class DistanceState {
 		return false;
 	}
 	
-	
+	/**
+	 * Add a report to the DistanceState and return the updated DistanceState
+	 * 
+	 * @param r
+	 * @param mod
+	 * @param errors
+	 * @return
+	 * @throws Exception
+	 */
 	public DistanceState addReport(Report r, ReportFunction mod, ArrayList<String> errors) throws Exception {
-		
+	
+		//generate Beliefstates that satisfy the report formula
+
 		BeliefState sat_report = r.convertFormToStates(map.getVocab());
 		BeliefState unsat_report = new BeliefState();
 		int result = r.getReportedVal();
 		
-		//BeliefState unsat_report = //add all but sat_report;
-		//if does not contain state in sat, must be a member of the unsat group
+		//create Beliefstate that isn't satisfied by the report formula
 		for (State state: map.getPossibleStates().getBeliefs())
 			if (!sat_report.contains(state))
 				unsat_report.addBelief(state);
 		
+		//return a DistanceState that has been modified by the report
 		return modByReport(sat_report, unsat_report, mod, result, errors);
-		
 	}
-
-	
 }

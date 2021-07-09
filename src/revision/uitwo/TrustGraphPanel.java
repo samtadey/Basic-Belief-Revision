@@ -10,10 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -22,18 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import constants.Strings;
-import constants.UIToOperatorPairs;
-import distance.DistanceMap;
 import distance.DistanceState;
-import distance.VariableWeights;
-import distance.constraint.TriangleInequalityOperator;
-import distance.constraint.TriangleInequalityResponse;
-import distance.constraint.TriangleInequalityResponseIgnore;
-import distance.constraint.TriangleInequalityResponseNextValid;
-import distance.constraint.TriangleInequalityResponseNoChange;
 import distance.file.ReportFunction;
-import distance.file.ReportFunctionReader;
-import language.BeliefState;
 import language.State;
 import propositional_translation.InputTranslation;
 import revision.uitwo.handler.ErrorHandler;
@@ -66,11 +53,9 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	
 	
 	public TrustGraphPanel(MainPanel main) {
-        
         //default
         visual = new GridLayout(3, 3);
         this.setLayout(visual);
-
         this.setBackground(Color.WHITE);
         this.setBorder(UISettings.panelborder);
 	}
@@ -81,102 +66,80 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	public void actionPerformed(ActionEvent e) {
 		int grids;
         String s = e.getActionCommand();
-        //System.out.println("Action Trust Panel");
-        //System.out.println(s);
         Set<Character> vars;   
          
+        //genereate default grid action
 		if (s.equals(Strings.action_gen_trust_action))
     	{	       
-			
     		try {
-    			//
-    			//Create new distance object with user specified propositional variables
-    			//
+    			//propositional variables
     			vars = InputTranslation.getVocab(ActionPanel.vocab.getText());
-    			//validate vocab?
     			
+    			//create default trust graph
             	distance = new DistanceState(vars);
+            	
+            	//width and length of grid
             	grids = distance.getMap().getPossibleStates().getBeliefs().size();
             	
-            	//
-            	//Init/Reset Grid JTextArea's
-            	//
+            	//reset grid UI items
             	grid_text = TrustGraphHandler.resetGridItems(grids);
-            	//
-            	//Set GridLayout Row and Column values with possible states
-            	//
+            	
+            	//set the grid's width and height
             	visual.setColumns(grids+1);
             	visual.setRows(grids+1);
-            	//
-        		//Rebuild Matrix with updated trust values
-        		//
+            	
+        		//Build trust graph with DistanceState object
             	TrustGraphHandler.rebuildGrid(this, grid_text, distance);
-            	//
-            	//Create MiniMax object
-            	//
+
+            	//Create the minimax DistanceState object
             	minimax = new DistanceState(vars);
 
-        		//
         		//Refresh Frame
-        		//
                 MainPanel.f.validate();
-
             } catch (Exception ex) {
-            	System.out.println(ex);
             	ErrorHandler.addError(Strings.action_gen_trust_action, ex.toString());
             }
     	}
+		//add report action
     	else if (s.equals(Strings.report_add_report_action))
-    	{
-    		//String triangle_ineq_action;
-    		//TriangleInequalityOperator op;
-    		//TriangleInequalityResponse tri_res = new TriangleInequalityResponseIgnore(TriangleInequalityOperator.IGNORE);
-    		
+    	{	
     		if (!validMembers(distance))
     			return;
 
-    		//Define error collection
     		ArrayList<String> errormsg = new ArrayList<String>();
     		DistanceState upd;
     		ReportFunction mod;
     		
     		try {
+    			//get propositional variables
     			vars = InputTranslation.getVocab(ActionPanel.vocab.getText());
 
-    			//
-    			//File will be uploaded before this point
-    			//
+    			//get ReportFunction object
     			if (ReportPanel.report_func != null)
     				mod = ReportPanel.report_func;
     			else
     				mod = new ReportFunction(); //default
     			
-	    		//
-	    		//Add Reports to Trust Graph. Collect any logic errors
-	    		//
+	    		//Add Reports to Trust Graph. Collect any logic errors in errormsg
 	    		upd = TrustGraphHandler.addReportAll(ReportPanel.formulae, ReportPanel.results, mod, distance, errormsg);
-	    		System.out.println(errormsg);
-	    		//
+
 	    		//set errors to errorpane
-	    		//
 	    		ErrorHandler.addErrorGroup(Strings.report_add_report_action, errormsg);
-	    		//System.out.println(errormsg);
+
 	    		//set new DistanceState
 	    		distance.setMap(upd.getMap());
-	    		//
-	    		//Rebuild Matrix with updated trust values
-	    		//
+	    		
+	    		//Rebuild trust graph
 	    		grids = distance.getMap().getPossibleStates().getBeliefs().size();
 	    		grid_text = TrustGraphHandler.resetGridItems(grids);
 	    		TrustGraphHandler.rebuildGrid(this, grid_text, distance);
-	    		//
-	    		//New minimax graph
-	    		//
+
+	    		//set new minimax trust graph
 	    		minimax.setMap(distance.miniMaxDistance());
 	    		
+	    		//refresh frame
 	    		MainPanel.f.validate();
     		} catch (Exception ex) {
-    			System.out.println("Panel Handler");
             	ErrorHandler.addError(Strings.action_gen_trust_action, ex.toString());
     		}
     	}
@@ -212,10 +175,8 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	@Override
 	public void focusLost(FocusEvent e) {
 		int indx, indy;
-		double upd_dist,current_dist, new_val;
+		double new_val;
 		State s1, s2;
-		//BeliefState invalid;
-		TriangleInequalityResponse tri_res;
 		ArrayList<String> errors = new ArrayList<String>();
 		
 		Component tbox = e.getComponent();
@@ -236,39 +197,30 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 			//if invalid input, reset to previous value
 			if (new_val > 0)
 			{
-				tri_res = new TriangleInequalityResponseIgnore(TriangleInequalityOperator.IGNORE);
-				
-				//checks important member objects are not null
-				//sets error messages if null
+				//trust graph not null
 	    		if (!validMembers(distance))
 	    			return;
 				
-	    		current_dist = distance.getMap().getDistance(s1, s2);
-				distance.setMapMember(s1, s2, current_dist, new_val, tri_res, errors);
-				//newly calculated distance
-				upd_dist = distance.getMap().getDistance(s1, s2);
+	    		//set value if value is valid
+				distance.setMapMember(s1, s2, new_val);
 				
-				//set new value
-				//grid_text.get(indx).get(indy).setText(Double.toString(upd_dist));
-				grid_text.get(indx).get(indy).setText(TrustGraphHandler.setFormattedText(upd_dist));
+				//set new value to UI
+				grid_text.get(indx).get(indy).setText(TrustGraphHandler.setFormattedText(new_val));
+				
 				//set errors to pane
 				ErrorHandler.addErrorGroup(Strings.action_trust_graph_manual, errors);
 				
-				//
 				//recalculate minimax
 				minimax.setMap(distance.miniMaxDistance());
 				
-//	    		System.out.println("Graph");
-//	    		distance.getMap().stateToConsole();
-//	    		System.out.println("MiniMax");
-//	    		minimax.getMap().stateToConsole();
 			}
 			else
 			{
+				//reset to previous value
 				resetManualInputTarget(indx,indy,Strings.action_trust_graph_manual, "Value " + new_val + " invalid");
 			}
 			
-		//if invalid input, reset to previous value
+		//reset to previous value
 		} catch (Exception ex) {
 			resetManualInputTarget(indx,indy,Strings.action_trust_graph_manual,ex.getMessage());
 		}

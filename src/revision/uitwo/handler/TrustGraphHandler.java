@@ -5,19 +5,15 @@ package revision.uitwo.handler;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Set;
 
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import constants.ArithmeticOperations;
 import constants.PropositionalSymbols;
 import constants.Strings;
 import distance.DistanceState;
 import distance.Report;
-import distance.constraint.TriangleInequalityResponse;
 import distance.file.ReportFunction;
 import language.BeliefState;
 import language.State;
@@ -50,33 +46,6 @@ public class TrustGraphHandler {
 	}
 	
 	
-//	public static HashMap<Character, Double> setVarWeights(ArrayList<JLabel> vars, ArrayList<JTextField> weights) throws Exception {
-//		
-//		if (vars.size() != weights.size())
-//			throw new Exception("Weight label size not equal to text box size");
-//		
-//		HashMap<Character, Double> wmap = new HashMap<Character, Double>();
-//		double w;
-//		
-//		//will throw error if invalid input
-//		for (int i = 0; i < vars.size(); i++)
-//		{
-//			try {
-//				w = Double.parseDouble(weights.get(i).getText());
-//			} catch (Exception ex) {
-//				throw new Exception("Weight input is not a Double");
-//			}
-//			
-//			if (vars.get(i).getText().length() != 1)
-//				throw new Exception("Weight variable is not a Character");
-//			
-//			wmap.put(vars.get(i).getText().charAt(0), w);
-//		}
-//			
-//		
-//		return wmap;
-//	}
-	
 	/*
 	 * rebuildGrid builds the TrustGraphPanel from the DistanceState object.
 	 * 
@@ -93,10 +62,6 @@ public class TrustGraphHandler {
 		double dist;
 		JTextField tf;
 		BeliefState allstates = distance.getMap().getPossibleStates();
-		//DecimalFormat dc = new DecimalFormat(Strings.text_format);
-		//int grids = allstates.getBeliefs().size();
-		
-		//GridBagConstraints gbc = new GridBagConstraints();
 		
 		grid.removeAll();
 	
@@ -132,59 +97,17 @@ public class TrustGraphHandler {
     		}
     	}
 	}
-	
-//	public static HashMap<Character,Double> setWeightsOne(Set<Character> vocab) {
-//		HashMap<Character,Double> weights = new HashMap<Character,Double>();
-//		
-//		for (Character c : vocab)
-//			weights.put(c, 1.0);
-//		
-//		return weights;
-//	}
-	
-	
-//	public static DistanceState addReportAll(ArrayList<JTextField> t_formula, ArrayList<JTextField> t_result, 
-//			double weight, DistanceState distance, TriangleInequalityResponse tri_res, HashMap<Character, Double> var_weights, ArrayList<String> errormsg) throws Exception {
-//		
-//		DistanceState update = new DistanceState(distance);
-//		Report report;
-//		String op;
-//
-//		for (int i = 0; i < t_formula.size(); i++)
-//		{
-//			//if formula not empty
-//			//validate input
-//			if (!t_formula.get(i).getText().isEmpty())
-//			{
-//				try {
-//					//invalid input will be reported in the error pane
-//					validateReportInput(t_formula.get(i), t_result.get(i), distance.getMap().getVocab());
-//					
-//					//create report object
-//					report = new Report(t_formula.get(i).getText(), Integer.parseInt(t_result.get(i).getText()));
-//					
-//					//set operation by report result
-//					if (t_result.get(i).getText().equals("0"))
-//						op = ArithmeticOperations.SUBTRACTION;
-//					else
-//						op = ArithmeticOperations.ADDITION;
-//					
-//					//op = (String) t_op.get(i).getSelectedItem();
-//					//get weight for report
-//					
-//					//run addreport
-//					update = update.addReport(report, op, weight, tri_res, var_weights, errormsg);
-//				} catch (Exception ex) {
-//					//add error to error list
-//					errormsg.add(Strings.errorReportInputInvalid(i+1, ex.getMessage()));
-//				}
-//			}
-//		}
-//		
-//		return update;
-//	}
-//	
-	
+
+	/**
+	 * 
+	 * @param t_formula
+	 * @param t_result
+	 * @param mod
+	 * @param distance
+	 * @param errormsg
+	 * @return
+	 * @throws Exception
+	 */
 	public static DistanceState addReportAll(ArrayList<JTextField> t_formula, ArrayList<JTextField> t_result, ReportFunction mod,
 			DistanceState distance, ArrayList<String> errormsg) throws Exception {
 		

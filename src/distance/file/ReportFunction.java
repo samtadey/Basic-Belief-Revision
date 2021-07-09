@@ -8,8 +8,18 @@ import java.util.HashMap;
 import language.State;
 
 /**
+ * A ReportFunction object stores String formula's that are applied to state combinations during the Add Report process on the Trust Graph.
+ * There are multiple fields of customization that can be used to modify trust graph scores. 
+ * 
+ * Default values - Most General
+ * All Combo values 
+ * Combo values - Most specific
+ * 
+ * Should take the forms
+ * 	- "1"
+ *  - "f(v) = 1 + v"
+
  * @author sam_t
- *
  */
 public class ReportFunction {
 	
@@ -25,7 +35,7 @@ public class ReportFunction {
 	private HashMap<State, HashMap<State, String>> combo_neg;
 	
 	/**
-	 * 
+	 * Default Report Function Constructor
 	 */
 	public ReportFunction() {
 		this.default_pos = DEFAULTS;
@@ -39,7 +49,7 @@ public class ReportFunction {
 	}
 
 	/**
-	 * 
+	 * Report Function Constructor, set the default positive and negative formulas
 	 */
 	public ReportFunction(String pos, String neg) {
 		this.default_pos = pos;
@@ -52,41 +62,79 @@ public class ReportFunction {
 		this.combo_neg = new HashMap<State, HashMap<State, String>>();
 	}
 	
-
-	
-	//getters
-	public String getDefaultPos() {
+	/**
+	 * Get default positive formula
+	 * @return default positive formula
+	 */
+	private String getDefaultPos() {
 		return default_pos;
 	}
 
-	public String getDefaultNeg() {
+	/**
+	 * Get default negative formula
+	 * @return default negative formula
+	 */
+	private String getDefaultNeg() {
 		return default_neg;
 	}
 	
-	
-	public void setDefaultPos(String pos) {
+	/**
+	 * Set default positive formula
+	 * @param pos String
+	 */
+	protected void setDefaultPos(String pos) {
 		this.default_pos = pos;
 	}
 	
-	public void setDefaultNeg(String neg) {
+	/**
+	 * Set default negative formula
+	 * @param neg String
+	 */
+	protected void setDefaultNeg(String neg) {
 		this.default_neg = neg;
 	}
 
-	public String getAllComboPos(State s) {
+	/**
+	 * Get the positive formula for all combinations of the state parameter
+	 * If there exists a entry for State : 00
+	 * 	- This would be applied to these state combinations: 00/01, 00/10, 00/11
+	 * 
+	 * @param s State
+	 * @return String or null
+	 */
+	private String getAllComboPos(State s) {
 		return all_combo_pos.get(s);
 	}
 
-
-	public String getAllComboNeg(State s) {
+	/**
+	 * Get the negative formula for all combinations of the state parameter
+	 * If there exists a entry for State : 00
+	 * 	- This would be applied to these state combinations: 00/01, 00/10, 00/11
+	 * 
+	 * @param s State
+	 * @return String or null
+	 */
+	private String getAllComboNeg(State s) {
 		return all_combo_neg.get(s);
 	}
 
-	//setters
-	public void addToAllComboPos(State st, String val) {
+	/**
+	 * Add entry to the All Combo Positive structure
+	 * 
+	 * @param st State
+	 * @param val String formula
+	 */
+	protected void addToAllComboPos(State st, String val) {
 		this.all_combo_pos.put(st, val);
 	}
 	
-	public void addToAllComboNeg(State st, String val) {
+	/**
+	 * Add entry to the All Combo Negative structure
+	 * 
+	 * @param st State
+	 * @param val String formula
+	 */
+	protected void addToAllComboNeg(State st, String val) {
 		this.all_combo_neg.put(st, val);
 	}
 	
@@ -98,7 +146,7 @@ public class ReportFunction {
 	 * @param t
 	 * @param val
 	 */
-	public void addToComboPos(State s, State t, String val) {
+	protected void addToComboPos(State s, State t, String val) {
 		addToCombo(this.combo_pos, s, t, val);
 	}
 	
@@ -109,7 +157,7 @@ public class ReportFunction {
 	 * @param t
 	 * @param val
 	 */
-	public void addToComboNeg(State s, State t, String val) {
+	protected void addToComboNeg(State s, State t, String val) {
 		addToCombo(this.combo_neg, s, t, val);
 	}
 	
@@ -153,16 +201,37 @@ public class ReportFunction {
 		}
 	}
 	
-	
-	public String getComboPos(State s, State t) {
+	/**
+	 * Get Positive State combination formula
+	 * 
+	 * @param s State
+	 * @param t State
+	 * @return String formula or null
+	 */
+	private String getComboPos(State s, State t) {
 		return getCombo(this.combo_pos, s, t);
 	}
 
 
-	public String getComboNeg(State s, State t) {
+	/**
+	 * Get Negative State combination formula
+	 * 
+	 * @param s State
+	 * @param t State
+	 * @return String formula or null
+	 */
+	private String getComboNeg(State s, State t) {
 		return getCombo(this.combo_neg, s, t);
 	}
 	
+	/**
+	 * Gets the formula value for the specified state combination parameter
+	 * 
+	 * @param pos_or_neg HashMap<State, HashMap<State, String>> instance variable
+	 * @param s State
+	 * @param t State
+	 * @return String formula or null
+	 */
 	private String getCombo(HashMap<State, HashMap<State, String>> pos_or_neg, State s, State t) {
 		int result = s.compareTo(t);
 		
@@ -181,12 +250,21 @@ public class ReportFunction {
 	}
 	
 	
-	//starts s
-	//not checking the all combinations structures until problem solved
+	/**
+	 * Find the Positive Formula to use for a given State combination
+	 * Checks each positive data structure from most specific to most general
+	 * Combo -> AllCombo -> Default
+	 * When an entry is found in any of those structures, that formula is returned
+	 * as the formula for the state combination (s1,s2) to use
+	 * 
+	 * @param s1 State
+	 * @param s2 State
+	 * @return String formula
+	 */
 	public String findPosFormula(State s1, State s2) {
 		String val;
 		
-		val = getCombo(this.combo_neg, s1, s2);
+		val = getComboPos(s1, s2);
 		
 		//if no specific val
 		//use default
@@ -197,12 +275,21 @@ public class ReportFunction {
 		
 	}
 	
-	//starts s
-	//not checking the all combinations structures until problem solved
+	/**
+	 * Find the Negative Formula to use for a given State combination
+	 * Checks each positive data structure from most specific to most general
+	 * Combo -> AllCombo -> Default
+	 * When an entry is found in any of those structures, that formula is returned
+	 * as the formula for the state combination (s1,s2) to use
+	 * 
+	 * @param s1 State
+	 * @param s2 State
+	 * @return String formula
+	 */
 	public String findNegFormula(State s1, State s2) {
 		String val;
 		
-		val = getCombo(this.combo_pos, s1, s2);
+		val = getComboNeg(s1, s2);
 		
 		//if no specific val
 		//use default
@@ -212,10 +299,5 @@ public class ReportFunction {
 		return val;
 		
 	}
-	
-	
-
-	//should check states against vocab before additions
-	
 	
 }
