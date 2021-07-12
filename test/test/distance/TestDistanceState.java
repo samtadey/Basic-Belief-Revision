@@ -11,9 +11,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import distance.DistanceMap;
-import distance.Report;
-import language.State;
+import ca.bcit.tadey.revision.state.State;
+import ca.bcit.tadey.revision.trust.DistanceMap;
+import ca.bcit.tadey.revision.trust.Report;
 
 public class TestDistanceState {
 	

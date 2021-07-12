@@ -15,8 +15,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import distance.RankingState;
-import language.State;
+import ca.bcit.tadey.revision.state.State;
+import ca.bcit.tadey.revision.trust.RankingState;
 
 
 
