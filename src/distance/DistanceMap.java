@@ -19,11 +19,12 @@ import language.StateHelper;
  */
 public class DistanceMap {
 	
-	public static final double DEFAULT_VAL = 2.0;
+	public static final double DEFAULT_VAL = 5.0;
 	
 	private Set<Character> vocab;
 	private BeliefState possible_states;
 	private HashMap<State, HashMap<State, Double>> distances;
+	private double init_val;
 	
 	/*
 	 * Constructor for the DistanceState object
@@ -39,13 +40,41 @@ public class DistanceMap {
 		this.possible_states = new BeliefState(StateHelper.generateStates(vocab.size()));
 		HashMap<State, Double> inner;
 		//state combinations and set distances
+		this.init_val = DEFAULT_VAL;
 		
 		this.distances = new HashMap<State, HashMap<State, Double>>();
 		for (int i = 0; i < possible_states.getBeliefs().size() - 1; i++)
 		{
 			inner = new HashMap<State, Double>();
 			for (int j = i+1; j < possible_states.getBeliefs().size(); j++)	
-				inner.put(possible_states.getBeliefs().get(j), DEFAULT_VAL);
+				inner.put(possible_states.getBeliefs().get(j), this.init_val);
+			distances.put(possible_states.getBeliefs().get(i), inner);
+		}
+	}
+	
+	/*
+	 * Constructor for the DistanceState object
+	 * Initiates all State combinations in the distances member, and sets all the distances to 0.0
+	 * 
+	 * @params
+	 * 	Set<Character> representing the propositional variables
+	 *  double init_val representing the starting value to set trust graph cells to
+	 */
+	public DistanceMap(Set<Character> vocab, double init_val) {
+		this.vocab = vocab;
+		//must initialize all possible states with a distance of 0
+		//not easy to generate states as strings, thats why they are 
+		this.possible_states = new BeliefState(StateHelper.generateStates(vocab.size()));
+		HashMap<State, Double> inner;
+		//state combinations and set distances
+		this.init_val = init_val;
+		
+		this.distances = new HashMap<State, HashMap<State, Double>>();
+		for (int i = 0; i < possible_states.getBeliefs().size() - 1; i++)
+		{
+			inner = new HashMap<State, Double>();
+			for (int j = i+1; j < possible_states.getBeliefs().size(); j++)	
+				inner.put(possible_states.getBeliefs().get(j), this.init_val);
 			distances.put(possible_states.getBeliefs().get(i), inner);
 		}
 	}
@@ -58,9 +87,11 @@ public class DistanceMap {
 	public DistanceMap(DistanceMap map) {
 		this.vocab =  new LinkedHashSet<Character>(map.vocab);
 		this.possible_states = new BeliefState(map.possible_states);
+		this.init_val = map.init_val;
 		
 		//set map
 		this.distances = new HashMap<State, HashMap<State, Double>>();
+		
 		HashMap<State, Double> inner;
 		
 		for (State s1: map.distances.keySet())

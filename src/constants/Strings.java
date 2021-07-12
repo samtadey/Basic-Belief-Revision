@@ -69,6 +69,7 @@ public final class Strings {
 	public static final String action_revise_action = "Revise";
 	public static final String action_gen_trust_action = "Generate Trust Graph";
 	public static final String action_thresh_title = "Threshold";
+	public static final String action_init_title = "Initial Trust Value";
 	
 	//revision types
 	public static final String revision_general = "General";
@@ -124,6 +125,7 @@ public final class Strings {
 	public static final String error_revise_no_ranking = "Belief Rankings not set";
 	public static final String error_no_default_rank = "Default rank value not set.";
 	public static final String error_constraint_tri_eq = "Triangle Inequality Handler Not Set";
+	public static final String error_init_trust_value = Strings.action_init_title + " must be a double";
 	
 	//state error
 	public static final String errorStateNotPossible(String st) {

@@ -3,13 +3,7 @@
  */
 package main;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Set;
-
 import distance.DistanceMap;
-import distance.DistanceState;
 import distance.RankingState;
 import distance.revision.RevisionOperator;
 import distance.revision.RevisionStateScore;

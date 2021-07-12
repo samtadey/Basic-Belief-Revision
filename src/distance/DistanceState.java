@@ -24,7 +24,6 @@ import propositional_translation.InputTranslation;
 
 /**
  * @author sam_t
- *
  */
 public class DistanceState {
 	
@@ -34,6 +33,10 @@ public class DistanceState {
 	
 	public DistanceState(Set<Character> vocab) {
 		this.map = new DistanceMap(vocab);
+	}
+	
+	public DistanceState(Set<Character> vocab, double init_val) {
+		this.map = new DistanceMap(vocab, init_val);
 	}
 	
 	public DistanceState(DistanceMap map) {

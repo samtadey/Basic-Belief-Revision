@@ -28,16 +28,20 @@ import revision.uitwo.handler.TrustGraphHandler;
 import revision.ui.settings.UISettings;
 
 /**
- * @author sam_t
+ * The TrustGraphPanel is the UI representation of a trust graph in belief revision. 
+ * This class is handled by the TrustGraphHandler class.
+ * The data structures containing the trust graph information are the DistanceState objects
+ * 	- the distance object contains the raw distance values seen in the UI
+ *  - the minimax object contains the minimax distances, calculated from the distance object
+ *  
+ * The minimax object is used when belief revision takes place
  *
+ *
+ * @author sam_t
  */
 public class TrustGraphPanel extends JPanel implements ActionListener, FocusListener {
 	
 	
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5771430681979792609L;
 	
 	static JTextField vocab, t_formula, t_result;
@@ -48,12 +52,12 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	static DistanceState distance, minimax;
 	
 	static ArrayList<ArrayList<JTextField>> grid_text;
-	
 	static String prev_box_val;
 	
-	
-	public TrustGraphPanel(MainPanel main) {
-        //default
+	/**
+	 * TrustGraphPanel constructor
+	 */
+	public TrustGraphPanel() {
         visual = new GridLayout(3, 3);
         this.setLayout(visual);
         this.setBackground(Color.WHITE);
@@ -62,21 +66,38 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	
 	
 
+	/**
+	 * The TrustGraphPanel listens for two action events that take place.
+	 * 	- The Generate Trust Graph Action
+	 *  - The Add Report Action
+	 * These two actions involve building a new trust graph after the DistanceState object has been changed.
+	 * 
+	 * 
+	 * 
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		int grids;
         String s = e.getActionCommand();
-        Set<Character> vars;   
+        Set<Character> vars; 
+        double init_val;
          
-        //genereate default grid action
+        //generate default grid action
 		if (s.equals(Strings.action_gen_trust_action))
     	{	       
     		try {
     			//propositional variables
     			vars = InputTranslation.getVocab(ActionPanel.vocab.getText());
     			
-    			//create default trust graph
-            	distance = new DistanceState(vars);
+    			//validate initial value field
+    			init_val = TrustGraphHandler.checkTrustVal(ActionPanel.init_graph_val);
+    			
+    			if (init_val > 0)
+    				//custom initial value
+                	distance = new DistanceState(vars, init_val);
+    			else
+    				//create default trust graph
+    				distance = new DistanceState(vars);
             	
             	//width and length of grid
             	grids = distance.getMap().getPossibleStates().getBeliefs().size();
@@ -251,18 +272,13 @@ public class TrustGraphPanel extends JPanel implements ActionListener, FocusList
 	 * @return boolean indicating whether any of the object parameters are null
 	 */
 	private boolean validMembers(DistanceState distance) {
-		boolean isvalid = true;
-		
 		if (distance == null) 
 		{
 			//set error
 			ErrorHandler.addError(Strings.report_add_report_action, Strings.report_add_report_action, Strings.error_gen_trust_prereq);
-			isvalid = false;
+			return false;
 		}
-		
-		
-		return isvalid;
+		return true;
 	}
-
 
 }

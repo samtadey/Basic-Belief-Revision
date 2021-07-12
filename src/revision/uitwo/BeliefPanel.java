@@ -90,7 +90,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.insets = allfieldsbutright;
-        gbc.weightx = 1;
+        gbc.weightx = 2;
         //rank.setBorder(UISettings.componentborder);
         this.add(rank, gbc);
         
@@ -127,7 +127,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.insets = allfieldsbutright;
-        gbc.weightx = 1;
+        gbc.weightx = 2;
         sent.setBorder(UISettings.componentborder);
         this.add(sent, gbc);
         
@@ -148,7 +148,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         gbc.gridx = 2;
         gbc.gridy = 1;
         gbc.insets = allfieldsbutright;
-        gbc.weightx = 1;
+        gbc.weightx = 2;
         res.setBorder(UISettings.componentborder);
         this.add(res, gbc);
 

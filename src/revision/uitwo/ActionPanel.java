@@ -51,10 +51,10 @@ public class ActionPanel extends JPanel implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	static JTextField vocab, threshold;
+	static JTextField vocab, threshold, init_graph_val;
 	
 	static JButton gen_trust, revise, open_file;
-	static JLabel actions, thresh_lab;
+	static JLabel actions, thresh_lab, init_val_lab;
 	static JComboBox<String> revision_type;
 	
 	JFileChooser test;
@@ -71,9 +71,11 @@ public class ActionPanel extends JPanel implements ActionListener {
 		//this.setBackground(Color.RED);
 		
 		Insets leftcol = new Insets(10, 20, 0, 20);
-		Insets toright = new Insets(10, 0, 0, 20);
+		Insets toright = new Insets(10, 20, 0, 20);
 		Insets label = new Insets(0, 20, 0, 20);
 		Insets tbox = new Insets(0, 20, 0, 20);
+		Insets bottom = new Insets(0,0,10,20);
+		
 		
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -84,16 +86,16 @@ public class ActionPanel extends JPanel implements ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = label;
-        gbc.gridwidth = 3;
+        //gbc.gridwidth = 2;
         gbc.weightx = 1;
         gbc.weighty = 1;
         this.add(actions, gbc);
 		
         
-		vocab = new JTextField(15);
+		vocab = new JTextField();
 		gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.insets = tbox;
@@ -102,50 +104,46 @@ public class ActionPanel extends JPanel implements ActionListener {
         gbc.weighty = 1;
         this.add(vocab, gbc);
 		
-
+        
+        init_val_lab = new JLabel(Strings.action_init_title);
+        gbc.fill = GridBagConstraints.BOTH;
+//        gbc.anchor = GridBagConstraints.SOUTHWEST;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.insets = label;
+       // gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        this.add(init_val_lab, gbc);
+        
+		init_graph_val = new JTextField(5);
+		gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.insets = tbox;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        this.add(init_graph_val, gbc);
+        
 		gen_trust = new JButton(Strings.action_gen_trust_action);
 		gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.SOUTHWEST;
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.insets = leftcol;
-        gbc.gridwidth = 1;
+		gbc.anchor = GridBagConstraints.SOUTHEAST;
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        gbc.insets = new Insets(0,0,0,20);
         gbc.weightx = 1;
         gbc.weighty = 1;
         this.add(gen_trust, gbc);
-        
-		revise = new JButton(Strings.action_revise_action);
-		gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.insets = leftcol;
-        //gbc.gridwidth = 1;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        this.add(revise, gbc);
-        
-        
-		revision_type = new JComboBox<String>(Strings.revision_options);
-		gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.insets = toright;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        this.add(revision_type, gbc);
-        
-        
+       
         thresh_lab = new JLabel(Strings.action_thresh_title);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.SOUTHWEST;
-        gbc.gridx = 2;
-        gbc.gridy = 2;
-        gbc.insets = new Insets(10,0,0,0);
+        //gbc.anchor = GridBagConstraints.SOUTHWEST;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.insets = label;
        // gbc.gridwidth = 3;
         gbc.weightx = 1;
         gbc.weighty = 1;
@@ -155,14 +153,38 @@ public class ActionPanel extends JPanel implements ActionListener {
 		//set to inital state
 		threshold.setEditable(false);
 		gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.NONE;
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.gridx = 2;
-        gbc.gridy = 3;
-        gbc.insets = new Insets(10,0,10,20);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.insets = new Insets(0,20,10,20);
         gbc.weightx = 1;
         gbc.weighty = 1;
         this.add(threshold, gbc);
+        
+		revision_type = new JComboBox<String>(Strings.revision_options);
+		gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+		//gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.gridx = 1;
+        gbc.gridy = 5;
+        gbc.insets = bottom;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        this.add(revision_type, gbc);
+        
+        
+
+		revise = new JButton(Strings.action_revise_action);
+		gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 2;
+        gbc.gridy = 5;
+        gbc.insets = bottom;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        this.add(revise, gbc);
         
         /*
          * Combobox listener
@@ -190,10 +212,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		String action = e.getActionCommand();
-		//System.out.println(action);
-		
+	public void actionPerformed(ActionEvent e) {	
 		if (revision_type.getSelectedItem().equals(Strings.revision_general))
 		{
 			threshold.setEditable(false);
@@ -202,7 +221,6 @@ public class ActionPanel extends JPanel implements ActionListener {
 		{
 			threshold.setEditable(true);
 		}
-		
 	}
 
 

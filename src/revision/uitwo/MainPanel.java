@@ -22,7 +22,7 @@ import constants.Strings;
  * @author sam_t
  *
  */
-public class MainPanel implements ActionListener {
+public class MainPanel {
 	
 	static final int TOP_ROW_WEIGHT = 1;
 	static final int MID_ROW_WEIGHT = 5;
@@ -40,36 +40,30 @@ public class MainPanel implements ActionListener {
 	
     static JLabel trust_lab, report_lab, error_lab, minimax_lab;
     
-    //static ActionPanel act;
     static TrustGraphPanel graph;
     static BeliefPanel belief_panel;
     static MiniMaxDistancePanel minimax;
     static ErrorPanel error_panel;
 	
 	public MainPanel() {
+		
+		//frame settings
 		f = new JFrame(Strings.project_title);
         f.setSize(1250,1000);
-        
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLocationRelativeTo(null); 
+           
         
-
-        
+        //constructors for individual panels
 		main_panel = new JPanel();
-		graph = new TrustGraphPanel(this);
+		graph = new TrustGraphPanel();
         belief_panel = new BeliefPanel(this);
         report_panel = new ReportPanel(graph);
         minimax = new MiniMaxDistancePanel();
-		error_panel = new ErrorPanel();
-		
-		//tester
-		//add action listener within the VarWeightsPanel
-
-        
+		error_panel = new ErrorPanel();   
 		main_panel.setLayout(new GridBagLayout());	
 		GridBagConstraints gbc = new GridBagConstraints();
 		
-		//main_panel.setBackground(Color.YELLOW);
 
 		//
 		//BeliefPanel
@@ -108,7 +102,6 @@ public class MainPanel implements ActionListener {
         //
         //ReportPanel
         //
-        //label
 		report_lab = new JLabel(Strings.main_reports_title);
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -119,7 +112,6 @@ public class MainPanel implements ActionListener {
         gbc.insets = new Insets(10, 0, 0, 20);
         main_panel.add(report_lab, gbc);
         
-        //Report Panel
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 1;
@@ -135,7 +127,6 @@ public class MainPanel implements ActionListener {
         //
         //MiniMaxDistancePanel
         //
-        //label
 		minimax_lab = new JLabel(Strings.mmd_title);
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -161,7 +152,6 @@ public class MainPanel implements ActionListener {
         //
         //ErrorPane
 		//
-        //label
         error_lab = new JLabel(Strings.main_errors_title);
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -172,13 +162,11 @@ public class MainPanel implements ActionListener {
         gbc.insets = new Insets(10, 40, 0, 20);
         main_panel.add(error_lab, gbc);
         
-        //ErrorPane
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 0;
         gbc.gridy = 6;
         gbc.gridwidth = 3;
-        //gbc.anchor = GridBagConstraints.NORTH;
         gbc.insets = new Insets(5, 40, 40, 40);
         gbc.weightx = 1;
         gbc.weighty = 0.1;
@@ -196,12 +184,6 @@ public class MainPanel implements ActionListener {
 	public static void main(String[] args) {
 		new MainPanel();
 
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		System.out.println("Action Taken MainPanel");
-		f.validate();
 	}
 
 }

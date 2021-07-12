@@ -186,4 +186,17 @@ public class TrustGraphHandler {
 	}
 	
 	
+	public static double checkTrustVal(JTextField trust_val) throws Exception {
+		
+		if (trust_val.getText().isBlank())
+			return -1;
+		
+		try {
+			return Double.parseDouble(trust_val.getText());
+		} catch (Exception e) {
+			throw new Exception(Strings.error_init_trust_value);
+		}
+		
+	}
+	
 }
