@@ -82,6 +82,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 		
         
 		vocab = new JTextField();
+		vocab.setToolTipText(Strings.tooltip_prop_vocab);
 		gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
@@ -106,6 +107,7 @@ public class ActionPanel extends JPanel implements ActionListener {
         this.add(init_val_lab, gbc);
         
 		init_graph_val = new JTextField(5);
+		init_graph_val.setToolTipText(Strings.tooltip_init_trust);
 		gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -117,6 +119,7 @@ public class ActionPanel extends JPanel implements ActionListener {
         this.add(init_graph_val, gbc);
         
 		gen_trust = new JButton(Strings.action_gen_trust_action);
+		gen_trust.setToolTipText(Strings.tooltip_gen_trust);
 		gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.SOUTHEAST;
@@ -139,8 +142,8 @@ public class ActionPanel extends JPanel implements ActionListener {
         this.add(thresh_lab, gbc);
         
 		threshold = new JTextField(5);
-		//set to inital state
 		threshold.setEditable(false);
+		threshold.setToolTipText(Strings.tooltip_threshold);
 		gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -152,6 +155,7 @@ public class ActionPanel extends JPanel implements ActionListener {
         this.add(threshold, gbc);
         
 		revision_type = new JComboBox<String>(Strings.revision_options);
+		revision_type.setToolTipText(Strings.tooltip_rev_type);
 		gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
 		//gbc.anchor = GridBagConstraints.NORTHWEST;
@@ -165,7 +169,7 @@ public class ActionPanel extends JPanel implements ActionListener {
         
 
 		revise = new JButton(Strings.action_revise_action);
-		//revise.setToolTipText("test");
+		revise.setToolTipText(Strings.tooltip_revise);
 		gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.EAST;

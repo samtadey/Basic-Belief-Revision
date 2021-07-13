@@ -90,6 +90,7 @@ public class ReportPanel extends JPanel implements ActionListener {
         for (int i = 1; i < NUM_FIELDS+1; i++)
         {
         	form = new JTextField();
+        	form.setToolTipText(Strings.tooltip_report_formula);
         	gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.gridx = FORM_COL;
@@ -108,14 +109,12 @@ public class ReportPanel extends JPanel implements ActionListener {
         for (int i = 1; i < NUM_FIELDS+1; i++)
         {
         	res = new JTextField();
+        	res.setToolTipText(Strings.tooltip_report_result);
         	gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.gridx = RES_COL;
             gbc.gridy = i;
             gbc.insets = rightcol;
-            //gbc.weightx = 1;
-            
-
             results.add(res);
             this.add(res, gbc);
         }
@@ -123,6 +122,7 @@ public class ReportPanel extends JPanel implements ActionListener {
         
         //action button
         add_report_action = new JButton(Strings.report_add_report_action);
+        add_report_action.setToolTipText(Strings.tooltip_add_report);
         gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridx = 0;
@@ -134,6 +134,7 @@ public class ReportPanel extends JPanel implements ActionListener {
         
         //upload button
         upload_function_file = new JButton(Strings.report_upload_functions);
+        upload_function_file.setToolTipText(Strings.tooltip_upload_func);
         gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridx = 1;

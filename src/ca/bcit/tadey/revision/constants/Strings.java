@@ -157,4 +157,83 @@ public final class Strings {
 	public static final String exception_missing_file_param =  "At least one State/Rank pair missing";
 	public static final String exception_bad_state_length = "State length in file does not match vocabulary size";
 	
+	
+	
+	//tooltip 
+	//html tags used for formatting
+	
+	//action panel
+	public static final String tooltip_prop_vocab = "<html>Input the propositional variables to use through all aspects of this tool. <br> Each variable must be "
+			+ "separated by a comma <br> eg. x,y,z</html>";
+	
+	public static final String tooltip_init_trust = "<html>Input a value to set the initially generated trust graph members to.<br>"
+			+ "Default: 5.0</html>";
+	
+	
+	public static final String tooltip_threshold = "<html>Set the value for the threshold in Naive revision. <br>"
+			+ "Required: Naive Revision<br>"
+			+ "Enabled: Naive Revision</html>";
+	
+	
+	public static final String tooltip_rev_type = "Select revision type";
+	
+	
+	public static final String tooltip_gen_trust = "<html>Generate a trust graph for the specified propositional vocabulary<br>"
+			+ "Required: " + Strings.action_vocab_title + "<br>"
+			+ "Optional:" + Strings.action_init_title
+			+ "</html>";
+	
+	
+	public static final String tooltip_revise = "<html>Perform belief revision. <br>"
+			+ "Required: " + Strings.action_gen_trust_action + "<br>" + Strings.belief_beliefs_title + "<br>" + Strings.belief_sentence_title
+			+ "</html>";
+	
+	
+	//Belief Panel
+	public static final String tooltip_ranking_type = "Select ranking type";
+	
+	public static final String tooltip_beliefs = "Specify initial beliefs";
+	public static final String tooltip_upload_beliefs = "<html>Upload belief ranking file <br>"
+			+ "Template: ranking.txt</html>";;
+	
+	public static final String tooltip_sentence = "Specify sentence to revise by";
+	
+	public static final String tooltip_results = "Results of belief revision. No input";
+	
+	//Report Panel
+	public static final String tooltip_report_formula = "<html>Specify a report to modify the trust graph. <br>"
+			+ "Ensure you're using the correct propositional variables. <br>"
+			+ "eg: x & y <br>"
+			+ "eg. y</html>";
+	
+	public static final String tooltip_report_result = "<html>Specify a report result. <br>"
+			+ "Value must be a 0 or 1.</html>";
+	
+	public static final String tooltip_add_report = "<html>Add a report to the trust graph. <br>"
+			+ "Required: At least one complete formula and result pair. <br>"
+			+ "Optional: " + Strings.report_upload_functions
+			+ " </html>";
+	
+	public static final String tooltip_upload_func = "<html>Specify custom function file <br>"
+			+ "Template: report_function.txt</html>";
+	
+	
+	//Minimax Distance Panel
+	public static final String tooltip_state = "<html>State to check Minimax distance</html>";
+	
+	public static final String tooltip_state_dist = "<html>Minimax distance value</html>";
+	
+	public static final String tooltip_find_dist = "<html>Find the minimax distance between two states. <br>"
+			+ "Required: " + Strings.mmd_state1 + ", " + Strings.mmd_state2
+			+ "</html>";
+	
+	//error panel
+	public static final String tooltip_error_desc = "<html>The Errors pane will display errors and exceptions when they occur. <br>"
+			+ "They will provide guidance when the tool is not being used in the correct way.</html>";
+	
+	
+	//trust graph panel
+	public static final String tooltip_trust_edge = "<html>Trust value between two valid states. <br>"
+			+ "Distance values must be greater than 0.0 <br>"
+			+ "Non-greyed out values can be changed manually through keyboard input.</html>";
 }

@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import ca.bcit.tadey.revision.constants.Strings;
+
 
 /**
  * @author sam_t
@@ -38,6 +40,7 @@ public class ErrorPanel extends JPanel {
 		//this.setBackground(Color.RED);
 		
 		error_messages = new JTextArea(5,5);
+		error_messages.setToolTipText(Strings.tooltip_error_desc);
 		error_messages.setForeground(Color.RED);
 		error_messages.setEditable(false);
 		

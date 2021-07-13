@@ -59,6 +59,7 @@ public class RankingPanel extends JPanel implements ActionListener {
 		//first panel
 		//manual belief input
 		bel = new JTextArea(10,10);
+		bel.setToolTipText(Strings.tooltip_beliefs);
 		panel1.add(bel);
 		panel1.setBorder(UISettings.panelborder);
 		
@@ -66,6 +67,7 @@ public class RankingPanel extends JPanel implements ActionListener {
 		//second panel
 		//file upload/generation actions
 		file_upload = new JButton(Strings.ranking_file_choose);
+		file_upload.setToolTipText(Strings.tooltip_upload_beliefs);
         file_up = new JFileChooser();
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.NONE;
@@ -92,20 +94,7 @@ public class RankingPanel extends JPanel implements ActionListener {
         gbc.weightx = 1;
         gbc.weighty = 1;
 		panel2.add(file_selected, gbc);
-		
-//		file_generate = new JButton(Strings.ranking_file_generate);
-//        gbc = new GridBagConstraints();
-//        gbc.fill = GridBagConstraints.NONE;
-//        gbc.anchor = GridBagConstraints.NORTHWEST;
-//        gbc.gridx = 0;
-//        gbc.gridy = 2;
-//        gbc.insets = leftcol;
-//        gbc.weightx = 1;
-//        gbc.weighty = 4; //make the bottom button take up more space. Just visual
-//		panel2.add(file_generate, gbc);
-//		//panel2.setBackground(Color.red);
-		
-		
+	
 		cardholder.add(panel1, Strings.belief_combo_hamming);
 		cardholder.add(panel2, Strings.belief_combo_file);
 		

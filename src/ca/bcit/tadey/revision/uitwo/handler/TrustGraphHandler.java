@@ -84,6 +84,7 @@ public class TrustGraphHandler {
     				dist = distance.getMap().getDistance(s1, s2);
     				//decimal formatting
     				tf = new JTextField(setFormattedText(dist));
+    				tf.setToolTipText(Strings.tooltip_trust_edge);
     				//tf = new JTextField(Double.toString(dist));
     				if (i == j || j > i)
     					tf.setEditable(false);

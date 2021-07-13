@@ -72,6 +72,7 @@ public class MiniMaxDistancePanel extends JPanel implements ActionListener {
         this.add(result_lab, gbc);
         
 		action = new JButton(Strings.mmd_action);
+		action.setToolTipText(Strings.tooltip_find_dist);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 3;
@@ -81,6 +82,7 @@ public class MiniMaxDistancePanel extends JPanel implements ActionListener {
         
         //right column
 		s1_box = new JTextField(10);
+		s1_box.setToolTipText(Strings.tooltip_state);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -89,6 +91,7 @@ public class MiniMaxDistancePanel extends JPanel implements ActionListener {
         this.add(s1_box, gbc);
         
 		s2_box = new JTextField(10);
+		s2_box.setToolTipText(Strings.tooltip_state);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 1;
         gbc.gridy = 1;
@@ -97,6 +100,7 @@ public class MiniMaxDistancePanel extends JPanel implements ActionListener {
         this.add(s2_box, gbc);
         
 		result = new JTextField(10);
+		result.setToolTipText(Strings.tooltip_state_dist);
 		result.setEditable(false);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 1;

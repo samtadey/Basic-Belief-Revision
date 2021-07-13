@@ -90,7 +90,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         
         //Belief Type Combo Box
         belief_input = new JComboBox<String>(Strings.belief_combo);
-        //belief_input.addItem(rank.getCardByString());
+        belief_input.setToolTipText(Strings.tooltip_ranking_type);
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
@@ -116,7 +116,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         this.add(sent_lab, gbc);
 
         sent = new JTextArea(10,10);
-        //sent.setToolTipText("stet");
+        sent.setToolTipText(Strings.tooltip_sentence);
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 1;
@@ -138,6 +138,7 @@ public class BeliefPanel extends JPanel implements ActionListener {
         this.add(res_lab, gbc);
         
         res = new JTextArea(10,10);
+        res.setToolTipText(Strings.tooltip_results);
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 2;
