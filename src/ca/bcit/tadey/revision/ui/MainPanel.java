@@ -8,10 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -47,6 +44,7 @@ public class MainPanel implements ActionListener {
     static ConstraintPanel constraint_panel;
     static VarWeightsPanel weights_panel;
 	
+	@SuppressWarnings("deprecation")
 	public MainPanel() {
 		f = new JFrame(Strings.project_title);
         f.setSize(1250,1000);

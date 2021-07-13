@@ -5,7 +5,6 @@ package ca.bcit.tadey.revision.ui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -33,6 +32,10 @@ import ca.bcit.tadey.revision.ui.settings.UISettings;
  */
 public class RankingPanel extends JPanel implements ActionListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static JTextArea bel;
 	static JButton file_upload, file_generate;
 	static JFileChooser file_up;

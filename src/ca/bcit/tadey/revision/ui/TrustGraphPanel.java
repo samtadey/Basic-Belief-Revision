@@ -12,7 +12,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -21,17 +20,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import ca.bcit.tadey.revision.constants.Strings;
-import ca.bcit.tadey.revision.constants.UIToOperatorPairs;
-import ca.bcit.tadey.revision.state.BeliefState;
 import ca.bcit.tadey.revision.state.State;
 import ca.bcit.tadey.revision.translation.InputTranslation;
-import ca.bcit.tadey.revision.trust.DistanceMap;
 import ca.bcit.tadey.revision.trust.DistanceState;
-import ca.bcit.tadey.revision.trust.VariableWeights;
-import ca.bcit.tadey.revision.trust.constraint.TriangleInequalityOperator;
 import ca.bcit.tadey.revision.trust.constraint.TriangleInequalityResponse;
-import ca.bcit.tadey.revision.trust.constraint.TriangleInequalityResponseNextValid;
-import ca.bcit.tadey.revision.trust.constraint.TriangleInequalityResponseNoChange;
 import ca.bcit.tadey.revision.ui.handler.ErrorHandler;
 import ca.bcit.tadey.revision.ui.handler.TrustGraphHandler;
 import ca.bcit.tadey.revision.ui.settings.UISettings;

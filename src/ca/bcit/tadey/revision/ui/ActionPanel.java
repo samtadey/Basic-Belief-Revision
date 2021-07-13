@@ -3,19 +3,10 @@
  */
 package ca.bcit.tadey.revision.ui;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -23,10 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import ca.bcit.tadey.revision.constants.Strings;
-import ca.bcit.tadey.revision.translation.InputTranslation;
-import ca.bcit.tadey.revision.trust.RankingState;
-import ca.bcit.tadey.revision.ui.handler.ErrorHandler;
-import ca.bcit.tadey.revision.ui.handler.FileHandler;
 import ca.bcit.tadey.revision.ui.settings.UISettings;
 
 /**

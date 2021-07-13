@@ -1,17 +1,13 @@
 package ca.bcit.tadey.revision.trust;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import aima.core.logic.common.ParserException;
-import ca.bcit.tadey.revision.constants.Strings;
 import ca.bcit.tadey.revision.state.BeliefState;
 import ca.bcit.tadey.revision.state.State;
 import ca.bcit.tadey.revision.state.StateHelper;
-import ca.bcit.tadey.revision.trust.constraint.TriangleInequalityResponse;
 
 /**
  * @author sam_t

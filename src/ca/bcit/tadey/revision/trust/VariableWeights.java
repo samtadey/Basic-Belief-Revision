@@ -3,7 +3,6 @@
  */
 package ca.bcit.tadey.revision.trust;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -18,7 +17,6 @@ import ca.bcit.tadey.revision.translation.InputTranslation;
  */
 public class VariableWeights {
 	
-	private static final double DEFAULT_WEIGHT = 1;
 	
 	DistanceMap map;
 	

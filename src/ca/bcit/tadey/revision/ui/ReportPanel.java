@@ -3,7 +3,6 @@
  */
 package ca.bcit.tadey.revision.ui;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -11,16 +10,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import ca.bcit.tadey.revision.constants.ArithmeticOperations;
 import ca.bcit.tadey.revision.constants.Strings;
-import ca.bcit.tadey.revision.ui.handler.ErrorHandler;
 import ca.bcit.tadey.revision.ui.settings.UISettings;
 
 /**
@@ -31,6 +26,10 @@ import ca.bcit.tadey.revision.ui.settings.UISettings;
  */
 public class ReportPanel extends JPanel implements ActionListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static final int NUM_FIELDS = 5;
 	static final int FORM_COL = 0;
 	static final int RES_COL = 1;

@@ -5,14 +5,11 @@ package ca.bcit.tadey.revision.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.ScrollPane;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import ca.bcit.tadey.revision.ui.settings.UISettings;
 
 /**
  * @author sam_t

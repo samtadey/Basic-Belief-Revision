@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 
 import ca.bcit.tadey.revision.constants.Strings;
 import ca.bcit.tadey.revision.trust.constraint.TriangleInequalityOperator;

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.bcit.tadey.revision.state.BeliefState;
-import ca.bcit.tadey.revision.state.State;
 import ca.bcit.tadey.revision.trust.RankingState;
 
 /**

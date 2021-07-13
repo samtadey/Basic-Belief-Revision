@@ -90,7 +90,6 @@ public class RankingState {
 		groupings = new HashMap<Integer, Set<State>>();
 		 
 		validstates = new BeliefState(StateHelper.generateStates(vocab.size()));
-		Set<State> a = new HashSet<State>();
 		 
 		//assign rank by Hamming Distance
 		for (State s : validstates.getBeliefs())

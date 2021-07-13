@@ -40,6 +40,7 @@ public class MainPanel {
     static MiniMaxDistancePanel minimax;
     static ErrorPanel error_panel;
 	
+	@SuppressWarnings("deprecation")
 	public MainPanel() {
 		
 		//frame settings

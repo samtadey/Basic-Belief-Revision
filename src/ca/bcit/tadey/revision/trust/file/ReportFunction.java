@@ -102,9 +102,9 @@ public class ReportFunction {
 	 * @param s State
 	 * @return String or null
 	 */
-	private String getAllComboPos(State s) {
-		return all_combo_pos.get(s);
-	}
+//	private String getAllComboPos(State s) {
+//		return all_combo_pos.get(s);
+//	}
 
 	/**
 	 * Get the negative formula for all combinations of the state parameter
@@ -114,9 +114,9 @@ public class ReportFunction {
 	 * @param s State
 	 * @return String or null
 	 */
-	private String getAllComboNeg(State s) {
-		return all_combo_neg.get(s);
-	}
+//	private String getAllComboNeg(State s) {
+//		return all_combo_neg.get(s);
+//	}
 
 	/**
 	 * Add entry to the All Combo Positive structure

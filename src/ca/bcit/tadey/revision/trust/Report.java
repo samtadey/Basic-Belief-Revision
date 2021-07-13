@@ -6,7 +6,6 @@ package ca.bcit.tadey.revision.trust;
 import java.util.Set;
 
 import aima.core.logic.common.ParserException;
-import ca.bcit.tadey.revision.BeliefRevision;
 import ca.bcit.tadey.revision.state.BeliefState;
 import ca.bcit.tadey.revision.translation.InputTranslation;
 

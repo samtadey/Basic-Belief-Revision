@@ -59,8 +59,6 @@ public class ActionPanel extends JPanel implements ActionListener {
 		this.setBorder(UISettings.panelborder);
 		//this.setBackground(Color.RED);
 		
-		Insets leftcol = new Insets(10, 20, 0, 20);
-		Insets toright = new Insets(10, 20, 0, 20);
 		Insets label = new Insets(0, 20, 0, 20);
 		Insets tbox = new Insets(0, 20, 0, 20);
 		Insets bottom = new Insets(0,0,10,20);

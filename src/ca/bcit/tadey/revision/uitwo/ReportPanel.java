@@ -32,6 +32,10 @@ import ca.bcit.tadey.revision.uitwo.handler.ErrorHandler;
  */
 public class ReportPanel extends JPanel implements ActionListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static final int NUM_FIELDS = 5;
 	static final int FORM_COL = 0;
 	static final int RES_COL = 2;

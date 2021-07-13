@@ -32,6 +32,10 @@ import ca.bcit.tadey.revision.ui.settings.UISettings;
  */
 public class RankingPanel extends JPanel implements ActionListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static JTextArea bel;
 	static JButton file_upload;
 	static JFileChooser file_up;

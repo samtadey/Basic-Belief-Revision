@@ -26,6 +26,10 @@ import ca.bcit.tadey.revision.uitwo.handler.ErrorHandler;
  */
 public class MiniMaxDistancePanel extends JPanel implements ActionListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JLabel s1_lab, s2_lab, result_lab;
 	JTextField s1_box, s2_box, result;
 	JButton action;

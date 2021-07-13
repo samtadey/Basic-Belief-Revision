@@ -1,7 +1,6 @@
 package ca.bcit.tadey.revision.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -16,7 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import ca.bcit.tadey.revision.constants.Strings;
@@ -24,9 +22,13 @@ import ca.bcit.tadey.revision.translation.InputTranslation;
 import ca.bcit.tadey.revision.trust.DistanceState;
 import ca.bcit.tadey.revision.trust.VariableWeights;
 import ca.bcit.tadey.revision.ui.handler.ErrorHandler;
-import ca.bcit.tadey.revision.ui.settings.UISettings;
 
 public class VarWeightsPanel extends JPanel implements ActionListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public static JScrollPane scroll;
 	

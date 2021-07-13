@@ -3,7 +3,6 @@
  */
 package ca.bcit.tadey.revision.ui;
 
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
@@ -18,6 +17,10 @@ import ca.bcit.tadey.revision.trust.RankingState;
  */
 public class RevisionResultPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static GridLayout visual;
 	
 	/**
